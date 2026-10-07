@@ -1,0 +1,181 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  /* ------------------------------------------------------------------
+     Design tokens, stored as "R G B" channels (so bg-primary/50 works).
+     Brand anchors are unchanged: Navy #1E3A8A + Gold #F59E0B.
+     Everything else is a tonal helper built around those two.
+     ------------------------------------------------------------------ */
+  :root {
+    /* Surfaces & lines */
+    --background: 249 250 251; /* #F9FAFB */
+    --surface: 255 255 255; /* #FFFFFF */
+    --muted: 243 244 246; /* #F3F4F6  hover / subtle fills */
+    --border: 229 231 235; /* #E5E7EB */
+
+    /* Text */
+    --foreground: 17 24 39; /* #111827 */
+    --foreground-secondary: 107 114 128; /* #6B7280 */
+    --foreground-muted: 156 163 175; /* #9CA3AF  decorative only */
+
+    /* Brand: Navy */
+    --primary: 30 58 138; /* #1E3A8A */
+    --primary-hover: 30 64 175; /* #1E40AF */
+    --primary-deep: 23 37 84; /* #172554  gradient end */
+    --primary-foreground: 255 255 255;
+    --primary-soft: 238 242 255; /* #EEF2FF  icon tiles, badges */
+    --primary-soft-fg: 30 58 138;
+    --link: 30 64 175; /* #1E40AF */
+
+    /* Brand: Gold (accent: use sparingly) */
+    --secondary: 245 158 11; /* #F59E0B */
+    --secondary-foreground: 17 24 39;
+    --secondary-soft: 254 243 199; /* #FEF3C7 */
+    --secondary-soft-fg: 146 64 14; /* #92400E */
+
+    /* Status: solid for fills, soft pair for badges/alerts (AA contrast) */
+    --success: 16 185 129; /* #10B981 */
+    --success-soft: 209 250 229;
+    --success-soft-fg: 6 95 70;
+    --danger: 239 68 68; /* #EF4444 */
+    --danger-soft: 254 226 226;
+    --danger-soft-fg: 153 27 27;
+    --warning: 249 115 22; /* #F97316 */
+    --warning-soft: 255 237 213;
+    --warning-soft-fg: 154 52 18;
+
+    --ring: 30 58 138;
+
+    /* Charts (Recharts): navy, gold, emerald, sky, slate, orange */
+    --chart-1: 30 58 138;
+    --chart-2: 245 158 11;
+    --chart-3: 16 185 129;
+    --chart-4: 14 165 233;
+    --chart-5: 100 116 139;
+    --chart-6: 249 115 22;
+    --chart-7: 20 184 166;
+    --chart-8: 244 63 94;
+  }
+
+  .dark {
+    --background: 15 23 42; /* #0F172A */
+    --surface: 30 41 59; /* #1E293B */
+    --muted: 38 51 71; /* #263347  visibly lighter than surface for hovers */
+    --border: 51 65 85; /* #334155 */
+
+    --foreground: 241 245 249; /* #F1F5F9 */
+    --foreground-secondary: 203 213 225; /* #CBD5E1 */
+    --foreground-muted: 148 163 184;
+
+    /* Navy on navy has no contrast, so dark mode uses a brighter blue brand fill. */
+    --primary: 37 99 235; /* #2563EB */
+    --primary-hover: 59 130 246; /* #3B82F6 */
+    --primary-deep: 30 64 175;
+    --primary-soft: 30 51 102; /* #1E3366 */
+    --primary-soft-fg: 191 219 254; /* #BFDBFE */
+    --link: 147 197 253; /* #93C5FD */
+
+    --secondary-soft: 69 52 17;
+    --secondary-soft-fg: 252 211 77;
+
+    --success-soft: 6 78 59;
+    --success-soft-fg: 110 231 183;
+    --danger-soft: 91 33 38;
+    --danger-soft-fg: 252 165 165;
+    --warning-soft: 94 45 20;
+    --warning-soft-fg: 253 186 116;
+
+    --ring: 96 165 250;
+
+    --chart-1: 96 165 250;
+    --chart-2: 251 191 36;
+    --chart-3: 52 211 153;
+    --chart-4: 56 189 248;
+    --chart-5: 148 163 184;
+    --chart-6: 251 146 60;
+    --chart-7: 45 212 191;
+    --chart-8: 251 113 133;
+  }
+
+  * {
+    @apply border-border;
+  }
+
+  html {
+    scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    @apply bg-background font-sans text-base leading-7 text-foreground antialiased;
+  }
+
+  :lang(bn) {
+    line-height: 1.75;
+  }
+
+  :focus-visible {
+    @apply outline-none ring-2 ring-ring ring-offset-2 ring-offset-background;
+  }
+
+  ::selection {
+    background: rgb(var(--secondary) / 0.3);
+  }
+}
+
+@layer components {
+  .container-page {
+    @apply mx-auto w-full max-w-7xl px-4 md:px-6 lg:px-8;
+  }
+  .section {
+    @apply py-16 md:py-24;
+  }
+}
+
+@layer utilities {
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Article typography for sanitized blog HTML (no plugin: uses our tokens, so dark mode just works) */
+@layer components {
+  .prose-blog {
+    @apply text-base leading-8 text-foreground;
+    overflow-wrap: anywhere;
+  }
+  .prose-blog > * + * { @apply mt-6; }
+  .prose-blog h2 { @apply mt-10 text-2xl font-semibold leading-snug md:text-3xl; }
+  .prose-blog h3 { @apply mt-8 text-xl font-semibold leading-snug md:text-2xl; }
+  .prose-blog h4 { @apply mt-6 text-lg font-semibold; }
+  .prose-blog a { @apply text-link underline underline-offset-4 hover:no-underline; }
+  .prose-blog ul { @apply list-disc space-y-2 pl-6; }
+  .prose-blog ol { @apply list-decimal space-y-2 pl-6; }
+  .prose-blog blockquote { @apply rounded-r-lg border-l-4 border-secondary bg-surface py-3 pl-5 pr-4 text-ink-secondary; }
+  .prose-blog img { @apply h-auto w-full rounded-2xl border border-border; }
+  .prose-blog figcaption { @apply mt-2 text-center text-sm text-ink-secondary; }
+  .prose-blog hr { @apply border-border; }
+  .prose-blog table { @apply block w-full overflow-x-auto border-collapse text-sm; }
+  .prose-blog th, .prose-blog td { @apply border border-border px-3 py-2 text-left; }
+  .prose-blog th { @apply bg-muted font-semibold; }
+  .prose-blog code { @apply rounded bg-muted px-1.5 py-0.5 text-sm; }
+  .prose-blog pre { @apply overflow-x-auto rounded-xl border border-border bg-muted p-4; }
+  .prose-blog pre code { @apply bg-transparent p-0; }
+}

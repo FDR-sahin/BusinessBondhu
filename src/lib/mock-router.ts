@@ -1,0 +1,178 @@
+import type { AxiosRequestConfig, AxiosResponse } from "axios";
+import type { MyPost } from "@/types";
+import {
+  MOCK_ANALYSIS_DATA,
+  MOCK_BLOG_POSTS,
+  MOCK_DASHBOARD_OVERVIEW,
+  MOCK_POSTS,
+  MOCK_TOP_DISTRICTS,
+  getMockAdvisorSuggestions,
+  getMockComments,
+  getMockPaginatedPosts,
+  getMockPostDetail,
+} from "@/lib/mock-data";
+
+export function handleMockFallback(config?: AxiosRequestConfig): AxiosResponse | null {
+  if (!config) return null;
+  const url = config.url || "";
+  const params = config.params || {};
+
+  // Clean endpoint path
+  const path = url.replace(/^https?:\/\/[^\/]+/, "").replace(/^\/api\/v1/, "");
+
+  // GET /posts/stats/top-districts or /stats/top-districts
+  if (path.includes("/stats/top-districts")) {
+    return createAxiosResponse(MOCK_TOP_DISTRICTS, config);
+  }
+
+  // GET /stats/analysis
+  if (path.includes("/stats/analysis")) {
+    return createAxiosResponse(MOCK_ANALYSIS_DATA, config);
+  }
+
+  // GET /posts/:id/comments
+  if (path.match(/\/posts\/[^\/]+\/comments/)) {
+    const postId = path.split("/")[2] || "post-1";
+    return createAxiosResponse(getMockComments(postId), config);
+  }
+
+  // GET /posts/:id/related
+  if (path.match(/\/posts\/[^\/]+\/related/)) {
+    return createAxiosResponse(MOCK_POSTS.slice(0, 4), config);
+  }
+
+  // GET /posts/:id/me
+  if (path.match(/\/posts\/[^\/]+\/me/)) {
+    return createAxiosResponse({ reaction: null, saved: false }, config);
+  }
+
+  // GET /posts/:id
+  if (path.match(/\/posts\/[^\/]+$/) && !path.includes("/posts?")) {
+    const id = path.split("/").pop() || "post-1";
+    return createAxiosResponse(getMockPostDetail(id), config);
+  }
+
+  // GET /posts
+  if (path.startsWith("/posts")) {
+    return createAxiosResponse(getMockPaginatedPosts(params), config);
+  }
+
+  // GET /blog/featured
+  if (path.includes("/blog/featured")) {
+    return createAxiosResponse(MOCK_BLOG_POSTS[0], config);
+  }
+
+  // GET /blog/:slug/related
+  if (path.match(/\/blog\/[^\/]+\/related/)) {
+    return createAxiosResponse(MOCK_BLOG_POSTS.slice(0, 3), config);
+  }
+
+  // GET /blog/:slug
+  if (path.match(/\/blog\/[^\/]+$/) && !path.includes("/blog?")) {
+    const slug = path.split("/").pop();
+    const blog = MOCK_BLOG_POSTS.find((b) => b.slug === slug) || MOCK_BLOG_POSTS[0];
+    return createAxiosResponse(
+      {
+        ...blog,
+        content: `
+          <h3>১. ট্রেড লাইসেন্স ও ব্যবসার প্রাথমিক প্রস্তুতি</h3>
+          <p>বাংলাদেশের যে কোনো প্রান্তে ক্ষুদ্র বা মাঝারি ব্যবসা শুরু করার জন্য ট্রেড লাইসেন্স প্রথম আইনি ভিত্তি। ইউনিয়ন পরিষদ, পৌরসভা বা সিটি কর্পোরেশন এলাকা অনুযায়ী সামান্য ফি প্রদান করে ট্রেড লাইসেন্স সংগ্রহ করতে হয়।</p>
+          <h3>২. ই-টিন (e-TIN) তৈরি ও কাস্টমার ট্রাস্ট</h3>
+          <p>এনবিআরের অফিশিয়াল পোর্টাল থেকে বিনামূল্যে মাত্র ৫ মিনিটে জাতীয় পরিচয়পত্র দিয়ে ই-টিন খোলা সম্ভব। এটি ব্যাংকে ব্যবসায়িক অ্যাকাউন্ট খোলার সময় প্রয়োজন হয়।</p>
+          <h3>৩. মূলধন ব্যবস্থাপনা ও পাইকারি সোর্সিং</h3>
+          <p>পাইকারি বাজারে কেনাকাটার সময় কয়েক জায়গায় দাম যাচাই করুন। প্রথম থেকেই হিসাব নিকাশ স্পষ্ট রাখুন।</p>
+        `,
+        commentsEnabled: true,
+      },
+      config,
+    );
+  }
+
+  // GET /blog
+  if (path.startsWith("/blog")) {
+    return createAxiosResponse(
+      {
+        items: MOCK_BLOG_POSTS,
+        total: MOCK_BLOG_POSTS.length,
+        page: 1,
+        limit: 9,
+        totalPages: 1,
+      },
+      config,
+    );
+  }
+
+  // POST /advisor/suggest
+  if (path.includes("/advisor/suggest")) {
+    const body = typeof config.data === "string" ? JSON.parse(config.data || "{}") : config.data || {};
+    return createAxiosResponse(getMockAdvisorSuggestions(body.budget || 20000, body.category), config);
+  }
+
+  // POST /advisor/saved, /posts/:id/like, /posts/:id/dislike, /posts/:id/save, /posts/:id/view
+  if (
+    path.includes("/advisor/saved") ||
+    path.includes("/like") ||
+    path.includes("/dislike") ||
+    path.includes("/save") ||
+    path.includes("/view")
+  ) {
+    return createAxiosResponse({ success: true, message: "অপারেশনটি সফল হয়েছে" }, config);
+  }
+
+  // Dashboard APIs
+  if (path.includes("/me/dashboard")) {
+    return createAxiosResponse(MOCK_DASHBOARD_OVERVIEW, config);
+  }
+  if (path.includes("/me/posts")) {
+    const myPosts: MyPost[] = MOCK_POSTS.map((p, index) => ({
+      ...p,
+      status: index === 0 ? "approved" : index === 1 ? "pending" : index === 2 ? "draft" : "approved",
+    }));
+    return createAxiosResponse(
+      {
+        items: myPosts,
+        total: myPosts.length,
+        page: 1,
+        limit: 10,
+        totalPages: 1,
+      },
+      config,
+    );
+  }
+  if (path.includes("/me/comments")) {
+    return createAxiosResponse(
+      [
+        {
+          id: "dc-1",
+          content: "গাজীপুরের কাগজের কাপের কারখানাটির পাইকারি রেট অনেক ভালো।",
+          createdAt: "2026-10-06T14:30:00Z",
+          author: { id: "u-2", name: "তানভীর আহমেদ", avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=200&q=80" },
+          post: { id: "post-1", title: "গাজীপুরে পরিবেশবান্ধব কাগজের কাপ তৈরির লাভজনক ব্যবসা" },
+          likesCount: 5,
+          replied: true,
+          replies: [],
+        },
+      ],
+      config,
+    );
+  }
+  if (path.includes("/me/notifications")) {
+    return createAxiosResponse({ items: [], unreadCount: 0 }, config);
+  }
+  if (path.includes("/me/collections")) {
+    return createAxiosResponse(getMockPaginatedPosts(), config);
+  }
+
+  // Generic Fallback
+  return createAxiosResponse({ items: MOCK_POSTS, total: MOCK_POSTS.length }, config);
+}
+
+function createAxiosResponse(data: any, config: AxiosRequestConfig): AxiosResponse {
+  return {
+    data,
+    status: 200,
+    statusText: "OK",
+    headers: {},
+    config: config as any,
+  };
+}
