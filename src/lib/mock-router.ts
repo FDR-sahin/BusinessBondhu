@@ -146,7 +146,7 @@ export function handleMockFallback(config?: AxiosRequestConfig): AxiosResponse |
           id: "dc-1",
           content: "গাজীপুরের কাগজের কাপের কারখানাটির পাইকারি রেট অনেক ভালো।",
           createdAt: "2026-10-06T14:30:00Z",
-          author: { id: "u-2", name: "তানভীর আহমেদ", avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=200&q=80" },
+          author: { id: "u-2", name: "তানভীর আহমেদ" },
           post: { id: "post-1", title: "গাজীপুরে পরিবেশবান্ধব কাগজের কাপ তৈরির লাভজনক ব্যবসা" },
           likesCount: 5,
           replied: true,

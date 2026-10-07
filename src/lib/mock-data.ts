@@ -19,7 +19,6 @@ export const MOCK_POSTS: Post[] = [
   {
     id: "post-1",
     title: "গাজীপুরে পরিবেশবান্ধব কাগজের কাপ তৈরির লাভজনক ব্যবসা",
-    image: "https://images.unsplash.com/photo-1517256064527-09c73fc73e38?auto=format&fit=crop&w=800&q=80",
     category: "food-beverage",
     division: "Dhaka",
     district: "Gazipur",
@@ -31,7 +30,6 @@ export const MOCK_POSTS: Post[] = [
     author: {
       id: "u-1",
       name: "মহসিন হোসেন",
-      avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=200&q=80",
     },
     likesCount: 142,
     dislikesCount: 3,
@@ -42,7 +40,6 @@ export const MOCK_POSTS: Post[] = [
   {
     id: "post-2",
     title: "বগুড়ার বিখ্যাত দই ও দুগ্ধজাত সামগ্রীর অনলাইন রিটেইল",
-    image: "https://images.unsplash.com/photo-1528735602780-2552fd46c7af?auto=format&fit=crop&w=800&q=80",
     category: "food-beverage",
     division: "Rajshahi",
     district: "Bogura",
@@ -54,7 +51,6 @@ export const MOCK_POSTS: Post[] = [
     author: {
       id: "u-2",
       name: "তানভীর আহমেদ",
-      avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=200&q=80",
     },
     likesCount: 215,
     dislikesCount: 5,
@@ -65,7 +61,6 @@ export const MOCK_POSTS: Post[] = [
   {
     id: "post-3",
     title: "চট্টগ্রামে অর্গানিক ড্রাই ফিশ (শুঁটকি) প্যাকেজিং ও ব্র্যান্ডিং",
-    image: "https://images.unsplash.com/photo-1534422298391-e4f8c172dddb?auto=format&fit=crop&w=800&q=80",
     category: "food-beverage",
     division: "Chattogram",
     district: "Chattogram",
@@ -77,7 +72,6 @@ export const MOCK_POSTS: Post[] = [
     author: {
       id: "u-3",
       name: "নাজমুন নাহার",
-      avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=200&q=80",
     },
     likesCount: 98,
     dislikesCount: 2,
@@ -88,7 +82,6 @@ export const MOCK_POSTS: Post[] = [
   {
     id: "post-4",
     title: "নারায়ণগঞ্জে হোসিয়ারি ও রেডিমেড টি-শার্ট পাইকারি সরবরাহ",
-    image: "https://images.unsplash.com/photo-1521572267360-ee0c2909d518?auto=format&fit=crop&w=800&q=80",
     category: "clothing",
     division: "Dhaka",
     district: "Narayanganj",
@@ -100,7 +93,6 @@ export const MOCK_POSTS: Post[] = [
     author: {
       id: "u-4",
       name: "আরিফ হাসান",
-      avatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=200&q=80",
     },
     likesCount: 310,
     dislikesCount: 8,
@@ -111,7 +103,6 @@ export const MOCK_POSTS: Post[] = [
   {
     id: "post-5",
     title: "যশোরে নার্সারি ও হাইব্রিড ফলের চারা উৎপাদন ব্যবসা",
-    image: "https://images.unsplash.com/photo-1416879595882-3373a0480b5b?auto=format&fit=crop&w=800&q=80",
     category: "agriculture-livestock",
     division: "Khulna",
     district: "Jashore",
@@ -123,7 +114,6 @@ export const MOCK_POSTS: Post[] = [
     author: {
       id: "u-5",
       name: "সাদিয়া রহমান",
-      avatar: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?auto=format&fit=crop&w=200&q=80",
     },
     likesCount: 176,
     dislikesCount: 1,
@@ -134,7 +124,6 @@ export const MOCK_POSTS: Post[] = [
   {
     id: "post-6",
     title: "সিলেটে অর্গানিক গ্রিন টি ও ভেষজ চায়ের স্মল-স্কেল প্যাকেজিং",
-    image: "https://images.unsplash.com/photo-1576092768241-dec231879fc3?auto=format&fit=crop&w=800&q=80",
     category: "food-beverage",
     division: "Sylhet",
     district: "Sylhet",
@@ -146,7 +135,6 @@ export const MOCK_POSTS: Post[] = [
     author: {
       id: "u-6",
       name: "কামরুল ইসলাম",
-      avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&w=200&q=80",
     },
     likesCount: 189,
     dislikesCount: 4,
@@ -157,7 +145,6 @@ export const MOCK_POSTS: Post[] = [
   {
     id: "post-7",
     title: "ঢাকার প্রাণকেন্দ্রে মোবাইল রিপ্রেয়ারিং ও এক্সেসরিজ পয়েন্ট",
-    image: "https://images.unsplash.com/photo-1598327105666-5b89351aff97?auto=format&fit=crop&w=800&q=80",
     category: "electronics",
     division: "Dhaka",
     district: "Dhaka",
@@ -169,7 +156,6 @@ export const MOCK_POSTS: Post[] = [
     author: {
       id: "u-7",
       name: "রাশেদুল করিম",
-      avatar: "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?auto=format&fit=crop&w=200&q=80",
     },
     likesCount: 260,
     dislikesCount: 6,
@@ -180,7 +166,6 @@ export const MOCK_POSTS: Post[] = [
   {
     id: "post-8",
     title: "রংপুরে হোমমেড ভেষজ রূপচর্চা সামগ্রী ও স্কিনকেয়ার ব্র্যান্ড",
-    image: "https://images.unsplash.com/photo-1556228720-195a672e8a03?auto=format&fit=crop&w=800&q=80",
     category: "cosmetics",
     division: "Rangpur",
     district: "Rangpur",
@@ -192,7 +177,6 @@ export const MOCK_POSTS: Post[] = [
     author: {
       id: "u-8",
       name: "ফারজানা ইয়াসমিন",
-      avatar: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=200&q=80",
     },
     likesCount: 145,
     dislikesCount: 2,
@@ -223,9 +207,8 @@ export const MOCK_BLOG_POSTS: BlogPost[] = [
     slug: "small-business-registration-bangladesh",
     title: "বাংলাদেশে ক্ষুদ্র ব্যবসার ট্রেড লাইসেন্স ও ই-টিন নেওয়ার সহজ গাইড",
     excerpt: "আইনি জটিলতা এড়িয়ে মাত্র ৩ দিনে ইউনিয়ন পরিষদ বা সিটি কর্পোরেশন থেকে ট্রেড লাইসেন্স সংগ্রহের ধাপসমূহ।",
-    coverImage: "https://images.unsplash.com/photo-1450133064473-71024230f91b?auto=format&fit=crop&w=800&q=80",
     category: "govt-benefits",
-    author: { id: "u-admin", name: "কমিউনিটি অ্যাডমিন", avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&w=200&q=80" },
+    author: { id: "u-admin", name: "কমিউনিটি অ্যাডমিন" },
     publishedAt: "2026-09-28T09:00:00Z",
     readingTime: 4,
   },
@@ -234,7 +217,6 @@ export const MOCK_BLOG_POSTS: BlogPost[] = [
     slug: "wholesale-market-sourcing-dhaka",
     title: "ঢাকার চকবাজার ও ইসলামপুরের পাইকারি বাজার থেকে পণ্য কেনার সিক্রেট টিপস",
     excerpt: "সঠিক কোয়ালিটি চেনা, দাম কমানো এবং ধোঁকাবাজি থেকে বাঁচার বাস্তব অভিজ্ঞতা।",
-    coverImage: "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=800&q=80",
     category: "wholesale-markets",
     author: { id: "u-1", name: "মহসিন হোসেন" },
     publishedAt: "2026-10-01T11:20:00Z",
@@ -245,7 +227,6 @@ export const MOCK_BLOG_POSTS: BlogPost[] = [
     slug: "facebook-f-commerce-growth-hacks",
     title: "কম খরচে এফ-কমার্স ব্যবসা বাড়ানোর ৫টি পরীক্ষিত মেথড",
     excerpt: "অর্গানিক রিচ বাড়ানো, কাস্টমার ট্রাস্ট গঠন এবং দ্রুত ডেলিভারি নিশ্চিত করার কৌশল।",
-    coverImage: "https://images.unsplash.com/photo-1563986768609-322da13575f3?auto=format&fit=crop&w=800&q=80",
     category: "success-stories",
     author: { id: "u-2", name: "তানভীর আহমেদ" },
     publishedAt: "2026-10-03T14:40:00Z",
@@ -284,9 +265,9 @@ export const MOCK_ANALYSIS_DATA: AnalysisData = {
   ],
   topDistricts: MOCK_TOP_DISTRICTS,
   topContributors: [
-    { id: "u-4", name: "আরিফ হাসান", avatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=200&q=80", postCount: 24 },
-    { id: "u-2", name: "তানভীর আহমেদ", avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=200&q=80", postCount: 18 },
-    { id: "u-1", name: "মহসিন হোসেন", avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=200&q=80", postCount: 15 },
+    { id: "u-4", name: "আরিফ হাসান", postCount: 24 },
+    { id: "u-2", name: "তানভীর আহমেদ", postCount: 18 },
+    { id: "u-1", name: "মহসিন হোসেন", postCount: 15 },
   ],
   priceTrends: [
     { month: "2026-05", avgWholesale: 120, avgRetail: 210 },
@@ -318,7 +299,7 @@ export const MOCK_DASHBOARD_OVERVIEW: DashboardOverview = {
     {
       id: "act-1",
       type: "like",
-      actor: { name: "সাদিয়া রহমান", avatar: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?auto=format&fit=crop&w=200&q=80" },
+      actor: { name: "সাদিয়া রহমান" },
       postId: "post-1",
       postTitle: "গাজীপুরে পরিবেশবান্ধব কাগজের কাপ তৈরির লাভজনক ব্যবসা",
       createdAt: "2026-10-07T14:20:00Z",
@@ -326,7 +307,7 @@ export const MOCK_DASHBOARD_OVERVIEW: DashboardOverview = {
     {
       id: "act-2",
       type: "comment",
-      actor: { name: "তানভীর আহমেদ", avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=200&q=80" },
+      actor: { name: "তানভীর আহমেদ" },
       postId: "post-1",
       postTitle: "গাজীপুরে পরিবেশবান্ধব কাগজের কাপ তৈরির লাভজনক ব্যবসা",
       message: "মেশিনটি কোথা থেকে কিনেছেন জানালে উপকৃত হতাম।",
@@ -393,7 +374,6 @@ export function getMockComments(postId: string): Comment[] {
       author: {
         id: "u-2",
         name: "তানভীর আহমেদ",
-        avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=200&q=80",
       },
       content: "খুবই দরকারী তথ্য শেয়ার করার জন্য ধন্যবাদ! কাঁচামাল সরবরাহের ঠিকানা থাকলে শেয়ার করবেন দয়া করে।",
       createdAt: "2026-10-06T14:30:00Z",
@@ -407,7 +387,6 @@ export function getMockComments(postId: string): Comment[] {
           author: {
             id: "u-1",
             name: "মহসিন হোসেন (লেখক)",
-            avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=200&q=80",
           },
           content: "ইনবক্সে কন্টাক্ট নম্বর পাঠিয়েছি ভাই, দেখে নিন।",
           createdAt: "2026-10-06T15:10:00Z",
@@ -421,7 +400,6 @@ export function getMockComments(postId: string): Comment[] {
       author: {
         id: "u-3",
         name: "নাজমুন নাহার",
-        avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=200&q=80",
       },
       content: "ঢাকার বাইরে ডেলিভারি পাওয়ার ব্যবস্থা আছে কি?",
       createdAt: "2026-10-07T09:15:00Z",
