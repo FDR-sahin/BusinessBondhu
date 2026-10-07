@@ -1,23 +1,15 @@
 "use client";
 
-import { Facebook, Instagram, Linkedin, Mail, MapPin, Phone, Youtube } from "lucide-react";
+import { Mail, MapPin, Phone } from "lucide-react";
 import Link from "next/link";
 import { LanguageToggle } from "@/components/shared/language-toggle";
 import { Logo } from "@/components/shared/logo";
-import { NewsletterForm } from "@/components/shared/newsletter-form";
 import { CATEGORIES, CONTACT, NAV_LINKS, SITE_NAME } from "@/lib/constants";
 import { useT } from "@/lib/i18n";
-import { toBanglaNumber } from "@/lib/utils";
+import { toFormattedNumber } from "@/lib/utils";
 import { useLangStore } from "@/store/lang-store";
 
-const SOCIALS = [
-  { label: "Facebook", href: "https://facebook.com", icon: Facebook },
-  { label: "YouTube", href: "https://youtube.com", icon: Youtube },
-  { label: "LinkedIn", href: "https://linkedin.com", icon: Linkedin },
-  { label: "Instagram", href: "https://instagram.com", icon: Instagram },
-]; // placeholders — point to your real pages
-
-const linkClass = "text-ink-secondary transition-colors hover:text-foreground";
+const linkClass = "text-surface/70 transition-colors hover:text-surface text-sm";
 
 export function Footer() {
   const t = useT();
@@ -25,65 +17,79 @@ export function Footer() {
   const year = new Date().getFullYear();
 
   return (
-    <footer className="border-t border-border bg-surface">
-      <div className="container-page py-16">
-        {/* Newsletter strip */}
-        <div className="mb-12 flex flex-col gap-6 border-b border-border pb-12 md:flex-row md:items-center md:justify-between">
-          <div className="max-w-md">
-            <h2 className="text-lg font-semibold md:text-xl">{t("newsletterTitle")}</h2>
-            <p className="mt-1 text-ink-secondary">{t("newsletterText")}</p>
-          </div>
-          <NewsletterForm />
-        </div>
-
-        <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-4">
+    <footer className="border-t-2 border-green bg-ink text-surface">
+      <div className="container-page py-12 md:py-16">
+        {/* 3 Text Columns */}
+        <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-3">
+          {/* Column 1: Wordmark & Statement */}
           <div className="space-y-4">
-            <Logo />
-            <p className="max-w-xs text-ink-secondary">{t("footerAboutText")}</p>
-            <ul className="flex gap-2">
-              {SOCIALS.map(({ label, href, icon: Icon }) => (
-                <li key={label}>
-                  <a href={href} target="_blank" rel="noopener noreferrer" aria-label={label} className="flex h-10 w-10 items-center justify-center rounded-lg border border-border text-ink-secondary transition-colors hover:bg-muted hover:text-foreground">
-                    <Icon className="h-4 w-4" />
-                  </a>
-                </li>
-              ))}
-            </ul>
+            <Logo className="text-surface" />
+            <p className="max-w-sm text-sm leading-relaxed text-surface/70">
+              {t("footerAboutText")}
+            </p>
+            <p className="font-display text-sm italic text-pen/90">
+              &quot;{t("closingNote")}&quot;
+            </p>
           </div>
 
+          {/* Column 2: Quick Links */}
           <div>
-            <h3 className="mb-4 font-semibold">{t("footerQuickLinks")}</h3>
+            <h3 className="mb-4 micro-label text-surface/50">{t("footerQuickLinks")}</h3>
             <ul className="space-y-2.5">
               {NAV_LINKS.map((l) => (
-                <li key={l.href}><Link href={l.href} className={linkClass}>{t(l.key)}</Link></li>
-              ))}
-            </ul>
-          </div>
-
-          <div>
-            <h3 className="mb-4 font-semibold">{t("footerCategories")}</h3>
-            <ul className="space-y-2.5">
-              {CATEGORIES.map((c) => (
-                <li key={c.slug}>
-                  <Link href={`/explore?category=${c.slug}`} className={linkClass}>{lang === "bn" ? c.nameBn : c.nameEn}</Link>
+                <li key={l.href}>
+                  <Link href={l.href} className={linkClass}>
+                    {t(l.key)}
+                  </Link>
                 </li>
               ))}
             </ul>
           </div>
 
-          <div>
-            <h3 className="mb-4 font-semibold">{t("footerContact")}</h3>
-            <ul className="space-y-3 text-ink-secondary">
-              <li className="flex items-start gap-2.5"><Mail className="mt-1 h-4 w-4 shrink-0" /><a href={`mailto:${CONTACT.email}`} className={linkClass}>{CONTACT.email}</a></li>
-              <li className="flex items-start gap-2.5"><Phone className="mt-1 h-4 w-4 shrink-0" /><span>{CONTACT.phone}</span></li>
-              <li className="flex items-start gap-2.5"><MapPin className="mt-1 h-4 w-4 shrink-0" /><span>{CONTACT.address}</span></li>
-            </ul>
+          {/* Column 3: Categories & Contact */}
+          <div className="space-y-6">
+            <div>
+              <h3 className="mb-3 micro-label text-surface/50">{t("footerCategories")}</h3>
+              <ul className="flex flex-wrap gap-2 text-xs">
+                {CATEGORIES.slice(0, 6).map((c) => (
+                  <li key={c.slug}>
+                    <Link
+                      href={`/explore?category=${c.slug}`}
+                      className="rounded border border-surface/20 px-2 py-1 text-surface/80 transition-colors hover:bg-surface/10 hover:text-surface"
+                    >
+                      {lang === "bn" ? c.nameBn : c.nameEn}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            <div>
+              <h3 className="mb-3 micro-label text-surface/50">{t("footerContact")}</h3>
+              <ul className="space-y-2 text-xs text-surface/70">
+                <li className="flex items-center gap-2">
+                  <Mail className="h-3.5 w-3.5 shrink-0 text-green" />
+                  <a href={`mailto:${CONTACT.email}`} className="hover:underline">
+                    {CONTACT.email}
+                  </a>
+                </li>
+                <li className="flex items-center gap-2">
+                  <Phone className="h-3.5 w-3.5 shrink-0 text-green" />
+                  <span>{CONTACT.phone}</span>
+                </li>
+                <li className="flex items-center gap-2">
+                  <MapPin className="h-3.5 w-3.5 shrink-0 text-green" />
+                  <span>{CONTACT.address}</span>
+                </li>
+              </ul>
+            </div>
           </div>
         </div>
 
-        <div className="mt-12 flex flex-col items-center justify-between gap-4 border-t border-border pt-8 sm:flex-row">
-          <p className="text-sm text-ink-secondary">
-            © {lang === "bn" ? toBanglaNumber(year).replace(/,/g, "") : year} {SITE_NAME}. {t("rights")}
+        {/* Closing line */}
+        <div className="mt-12 flex flex-col items-center justify-between gap-4 border-t border-surface/15 pt-6 sm:flex-row">
+          <p className="text-xs text-surface/60">
+            © {toFormattedNumber(year, lang)} {SITE_NAME}. {t("rights")}
           </p>
           <LanguageToggle />
         </div>

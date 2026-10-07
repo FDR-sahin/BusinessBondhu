@@ -1,49 +1,73 @@
 import type { Metadata, Viewport } from "next";
-import { Hind_Siliguri, Inter } from "next/font/google";
+import { Noto_Serif_Bengali, Hind_Siliguri, Fraunces, Inter } from "next/font/google";
 import { Providers } from "@/components/providers";
 import { cn } from "@/lib/utils";
 import "./globals.css";
 
-// English / numerals
-const inter = Inter({
-  subsets: ["latin"],
-  variable: "--font-inter",
+// Bangla display serif headline font
+const notoSerifBn = Noto_Serif_Bengali({
+  subsets: ["bengali"],
+  weight: ["600", "700"],
+  variable: "--font-noto-serif-bn",
   display: "swap",
 });
 
-// Bangla. The "bengali" subset is required or Bangla glyphs won't be downloaded.
+// Bangla UI / body font
 const hindSiliguri = Hind_Siliguri({
   subsets: ["bengali", "latin"],
-  weight: ["400", "500", "600", "700"],
+  weight: ["400", "600"],
   variable: "--font-hind",
+  display: "swap",
+});
+
+// Latin display font
+const fraunces = Fraunces({
+  subsets: ["latin"],
+  weight: ["600", "700"],
+  variable: "--font-fraunces",
+  display: "swap",
+});
+
+// Latin body & micro-label font
+const inter = Inter({
+  subsets: ["latin"],
+  weight: ["400", "600"],
+  variable: "--font-inter",
   display: "swap",
 });
 
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000"),
   title: {
-    default: "Business Hub BD — আপনার এলাকার জন্য সঠিক ব্যবসা খুঁজুন",
-    template: "%s | Business Hub BD",
+    default: "বিজনেস হাব — এলাকাভিত্তিক ব্যবসার খাতা",
+    template: "%s | বিজনেস হাব",
   },
   description:
-    "বাংলাদেশের ব্যবসায়িক কমিউনিটি। এলাকাভিত্তিক ব্যবসার আইডিয়া, পাইকারি ও খুচরা দাম এবং বাজেট অনুযায়ী এআই পরামর্শ এক জায়গায়।",
-  openGraph: { type: "website", locale: "bn_BD", siteName: "Business Hub BD" },
+    "বাংলাদেশের ব্যবসায়িক খাতা। এলাকাভিত্তিক ব্যবসার আইডিয়া, পাইকারি ও খুচরা দাম এবং লাভ হিসাব এক জায়গায়।",
+  openGraph: { type: "website", locale: "bn_BD", siteName: "বিজনেস হাব" },
 };
 
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
   themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "#F9FAFB" },
-    { media: "(prefers-color-scheme: dark)", color: "#0F172A" },
+    { media: "(prefers-color-scheme: light)", color: "#F6F2E9" },
+    { media: "(prefers-color-scheme: dark)", color: "#0F110E" },
   ],
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    // suppressHydrationWarning: next-themes sets the "dark" class before hydration.
     <html lang="bn" suppressHydrationWarning>
-      <body className={cn(inter.variable, hindSiliguri.variable, "min-h-screen")}>
+      <body
+        className={cn(
+          notoSerifBn.variable,
+          hindSiliguri.variable,
+          fraunces.variable,
+          inter.variable,
+          "min-h-screen ledger-paper font-sans antialiased text-ink bg-background"
+        )}
+      >
         <Providers>{children}</Providers>
       </body>
     </html>

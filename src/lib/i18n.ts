@@ -13,6 +13,7 @@ const bn = {
   navAnalysis: "বিশ্লেষণ",
   navAiAdvisor: "এআই পরামর্শ",
   navAbout: "আমাদের সম্পর্কে",
+  navSaved: "সংরক্ষিত",
   login: "লগইন",
   signup: "সাইন আপ",
   dashboard: "ড্যাশবোর্ড",
@@ -30,7 +31,7 @@ const bn = {
   accountMenu: "অ্যাকাউন্ট মেনু",
   footerAbout: "আমাদের সম্পর্কে",
   footerAboutText:
-    "বাংলাদেশের ছোট ও মাঝারি উদ্যোক্তাদের জন্য একটি কমিউনিটি। এলাকাভিত্তিক ব্যবসার আইডিয়া, পাইকারি-খুচরা দাম আর বাজেট অনুযায়ী পরামর্শ এক জায়গায়।",
+    "বাংলাদেশের ছোট ও মাঝারি উদ্যোক্তাদের জন্য একটি খাতা। এলাকাভিত্তিক ব্যবসার আইডিয়া, পাইকারি-খুচরা দাম এবং মার্জিন হিসাব এক জায়গায়।",
   footerQuickLinks: "দ্রুত লিংক",
   footerCategories: "ক্যাটাগরি",
   footerContact: "যোগাযোগ",
@@ -40,6 +41,14 @@ const bn = {
   emailPlaceholder: "আপনার ইমেইল",
   subscribe: "সাবস্ক্রাইব",
   subscribed: "ধন্যবাদ! আপনি সফলভাবে সাবস্ক্রাইব করেছেন।",
+
+  // New keys for Step 2 redesign
+  trustStripFree: "বিনামূল্যে ব্যবহার করুন",
+  trustStripModerated: "মডারেটেড পোস্ট",
+  trustStripDistricts: "সকল ৬৪ জেলা",
+  shareIdea: "আইডিয়া শেয়ার করুন",
+  createPost: "আইডিয়া যোগ",
+  closingNote: "একটি আইডিয়া একটি শুরু। অনেক আইডিয়া একটি বাজার।",
 } as const;
 
 const en: Record<keyof typeof bn, string> = {
@@ -49,6 +58,7 @@ const en: Record<keyof typeof bn, string> = {
   navAnalysis: "Analysis",
   navAiAdvisor: "AI Advisor",
   navAbout: "About",
+  navSaved: "Saved",
   login: "Login",
   signup: "Sign Up",
   dashboard: "Dashboard",
@@ -66,7 +76,7 @@ const en: Record<keyof typeof bn, string> = {
   accountMenu: "Account menu",
   footerAbout: "About",
   footerAboutText:
-    "A community for small and medium entrepreneurs in Bangladesh. Local business ideas, wholesale and retail prices, and budget-based advice in one place.",
+    "A shopkeeper's ledger for small & medium entrepreneurs in Bangladesh. Local business ideas, wholesale & retail prices, and margin calculations in one place.",
   footerQuickLinks: "Quick Links",
   footerCategories: "Categories",
   footerContact: "Contact",
@@ -76,6 +86,14 @@ const en: Record<keyof typeof bn, string> = {
   emailPlaceholder: "Your email",
   subscribe: "Subscribe",
   subscribed: "Thank you! You are now subscribed.",
+
+  // New keys for Step 2 redesign
+  trustStripFree: "Free to use",
+  trustStripModerated: "Moderated posts",
+  trustStripDistricts: "All 64 districts",
+  shareIdea: "Share Idea",
+  createPost: "Add Idea",
+  closingNote: "One idea is a start. Many ideas make a market.",
 };
 
 const dictionaries = { bn, en } as const;

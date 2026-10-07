@@ -4,103 +4,50 @@
 
 @layer base {
   /* ------------------------------------------------------------------
-     Design tokens, stored as "R G B" channels (so bg-primary/50 works).
-     Brand anchors are unchanged: Navy #1E3A8A + Gold #F59E0B.
-     Everything else is a tonal helper built around those two.
+     Paper & Night Ledger Design Tokens
+     Colors stored as "R G B" channels for Tailwind opacity & dark mode theme swapping.
      ------------------------------------------------------------------ */
   :root {
-    /* Surfaces & lines */
-    --background: 249 250 251; /* #F9FAFB */
-    --surface: 255 255 255; /* #FFFFFF */
-    --muted: 243 244 246; /* #F3F4F6  hover / subtle fills */
-    --border: 229 231 235; /* #E5E7EB */
+    /* Light "Paper" */
+    --bg: 246 242 233;         /* #F6F2E9 */
+    --surface: 255 255 255;    /* #FFFFFF */
+    --ink: 23 19 15;           /* #17130F */
+    --muted: 107 100 92;       /* #6B645C */
+    --line: 221 213 197;       /* #DDD5C5 */
 
-    /* Text */
-    --foreground: 17 24 39; /* #111827 */
-    --foreground-secondary: 107 114 128; /* #6B7280 */
-    --foreground-muted: 156 163 175; /* #9CA3AF  decorative only */
+    /* Accents */
+    --green: 11 107 69;        /* #0B6B45 - primary actions, margin fill, high profit */
+    --pen: 215 56 28;          /* #D7381C - Red-Pen Mark only, plus error states */
+    --gold: 224 169 59;        /* #E0A93B - medium profit, small highlights */
 
-    /* Brand: Navy */
-    --primary: 30 58 138; /* #1E3A8A */
-    --primary-hover: 30 64 175; /* #1E40AF */
-    --primary-deep: 23 37 84; /* #172554  gradient end */
-    --primary-foreground: 255 255 255;
-    --primary-soft: 238 242 255; /* #EEF2FF  icon tiles, badges */
-    --primary-soft-fg: 30 58 138;
-    --link: 30 64 175; /* #1E40AF */
-
-    /* Brand: Gold (accent: use sparingly) */
-    --secondary: 245 158 11; /* #F59E0B */
-    --secondary-foreground: 17 24 39;
-    --secondary-soft: 254 243 199; /* #FEF3C7 */
-    --secondary-soft-fg: 146 64 14; /* #92400E */
-
-    /* Status: solid for fills, soft pair for badges/alerts (AA contrast) */
-    --success: 16 185 129; /* #10B981 */
-    --success-soft: 209 250 229;
-    --success-soft-fg: 6 95 70;
-    --danger: 239 68 68; /* #EF4444 */
-    --danger-soft: 254 226 226;
-    --danger-soft-fg: 153 27 27;
-    --warning: 249 115 22; /* #F97316 */
-    --warning-soft: 255 237 213;
-    --warning-soft-fg: 154 52 18;
-
-    --ring: 30 58 138;
-
-    /* Charts (Recharts): navy, gold, emerald, sky, slate, orange */
-    --chart-1: 30 58 138;
-    --chart-2: 245 158 11;
-    --chart-3: 16 185 129;
-    --chart-4: 14 165 233;
-    --chart-5: 100 116 139;
-    --chart-6: 249 115 22;
-    --chart-7: 20 184 166;
-    --chart-8: 244 63 94;
+    /* Semantic mappings */
+    --background: var(--bg);
+    --foreground: var(--ink);
+    --border: var(--line);
+    --ring: var(--green);
   }
 
   .dark {
-    --background: 15 23 42; /* #0F172A */
-    --surface: 30 41 59; /* #1E293B */
-    --muted: 38 51 71; /* #263347  visibly lighter than surface for hovers */
-    --border: 51 65 85; /* #334155 */
+    /* Dark "Night Ledger" */
+    --bg: 15 17 14;            /* #0F110E */
+    --surface: 23 26 21;       /* #171A15 */
+    --ink: 243 239 230;        /* #F3EFE6 */
+    --muted: 154 149 138;      /* #9A958A */
+    --line: 42 46 37;          /* #2A2E25 */
 
-    --foreground: 241 245 249; /* #F1F5F9 */
-    --foreground-secondary: 203 213 225; /* #CBD5E1 */
-    --foreground-muted: 148 163 184;
+    /* Accents */
+    --green: 16 142 92;        /* #108E5C */
+    --pen: 235 75 45;          /* #EB4B2D */
+    --gold: 230 175 65;        /* #E6AF41 */
 
-    /* Navy on navy has no contrast, so dark mode uses a brighter blue brand fill. */
-    --primary: 37 99 235; /* #2563EB */
-    --primary-hover: 59 130 246; /* #3B82F6 */
-    --primary-deep: 30 64 175;
-    --primary-soft: 30 51 102; /* #1E3366 */
-    --primary-soft-fg: 191 219 254; /* #BFDBFE */
-    --link: 147 197 253; /* #93C5FD */
-
-    --secondary-soft: 69 52 17;
-    --secondary-soft-fg: 252 211 77;
-
-    --success-soft: 6 78 59;
-    --success-soft-fg: 110 231 183;
-    --danger-soft: 91 33 38;
-    --danger-soft-fg: 252 165 165;
-    --warning-soft: 94 45 20;
-    --warning-soft-fg: 253 186 116;
-
-    --ring: 96 165 250;
-
-    --chart-1: 96 165 250;
-    --chart-2: 251 191 36;
-    --chart-3: 52 211 153;
-    --chart-4: 56 189 248;
-    --chart-5: 148 163 184;
-    --chart-6: 251 146 60;
-    --chart-7: 45 212 191;
-    --chart-8: 251 113 133;
+    --background: var(--bg);
+    --foreground: var(--ink);
+    --border: var(--line);
+    --ring: var(--green);
   }
 
   * {
-    @apply border-border;
+    border-color: rgb(var(--line));
   }
 
   html {
@@ -109,38 +56,64 @@
   }
 
   body {
-    @apply bg-background font-sans text-base leading-7 text-foreground antialiased;
+    background-color: rgb(var(--bg));
+    color: rgb(var(--ink));
+    font-family: var(--font-inter), var(--font-hind), system-ui, sans-serif;
+    font-size: clamp(1rem, 1vw + 0.5rem, 1.125rem);
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
   }
 
+  :lang(bn) body,
   :lang(bn) {
-    line-height: 1.75;
+    font-family: var(--font-hind), var(--font-inter), system-ui, sans-serif;
+    line-height: 1.65;
   }
 
+  h1, h2, h3, h4, .font-display {
+    font-family: var(--font-noto-serif-bn), var(--font-fraunces), serif;
+  }
+
+  /* 2px visible focus ring */
   :focus-visible {
-    @apply outline-none ring-2 ring-ring ring-offset-2 ring-offset-background;
+    outline: none;
+    box-shadow: 0 0 0 2px rgb(var(--bg)), 0 0 0 4px rgb(var(--green));
   }
 
   ::selection {
-    background: rgb(var(--secondary) / 0.3);
+    background-color: rgb(var(--pen) / 0.2);
+    color: rgb(var(--ink));
   }
+
+  .micro-label {
+    font-family: var(--font-inter), monospace;
+    font-size: 0.6875rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    font-weight: 600;
+  }
+
+  .tabular-nums {
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+/* Ledger paper texture (< 6% opacity horizontal rules) */
+.ledger-paper {
+  background-image: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 27px,
+    rgb(var(--line) / 0.35) 28px
+  );
 }
 
 @layer components {
   .container-page {
-    @apply mx-auto w-full max-w-7xl px-4 md:px-6 lg:px-8;
+    @apply mx-auto w-full max-w-[1200px] px-4 md:px-6 lg:px-8;
   }
   .section {
-    @apply py-16 md:py-24;
-  }
-}
-
-@layer utilities {
-  .scrollbar-hide {
-    -ms-overflow-style: none;
-    scrollbar-width: none;
-  }
-  .scrollbar-hide::-webkit-scrollbar {
-    display: none;
+    @apply py-12 md:py-20;
   }
 }
 
@@ -155,27 +128,26 @@
   }
 }
 
-/* Article typography for sanitized blog HTML (no plugin: uses our tokens, so dark mode just works) */
+/* Article typography for blog/content */
 @layer components {
   .prose-blog {
     @apply text-base leading-8 text-foreground;
     overflow-wrap: anywhere;
   }
   .prose-blog > * + * { @apply mt-6; }
-  .prose-blog h2 { @apply mt-10 text-2xl font-semibold leading-snug md:text-3xl; }
-  .prose-blog h3 { @apply mt-8 text-xl font-semibold leading-snug md:text-2xl; }
+  .prose-blog h2 { @apply mt-10 text-2xl font-semibold leading-snug md:text-3xl font-display; }
+  .prose-blog h3 { @apply mt-8 text-xl font-semibold leading-snug md:text-2xl font-display; }
   .prose-blog h4 { @apply mt-6 text-lg font-semibold; }
-  .prose-blog a { @apply text-link underline underline-offset-4 hover:no-underline; }
+  .prose-blog a { @apply text-green underline underline-offset-4 hover:no-underline; }
   .prose-blog ul { @apply list-disc space-y-2 pl-6; }
   .prose-blog ol { @apply list-decimal space-y-2 pl-6; }
-  .prose-blog blockquote { @apply rounded-r-lg border-l-4 border-secondary bg-surface py-3 pl-5 pr-4 text-ink-secondary; }
-  .prose-blog img { @apply h-auto w-full rounded-2xl border border-border; }
-  .prose-blog figcaption { @apply mt-2 text-center text-sm text-ink-secondary; }
-  .prose-blog hr { @apply border-border; }
+  .prose-blog blockquote { @apply rounded-r-lg border-l-4 border-pen bg-surface py-3 pl-5 pr-4 text-muted; }
+  .prose-blog img { @apply h-auto w-full rounded-xl border border-line; }
+  .prose-blog hr { @apply border-line; }
   .prose-blog table { @apply block w-full overflow-x-auto border-collapse text-sm; }
-  .prose-blog th, .prose-blog td { @apply border border-border px-3 py-2 text-left; }
-  .prose-blog th { @apply bg-muted font-semibold; }
-  .prose-blog code { @apply rounded bg-muted px-1.5 py-0.5 text-sm; }
-  .prose-blog pre { @apply overflow-x-auto rounded-xl border border-border bg-muted p-4; }
+  .prose-blog th, .prose-blog td { @apply border border-line px-3 py-2 text-left; }
+  .prose-blog th { @apply bg-surface font-semibold; }
+  .prose-blog code { @apply rounded bg-surface px-1.5 py-0.5 text-sm font-mono; }
+  .prose-blog pre { @apply overflow-x-auto rounded-xl border border-line bg-surface p-4; }
   .prose-blog pre code { @apply bg-transparent p-0; }
 }

@@ -1,11 +1,6 @@
 import type { Config } from "tailwindcss";
 import animate from "tailwindcss-animate";
 
-/**
- * Colors are CSS variables holding "R G B" channels (see globals.css), so
- * Tailwind opacity modifiers (bg-primary/10) work AND dark mode only swaps
- * the variables. Hex values live in globals.css — exact spec palette.
- */
 const token = (name: string) => `rgb(var(--${name}) / <alpha-value>)`;
 
 const config: Config = {
@@ -15,90 +10,63 @@ const config: Config = {
     container: {
       center: true,
       padding: { DEFAULT: "1rem", md: "1.5rem", lg: "2rem" },
-      screens: { "2xl": "80rem" }, // max-w-7xl
+      screens: { "2xl": "1200px" },
     },
     extend: {
       colors: {
-        // ---- shadcn/ui contract ----
-        border: token("border"),
-        input: token("border"),
-        ring: token("ring"),
-        background: token("background"),
-        foreground: token("foreground"),
-        card: { DEFAULT: token("surface"), foreground: token("foreground") },
-        popover: { DEFAULT: token("surface"), foreground: token("foreground") },
+        border: token("line"),
+        input: token("line"),
+        ring: token("green"),
+        background: token("bg"),
+        foreground: token("ink"),
+        surface: token("surface"),
+        card: { DEFAULT: token("surface"), foreground: token("ink") },
+        popover: { DEFAULT: token("surface"), foreground: token("ink") },
         primary: {
-          DEFAULT: token("primary"),
-          hover: token("primary-hover"),
-          deep: token("primary-deep"),
-          foreground: token("primary-foreground"),
-          soft: token("primary-soft"),
-          "soft-foreground": token("primary-soft-fg"),
+          DEFAULT: token("green"),
+          hover: token("green"),
+          foreground: "#FFFFFF",
+          soft: token("surface"),
+          "soft-foreground": token("green"),
         },
         secondary: {
-          DEFAULT: token("secondary"),
-          foreground: token("secondary-foreground"),
-          soft: token("secondary-soft"),
-          "soft-foreground": token("secondary-soft-fg"),
+          DEFAULT: token("gold"),
+          foreground: token("ink"),
+          soft: token("surface"),
+          "soft-foreground": token("gold"),
         },
-        muted: { DEFAULT: token("muted"), foreground: token("foreground-secondary") },
-        accent: { DEFAULT: token("muted"), foreground: token("foreground") },
-        destructive: { DEFAULT: token("danger"), foreground: token("primary-foreground") },
-        // ---- project semantics ----
-        surface: token("surface"),
-        link: token("link"),
-        success: { DEFAULT: token("success"), foreground: token("primary-foreground"), soft: token("success-soft"), "soft-foreground": token("success-soft-fg") },
-        danger: { DEFAULT: token("danger"), foreground: token("primary-foreground"), soft: token("danger-soft"), "soft-foreground": token("danger-soft-fg") },
-        warning: { DEFAULT: token("warning"), foreground: token("primary-foreground"), soft: token("warning-soft"), "soft-foreground": token("warning-soft-fg") },
-        // Text scale: text-ink / text-ink-secondary / text-ink-muted
+        muted: { DEFAULT: token("surface"), foreground: token("muted") },
+        accent: { DEFAULT: token("surface"), foreground: token("ink") },
+        destructive: { DEFAULT: token("pen"), foreground: "#FFFFFF" },
         ink: {
-          DEFAULT: token("foreground"),
-          secondary: token("foreground-secondary"),
-          muted: token("foreground-muted"),
+          DEFAULT: token("ink"),
+          secondary: token("muted"),
+          muted: token("muted"),
         },
-        chart: { 1: token("chart-1"), 2: token("chart-2"), 3: token("chart-3"), 4: token("chart-4"), 5: token("chart-5"), 6: token("chart-6"), 7: token("chart-7"), 8: token("chart-8") },
+        pen: token("pen"),
+        green: token("green"),
+        gold: token("gold"),
+        line: token("line"),
       },
       fontFamily: {
-        // Inter has no Bangla glyphs, so the browser falls through to Hind Siliguri.
         sans: ["var(--font-inter)", "var(--font-hind)", "system-ui", "sans-serif"],
-        bangla: ["var(--font-hind)", "var(--font-inter)", "system-ui", "sans-serif"],
+        bangla: ["var(--font-hind)", "system-ui", "sans-serif"],
+        display: ["var(--font-noto-serif-bn)", "var(--font-fraunces)", "serif"],
+        mono: ["var(--font-inter)", "monospace"],
       },
-      fontSize: {
-        // Spec: no text smaller than 14px -> text-xs is clamped to 14px.
-        xs: ["0.875rem", { lineHeight: "1.25rem" }],
-      },
-      // Spec: one consistent radius system. buttons/inputs = lg, cards = 2xl.
       borderRadius: {
-        sm: "0.5rem",
-        md: "0.5rem",
-        lg: "0.5rem",
-        xl: "0.75rem",
-        "2xl": "1rem",
+        sm: "6px",   // inputs (6px)
+        md: "6px",   // inputs (6px)
+        lg: "12px",  // cards (12px)
+        xl: "12px",  // cards (12px)
+        "2xl": "12px",
+        full: "999px", // pills (999px)
       },
-      // Spec: soft shadows only. sm -> md on hover -> lg for modals.
       boxShadow: {
-        sm: "0 1px 2px 0 rgb(15 23 42 / 0.05), 0 1px 3px 0 rgb(15 23 42 / 0.04)",
-        DEFAULT: "0 1px 3px 0 rgb(15 23 42 / 0.06)",
-        md: "0 8px 20px -6px rgb(15 23 42 / 0.10), 0 2px 6px -2px rgb(15 23 42 / 0.05)",
-        lg: "0 20px 44px -14px rgb(15 23 42 / 0.20)",
-      },
-      spacing: {
-        // Spec scale 4/8/12/16/24/32/48/64/96 maps to Tailwind 1/2/3/4/6/8/12/16/24.
-        // Section padding helpers: py-16 md:py-24 (see .section in globals.css).
-      },
-      keyframes: {
-        "accordion-down": {
-          from: { height: "0" },
-          to: { height: "var(--radix-accordion-content-height)" },
-        },
-        "accordion-up": {
-          from: { height: "var(--radix-accordion-content-height)" },
-          to: { height: "0" },
-        },
-      },
-      animation: {
-        "accordion-down": "accordion-down 0.2s ease-out",
-        "accordion-up": "accordion-up 0.2s ease-out",
+        sm: "0 1px 2px 0 rgb(0 0 0 / 0.05)",
+        DEFAULT: "0 1px 3px 0 rgb(0 0 0 / 0.08)",
+        md: "0 4px 12px -2px rgb(0 0 0 / 0.1)",
+        lg: "0 12px 32px -8px rgb(0 0 0 / 0.15)", // soft shadow token for floating menus only
       },
     },
   },
