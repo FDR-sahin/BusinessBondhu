@@ -15,8 +15,8 @@ export const buttonVariants = cva(
       variant: {
         primary: "bg-primary text-primary-foreground shadow-[inset_0_1px_0_0_rgb(255_255_255/0.14),0_1px_2px_0_rgb(15_23_42/0.25)] hover:bg-primary-hover",
         secondary: "bg-secondary text-secondary-foreground shadow-sm hover:bg-secondary/90",
-        outline: "border border-border bg-surface text-foreground hover:bg-muted",
-        ghost: "text-foreground hover:bg-muted",
+        outline: "border border-border bg-surface text-foreground hover:bg-green/10 hover:text-green hover:border-green/40 dark:hover:bg-green/20 dark:hover:text-green-300",
+        ghost: "text-foreground hover:bg-green/10 hover:text-green dark:hover:bg-green/20 dark:hover:text-green-300",
         danger: "bg-danger text-danger-foreground shadow-sm hover:bg-danger/90",
         link: "text-link underline-offset-4 hover:underline",
       },

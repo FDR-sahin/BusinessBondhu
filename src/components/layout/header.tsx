@@ -62,7 +62,7 @@ export function Header() {
           <Logo />
 
           {/* Desktop Navigation */}
-          <nav aria-label={t("mainMenu")} className="hidden flex-1 items-center justify-center lg:flex">
+          <nav aria-label={t("mainMenu")} className="hidden flex-1 items-center justify-center gap-1.5 lg:flex">
             {NAV_LINKS.map((l) => {
               const active = isActive(l.href);
               return (
@@ -71,15 +71,17 @@ export function Header() {
                   href={l.href}
                   aria-current={active ? "page" : undefined}
                   className={cn(
-                    "relative flex h-16 items-center px-3.5 text-sm font-medium transition-colors",
-                    active ? "text-ink font-semibold" : "text-muted hover:text-ink"
+                    "relative flex h-10 items-center rounded-lg px-3.5 text-sm font-medium transition-all duration-200",
+                    active
+                      ? "text-green font-semibold bg-green/10"
+                      : "text-ink-secondary hover:text-green hover:bg-green/10 dark:hover:bg-green/20"
                   )}
                 >
                   {t(l.key)}
                   {active && (
                     <motion.span
                       layoutId="nav-underline"
-                      className="absolute inset-x-3 bottom-0 h-[2px] rounded-full bg-green"
+                      className="absolute inset-x-2 bottom-0 h-[2.5px] rounded-full bg-green"
                       transition={{ type: "spring", stiffness: 300, damping: 30 }}
                     />
                   )}
