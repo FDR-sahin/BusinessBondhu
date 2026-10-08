@@ -4,6 +4,8 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/
 import { CATEGORIES } from "@/lib/constants";
 import { DIVISIONS } from "@/lib/bd-data";
 import { PROFIT_OPTIONS, type ExploreFilters } from "@/lib/explore";
+import { useT } from "@/lib/i18n";
+import { useLangStore } from "@/store/lang-store";
 import { AreaFilter } from "./area-filter";
 import { CheckList } from "./check-list";
 import { PriceRangeFilter } from "./price-range-filter";
@@ -17,15 +19,15 @@ interface FilterSidebarProps {
 }
 
 const ALL_SECTIONS = ["division", "district", "area", "category", "wholesale", "retail", "profit"];
-const trigger = "py-3 text-sm font-semibold";
+const trigger = "py-3 text-sm font-semibold text-ink";
 
 const toggle = (list: string[], value: string, checked: boolean) =>
   checked ? Array.from(new Set([...list, value])) : list.filter((v) => v !== value);
 
-/** Used twice: sticky sidebar on desktop, inside the Drawer on mobile. */
 export function FilterSidebar({ filters, onChange, onReset, activeCount, showTitle = true }: FilterSidebarProps) {
-  // Districts are grouped under their division. A division shows up if it is selected
-  // OR if one of its districts is (e.g. a link like /explore?district=Sylhet).
+  const t = useT();
+  const lang = useLangStore((s) => s.lang);
+
   const visibleDivisions = DIVISIONS.filter(
     (d) => filters.division.includes(d.value) || d.districts.some((x) => filters.district.includes(x.value)),
   );
@@ -33,21 +35,21 @@ export function FilterSidebar({ filters, onChange, onReset, activeCount, showTit
   return (
     <div>
       <div className="flex min-h-9 items-center justify-between">
-        {showTitle ? <h2 className="text-lg font-semibold">ফিল্টার</h2> : <span />}
+        {showTitle ? <h2 className="text-lg font-semibold text-ink">{t("filterTitle")}</h2> : <span />}
         {activeCount > 0 && (
-          <button onClick={onReset} className="rounded text-sm font-medium text-link hover:underline">
-            সব মুছুন ({activeCount})
+          <button onClick={onReset} className="rounded text-sm font-medium text-green hover:underline">
+            {t("clearAll")} ({activeCount})
           </button>
         )}
       </div>
 
       <Accordion type="multiple" defaultValue={ALL_SECTIONS} className="mt-1">
         <AccordionItem value="division">
-          <AccordionTrigger className={trigger}>বিভাগ</AccordionTrigger>
+          <AccordionTrigger className={trigger}>{t("division")}</AccordionTrigger>
           <AccordionContent>
             <CheckList
               idPrefix="f-division"
-              options={DIVISIONS.map((d) => ({ value: d.value, label: d.label }))}
+              options={DIVISIONS.map((d) => ({ value: d.value, label: lang === "bn" ? d.label : d.value }))}
               selected={filters.division}
               onToggle={(v, c) => onChange({ division: toggle(filters.division, v, c) })}
             />
@@ -55,18 +57,20 @@ export function FilterSidebar({ filters, onChange, onReset, activeCount, showTit
         </AccordionItem>
 
         <AccordionItem value="district">
-          <AccordionTrigger className={trigger}>জেলা</AccordionTrigger>
+          <AccordionTrigger className={trigger}>{t("district")}</AccordionTrigger>
           <AccordionContent>
             {visibleDivisions.length === 0 ? (
-              <p className="text-sm text-ink-secondary">জেলা বেছে নিতে আগে এক বা একাধিক বিভাগ নির্বাচন করুন।</p>
+              <p className="text-sm text-muted">{t("selectDistrictHint")}</p>
             ) : (
               <div className="max-h-64 space-y-3 overflow-y-auto pr-1">
                 {visibleDivisions.map((d) => (
                   <div key={d.value}>
-                    <p className="mb-1 text-sm font-medium text-ink-secondary">{d.label} বিভাগ</p>
+                    <p className="mb-1 text-xs font-semibold uppercase tracking-wider text-muted">
+                      {lang === "bn" ? `${d.label} বিভাগ` : `${d.value} Division`}
+                    </p>
                     <CheckList
                       idPrefix={`f-district-${d.value}`}
-                      options={d.districts}
+                      options={d.districts.map((x) => ({ value: x.value, label: lang === "bn" ? x.label : x.value }))}
                       selected={filters.district}
                       onToggle={(v, c) => onChange({ district: toggle(filters.district, v, c) })}
                     />
@@ -78,18 +82,18 @@ export function FilterSidebar({ filters, onChange, onReset, activeCount, showTit
         </AccordionItem>
 
         <AccordionItem value="area">
-          <AccordionTrigger className={trigger}>এলাকা</AccordionTrigger>
+          <AccordionTrigger className={trigger}>{t("area")}</AccordionTrigger>
           <AccordionContent>
             <AreaFilter value={filters.area} onChange={(area) => onChange({ area })} />
           </AccordionContent>
         </AccordionItem>
 
         <AccordionItem value="category">
-          <AccordionTrigger className={trigger}>ক্যাটাগরি</AccordionTrigger>
+          <AccordionTrigger className={trigger}>{t("category")}</AccordionTrigger>
           <AccordionContent>
             <CheckList
               idPrefix="f-category"
-              options={CATEGORIES.map((c) => ({ value: c.slug, label: c.nameBn }))}
+              options={CATEGORIES.map((c) => ({ value: c.slug, label: lang === "bn" ? c.nameBn : c.nameEn }))}
               selected={filters.category}
               onToggle={(v, c) => onChange({ category: toggle(filters.category, v, c) })}
             />
@@ -97,25 +101,25 @@ export function FilterSidebar({ filters, onChange, onReset, activeCount, showTit
         </AccordionItem>
 
         <AccordionItem value="wholesale">
-          <AccordionTrigger className={trigger}>পাইকারি দাম</AccordionTrigger>
+          <AccordionTrigger className={trigger}>{t("wholesalePrice")}</AccordionTrigger>
           <AccordionContent>
-            <PriceRangeFilter label="পাইকারি দাম" value={filters.wholesale} onCommit={(wholesale) => onChange({ wholesale })} />
+            <PriceRangeFilter label={t("wholesalePrice")} value={filters.wholesale} onCommit={(wholesale) => onChange({ wholesale })} />
           </AccordionContent>
         </AccordionItem>
 
         <AccordionItem value="retail">
-          <AccordionTrigger className={trigger}>খুচরা দাম</AccordionTrigger>
+          <AccordionTrigger className={trigger}>{t("retailPrice")}</AccordionTrigger>
           <AccordionContent>
-            <PriceRangeFilter label="খুচরা দাম" value={filters.retail} onCommit={(retail) => onChange({ retail })} />
+            <PriceRangeFilter label={t("retailPrice")} value={filters.retail} onCommit={(retail) => onChange({ retail })} />
           </AccordionContent>
         </AccordionItem>
 
         <AccordionItem value="profit" className="border-b-0">
-          <AccordionTrigger className={trigger}>লাভের সম্ভাবনা</AccordionTrigger>
+          <AccordionTrigger className={trigger}>{t("profitPotential")}</AccordionTrigger>
           <AccordionContent>
             <CheckList
               idPrefix="f-profit"
-              options={PROFIT_OPTIONS}
+              options={PROFIT_OPTIONS.map((o) => ({ value: o.value, label: lang === "bn" ? o.labelBn : o.labelEn }))}
               selected={filters.profit}
               onToggle={(v, c) => onChange({ profit: toggle(filters.profit, v, c) as ExploreFilters["profit"] })}
             />

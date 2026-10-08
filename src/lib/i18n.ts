@@ -2,9 +2,8 @@ import { useCallback } from "react";
 import { useLangStore } from "@/store/lang-store";
 
 /**
- * Minimal dictionary for site chrome (header, footer, menus, auth labels).
+ * Minimal dictionary for site chrome (header, footer, menus, auth labels, filters).
  * Bangla is the source of truth; English must define the same keys (enforced by types).
- * Page-level content stays Bangla-first and is wired up page by page.
  */
 const bn = {
   navHome: "হোম",
@@ -87,6 +86,25 @@ const bn = {
   passwordStrengthLabel: "পাসওয়ার্ডের শক্তি",
   hidePassword: "পাসওয়ার্ড লুকান",
   showPassword: "পাসওয়ার্ড দেখান",
+
+  // Explore & Filter i18n
+  exploreTitle: "ব্যবসার আইডিয়া এক্সপ্লোর করুন",
+  exploreSubtitle: "বিভাগ, জেলা, ক্যাটাগরি ও দাম অনুযায়ী ফিল্টার করে আপনার জন্য সঠিক আইডিয়া বেছে নিন।",
+  filterTitle: "ফিল্টার",
+  clearAll: "সব মুছুন",
+  selectDistrictHint: "জেলা বেছে নিতে আগে এক বা একাধিক বিভাগ নির্বাচন করুন।",
+  area: "এলাকা",
+  areaPlaceholder: "যেমন: ধানমন্ডি, মীরপুর...",
+  category: "ক্যাটাগরি",
+  wholesalePrice: "পাইকারি দাম",
+  retailPrice: "খুচরা দাম",
+  profitPotential: "লাভের সম্ভাবনা",
+  totalResults: "মোট {count}টি ফলাফল",
+  noPostsFound: "কোনো পোস্ট পাওয়া যায়নি",
+  noPostsDesc: "এই ফিল্টারে কোনো ফলাফল মেলেনি। ফিল্টার কমিয়ে বা বদলে আবার চেষ্টা করুন।",
+  resetFilters: "ফিল্টার রিসেট করুন",
+  applyResults: "ফলাফল দেখুন",
+  sortBy: "সাজানোর ধরন",
 } as const;
 
 const en: Record<keyof typeof bn, string> = {
@@ -170,6 +188,25 @@ const en: Record<keyof typeof bn, string> = {
   passwordStrengthLabel: "Password strength",
   hidePassword: "Hide password",
   showPassword: "Show password",
+
+  // Explore & Filter i18n
+  exploreTitle: "Explore Business Ideas",
+  exploreSubtitle: "Filter by division, district, category, and price to find the right idea for your budget.",
+  filterTitle: "Filters",
+  clearAll: "Clear All",
+  selectDistrictHint: "Select one or more divisions first to view districts.",
+  area: "Area",
+  areaPlaceholder: "e.g. Dhanmondi, Mirpur...",
+  category: "Category",
+  wholesalePrice: "Wholesale Price",
+  retailPrice: "Retail Price",
+  profitPotential: "Profit Potential",
+  totalResults: "{count} results found",
+  noPostsFound: "No business ideas found",
+  noPostsDesc: "No results matched your selected filters. Try clearing or relaxing some filters.",
+  resetFilters: "Reset Filters",
+  applyResults: "View Results",
+  sortBy: "Sort by",
 };
 
 const dictionaries = { bn, en } as const;

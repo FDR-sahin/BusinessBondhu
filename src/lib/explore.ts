@@ -9,18 +9,18 @@ export const PAGE_SIZE = 12;
 export type SortKey = NonNullable<PostFilters["sort"]>;
 export type PriceRange = [number, number];
 
-export const SORT_OPTIONS: { value: SortKey; label: string }[] = [
-  { value: "newest", label: "নতুন" },
-  { value: "popular", label: "জনপ্রিয়" },
-  { value: "most_liked", label: "সবচেয়ে বেশি লাইক" },
-  { value: "most_commented", label: "সবচেয়ে বেশি মন্তব্য" },
-  { value: "price_asc", label: "দাম: কম থেকে বেশি" },
+export const SORT_OPTIONS: { value: SortKey; label: string; labelBn: string; labelEn: string }[] = [
+  { value: "newest", label: "নতুন", labelBn: "নতুন", labelEn: "Newest" },
+  { value: "popular", label: "জনপ্রিয়", labelBn: "জনপ্রিয়", labelEn: "Popular" },
+  { value: "most_liked", label: "সবচেয়ে বেশি লাইক", labelBn: "সবচেয়ে বেশি লাইক", labelEn: "Most Liked" },
+  { value: "most_commented", label: "সবচেয়ে বেশি মন্তব্য", labelBn: "সবচেয়ে বেশি মন্তব্য", labelEn: "Most Commented" },
+  { value: "price_asc", label: "দাম: কম থেকে বেশি", labelBn: "দাম: কম থেকে বেশি", labelEn: "Price: Low to High" },
 ];
 
-export const PROFIT_OPTIONS: { value: ProfitPotential; label: string }[] = [
-  { value: "low", label: "কম" },
-  { value: "medium", label: "মাঝারি" },
-  { value: "high", label: "বেশি" },
+export const PROFIT_OPTIONS: { value: ProfitPotential; label: string; labelBn: string; labelEn: string }[] = [
+  { value: "low", label: "সাধারণ", labelBn: "সাধারণ", labelEn: "Standard Margin" },
+  { value: "medium", label: "মাঝারি", labelBn: "মাঝারি", labelEn: "Medium Margin" },
+  { value: "high", label: "বেশি", labelBn: "বেশি", labelEn: "High Margin" },
 ];
 
 export interface ExploreFilters {
