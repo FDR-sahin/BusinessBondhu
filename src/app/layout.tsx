@@ -1,16 +1,16 @@
 import type { Metadata, Viewport } from "next";
-import { Noto_Serif_Bengali, Hind_Siliguri, Fraunces, Inter } from "next/font/google";
+import { Anek_Bangla, Hind_Siliguri, Fraunces, Inter } from "next/font/google";
 import { Providers } from "@/components/providers";
 import { BgMapWatermark } from "@/components/layout/bg-map-watermark";
 import { AiChatbotWidget } from "@/components/chat/ai-chatbot-widget";
 import { cn } from "@/lib/utils";
 import "./globals.css";
 
-// Bangla display serif headline font
-const notoSerifBn = Noto_Serif_Bengali({
+// Professional Bangla display font
+const anekBangla = Anek_Bangla({
   subsets: ["bengali"],
   weight: ["600", "700"],
-  variable: "--font-noto-serif-bn",
+  variable: "--font-bn-display",
   display: "swap",
 });
 
@@ -63,7 +63,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="bn" suppressHydrationWarning>
       <body
         className={cn(
-          notoSerifBn.variable,
+          anekBangla.variable,
           hindSiliguri.variable,
           fraunces.variable,
           inter.variable,
