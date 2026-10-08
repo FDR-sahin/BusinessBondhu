@@ -3,11 +3,13 @@
 import { animate, useInView, useReducedMotion } from "framer-motion";
 import type { LucideIcon } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
-import { toBanglaNumber } from "@/lib/utils";
+import { toFormattedNumber } from "@/lib/utils";
+import { useLangStore } from "@/store/lang-store";
 import { Card } from "./card";
 
 /** Counts up from 0 the first time it scrolls into view. Reduced motion: shows the final number. */
 export function AnimatedCounter({ value, duration = 0.8 }: { value: number; duration?: number }) {
+  const lang = useLangStore((s) => s.lang);
   const ref = useRef<HTMLSpanElement>(null);
   const inView = useInView(ref, { once: true, margin: "-40px" });
   const reduce = useReducedMotion();
@@ -24,8 +26,8 @@ export function AnimatedCounter({ value, duration = 0.8 }: { value: number; dura
   }, [inView, value, reduce, duration]);
 
   return (
-    <span ref={ref} className="tabular-nums" aria-label={toBanglaNumber(value)}>
-      {toBanglaNumber(display)}
+    <span ref={ref} className="tabular-nums" aria-label={toFormattedNumber(value, lang)}>
+      {toFormattedNumber(display, lang)}
     </span>
   );
 }
