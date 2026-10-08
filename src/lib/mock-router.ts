@@ -70,7 +70,7 @@ export function handleMockFallback(config?: AxiosRequestConfig): AxiosResponse |
   // GET /blog/:slug
   if (path.match(/\/blog\/[^\/]+$/) && !path.includes("/blog?")) {
     const slug = path.split("/").pop();
-    const blog = MOCK_BLOG_POSTS.find((b) => b.slug === slug) || MOCK_BLOG_POSTS[0];
+    const blog = MOCK_BLOG_POSTS.find((b) => b.slug === slug || b.id === slug) || MOCK_BLOG_POSTS[0];
     return createAxiosResponse(
       {
         ...blog,
