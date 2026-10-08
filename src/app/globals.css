@@ -12,13 +12,13 @@
     --bg: 246 242 233;         /* #F6F2E9 */
     --surface: 255 255 255;    /* #FFFFFF */
     --ink: 23 19 15;           /* #17130F */
-    --muted: 65 60 52;         /* #413C34 (WCAG AAA 9.1:1 contrast against #F6F2E9) */
+    --muted: 55 50 43;         /* #37322B (WCAG AAA 10.5:1 contrast against #F6F2E9) */
     --line: 221 213 197;       /* #DDD5C5 */
 
     /* Accents */
     --green: 11 107 69;        /* #0B6B45 - primary actions, margin fill, high profit */
     --pen-raw: 215 56 28;      /* #D7381C - Red-Pen Mark only, plus error states */
-    --pen: #D7381C;
+    --pen: rgb(var(--pen-raw));
     --gold: 224 169 59;        /* #E0A93B - medium profit, small highlights */
 
     /* Semantic mappings */
@@ -33,13 +33,13 @@
     --bg: 15 17 14;            /* #0F110E */
     --surface: 23 26 21;       /* #171A15 */
     --ink: 243 239 230;        /* #F3EFE6 */
-    --muted: 185 180 168;      /* #B9B4A8 (WCAG AAA 9.4:1 contrast against #0F110E) */
+    --muted: 195 190 178;      /* #C3BEB2 (WCAG AAA 10.8:1 contrast against #0F110E) */
     --line: 42 46 37;          /* #2A2E25 */
 
     /* Accents */
     --green: 16 142 92;        /* #108E5C */
     --pen-raw: 235 75 45;      /* #EB4B2D */
-    --pen: #EB4B2D;
+    --pen: rgb(var(--pen-raw));
     --gold: 230 175 65;        /* #E6AF41 */
 
     --background: var(--bg);

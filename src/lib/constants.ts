@@ -11,7 +11,7 @@ import {
 } from "lucide-react";
 import type { TKey } from "@/lib/i18n";
 
-export const SITE_NAME = "Business Hub BD";
+export const SITE_NAME = "Business Bondhu";
 
 export const NAV_LINKS: { href: string; key: TKey }[] = [
   { href: "/", key: "navHome" },

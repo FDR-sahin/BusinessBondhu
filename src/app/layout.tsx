@@ -39,12 +39,12 @@ const inter = Inter({
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000"),
   title: {
-    default: "বিজনেস হাব — এলাকাভিত্তিক ব্যবসার খাতা",
-    template: "%s | বিজনেস হাব",
+    default: "বিজনেস বন্ধু — এলাকাভিত্তিক ব্যবসার খাতা",
+    template: "%s | বিজনেস বন্ধু",
   },
   description:
     "বাংলাদেশের ব্যবসায়িক খাতা। এলাকাভিত্তিক ব্যবসার আইডিয়া, পাইকারি ও খুচরা দাম এবং লাভ হিসাব এক জায়গায়।",
-  openGraph: { type: "website", locale: "bn_BD", siteName: "বিজনেস হাব" },
+  openGraph: { type: "website", locale: "bn_BD", siteName: "বিজনেস বন্ধু" },
 };
 
 export const viewport: Viewport = {
