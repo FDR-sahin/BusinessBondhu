@@ -56,7 +56,7 @@ export function Hero() {
           {/* Left Column */}
           <div className="lg:col-span-7">
             {/* Rule D: Live Micro-label with pulse green dot */}
-            <div className="flex items-center text-xs font-mono uppercase tracking-widest text-muted">
+            <div className="flex items-center text-xs font-mono uppercase tracking-[0.08em] text-muted">
               <span className="mr-2 inline-block h-2 w-2 rounded-full bg-green motion-safe:animate-pulse" />
               {ideasCount >= 10 ? (
                 lang === "bn" ? (
@@ -80,28 +80,28 @@ export function Hero() {
               {lang === "bn" ? (
                 <>
                   <div>
-                    হাতে <PenMark variant="underline">সামান্য পুঁজি।</PenMark>
+                    হাতে <PenMark variant="underline">সামান্য পুঁজি</PenMark>।
                   </div>
                   <div>
-                    মাথায় <PenMark variant="circle">বড় আইডিয়া।</PenMark>
+                    মাথায় <PenMark variant="circle">বড় আইডিয়া</PenMark>।
                   </div>
                   <div>খুঁজে নিন নিজের ব্যবসা।</div>
                 </>
               ) : (
                 <>
                   <div>
-                    Small <PenMark variant="underline">capital.</PenMark>
+                    Small <PenMark variant="underline">capital</PenMark>.
                   </div>
                   <div>
-                    Big <PenMark variant="circle">idea.</PenMark>
+                    Big <PenMark variant="circle">idea</PenMark>.
                   </div>
                   <div>Find your business.</div>
                 </>
               )}
             </h1>
 
-            {/* Rule B: ONE-line subline */}
-            <p className="mt-4 text-base text-muted max-w-[540px] truncate">
+            {/* Rule B: ONE-line subline in 18px text-muted */}
+            <p className="mt-4 text-base md:text-[18px] text-muted max-w-[540px] truncate">
               {lang === "bn"
                 ? "বাংলাদেশের উদ্যোক্তাদের দোকানি-খাতা।"
                 : "A shopkeeper's ledger for Bangladeshi entrepreneurs."}

@@ -19,10 +19,30 @@ export function PenMark({ children, variant = "underline" }: Props) {
         aria-hidden="true"
         viewBox={circle ? "0 0 300 76" : "0 0 300 16"}
         preserveAspectRatio="none"
-        className={
+        style={
           circle
-            ? "pointer-events-none absolute left-[-0.5rem] top-[-0.35rem] z-0 h-[calc(100%+0.7rem)] w-[calc(100%+1rem)] overflow-visible"
-            : "pointer-events-none absolute bottom-[-0.2rem] left-0 z-0 h-[0.5em] w-full overflow-visible"
+            ? {
+                position: "absolute",
+                left: "-0.22em",
+                right: "-0.22em",
+                top: "-0.18em",
+                bottom: "-0.12em",
+                width: "calc(100% + 0.44em)",
+                height: "calc(100% + 0.30em)",
+                zIndex: 0,
+                pointerEvents: "none",
+                overflow: "visible",
+              }
+            : {
+                position: "absolute",
+                left: 0,
+                bottom: "-0.28em",
+                width: "100%",
+                height: "0.35em",
+                zIndex: 0,
+                pointerEvents: "none",
+                overflow: "visible",
+              }
         }
       >
         <motion.path
