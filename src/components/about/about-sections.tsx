@@ -1,3 +1,5 @@
+"use client";
+
 import { ArrowRight, Check } from "lucide-react";
 import Link from "next/link";
 import { FadeIn, Stagger, StaggerItem } from "@/components/shared/motion";
@@ -7,7 +9,8 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { FAQS, PAIN_POINTS, STEPS, TEAM, VALUES } from "@/lib/about-content";
-import { toBanglaNumber } from "@/lib/utils";
+import { toFormattedNumber } from "@/lib/utils";
+import { useLangStore } from "@/store/lang-store";
 import { ContactForm } from "./contact-form";
 
 function Heading({ id, title, text }: { id: string; title: string; text?: string }) {
@@ -20,6 +23,7 @@ function Heading({ id, title, text }: { id: string; title: string; text?: string
 }
 
 export function AboutHero() {
+  const lang = useLangStore((s) => s.lang);
   return (
     <section className="relative overflow-hidden border-b border-border">
       <div aria-hidden className="pointer-events-none absolute inset-0">
@@ -29,12 +33,18 @@ export function AboutHero() {
       </div>
       <div className="container-page relative py-16 md:py-24">
         <FadeIn className="max-w-3xl">
-          <Badge variant="secondary" className="mb-5 px-3 py-1">আমাদের সম্পর্কে</Badge>
+          <Badge variant="secondary" className="mb-5 px-3 py-1">
+            {lang === "en" ? "About Us" : "আমাদের সম্পর্কে"}
+          </Badge>
           <h1 className="text-4xl font-bold leading-[1.3] tracking-tight md:text-6xl md:leading-[1.25]">
-            প্রতিটি উদ্যোক্তার হাতে সঠিক তথ্য পৌঁছে দেওয়াই আমাদের লক্ষ্য
+            {lang === "en"
+              ? "Empowering Every Entrepreneur with Real Market Data"
+              : "প্রতিটি উদ্যোক্তার হাতে সঠিক তথ্য পৌঁছে দেওয়াই আমাদের লক্ষ্য"}
           </h1>
           <p className="mt-5 max-w-2xl text-lg text-ink-secondary">
-            Business Hub BD এমন একটি জায়গা, যেখানে বাংলাদেশের ছোট ও মাঝারি উদ্যোক্তারা এলাকাভিত্তিক ব্যবসার আইডিয়া, বাজারদর ও নিজেদের অভিজ্ঞতা ভাগাভাগি করেন।
+            {lang === "en"
+              ? "Business Hub BD is an open ledger community where Bangladeshi entrepreneurs share region-specific business ideas, wholesale rates, and real-world operational insights."
+              : "Business Hub BD এমন একটি জায়গা, যেখানে বাংলাদেশের ছোট ও মাঝারি উদ্যোক্তারা এলাকাভিত্তিক ব্যবসার আইডিয়া, বাজারদর ও নিজেদের অভিজ্ঞতা ভাগাভাগি করেন।"}
           </p>
         </FadeIn>
       </div>
@@ -43,23 +53,34 @@ export function AboutHero() {
 }
 
 export function WhoWeAre() {
+  const lang = useLangStore((s) => s.lang);
   return (
     <section className="section" aria-labelledby="who-title">
       <div className="container-page grid gap-10 lg:grid-cols-2 lg:gap-16">
         <FadeIn>
-          <Heading id="who-title" title="আমরা কারা" />
+          <Heading id="who-title" title={lang === "en" ? "Who We Are" : "আমরা কারা"} />
           <div className="space-y-4 text-ink-secondary">
-            <p>আমরা একদল প্রযুক্তিবিদ ও ব্যবসা-অনুরাগী মানুষ। দেশের উদ্যোক্তাদের জন্য তথ্যভিত্তিক সিদ্ধান্ত নেওয়া সহজ করতে আমরা Business Hub BD তৈরি করেছি।</p>
-            <p>আমাদের বিশ্বাস, একজন উদ্যোক্তার সবচেয়ে বড় পুঁজি শুধু টাকা নয়, সঠিক সময়ে সঠিক তথ্য। তাই আমরা এমন একটি প্ল্যাটফর্ম বানাচ্ছি, যেখানে কমিউনিটির অভিজ্ঞতা আর আধুনিক প্রযুক্তি একসঙ্গে কাজ করে।</p>
+            <p>
+              {lang === "en"
+                ? "We are a team of technologists and business enthusiasts dedicated to simplifying data-driven decision-making for entrepreneurs across Bangladesh."
+                : "আমরা একদল প্রযুক্তিবিদ ও ব্যবসা-অনুরাগী মানুষ। দেশের উদ্যোক্তাদের জন্য তথ্যভিত্তিক সিদ্ধান্ত নেওয়া সহজ করতে আমরা Business Hub BD তৈরি করেছি।"}
+            </p>
+            <p>
+              {lang === "en"
+                ? "We believe an entrepreneur's greatest asset isn't just capital—it's timely, accurate market intelligence. We combine community ledger insights with modern tech tools to help businesses succeed."
+                : "আমাদের বিশ্বাস, একজন উদ্যোক্তার সবচেয়ে বড় পুঁজি শুধু টাকা নয়, সঠিক সময়ে সঠিক তথ্য। তাই আমরা এমন একটি প্ল্যাটফর্ম বানাচ্ছি, যেখানে কমিউনিটির অভিজ্ঞতা আর আধুনিক প্রযুক্তি একসঙ্গে কাজ করে।"}
+            </p>
           </div>
         </FadeIn>
         <Stagger className="grid gap-4 sm:grid-cols-2">
           {VALUES.map(({ icon: Icon, title, text }) => (
-            <StaggerItem key={title} className="h-full">
+            <StaggerItem key={title.bn} className="h-full">
               <Card className="h-full space-y-3 p-5">
-                <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary-soft text-primary-soft-foreground"><Icon className="h-5 w-5" aria-hidden /></span>
-                <h3 className="font-semibold">{title}</h3>
-                <p className="text-sm text-ink-secondary">{text}</p>
+                <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary-soft text-primary-soft-foreground">
+                  <Icon className="h-5 w-5" aria-hidden />
+                </span>
+                <h3 className="font-semibold">{title[lang]}</h3>
+                <p className="text-sm text-ink-secondary">{text[lang]}</p>
               </Card>
             </StaggerItem>
           ))}
@@ -70,18 +91,33 @@ export function WhoWeAre() {
 }
 
 export function WhyWeBuilt() {
+  const lang = useLangStore((s) => s.lang);
   return (
     <section className="section border-y border-border bg-surface" aria-labelledby="why-title">
       <div className="container-page grid gap-10 lg:grid-cols-2 lg:gap-16">
         <FadeIn>
-          <Heading id="why-title" title="কেন বানানো হলো" text="একটি সাধারণ সমস্যা থেকেই শুরু। নতুন ব্যবসা শুরু করতে গেলে সঠিক তথ্যই সবচেয়ে কঠিন জোগাড়।" />
-          <p className="text-ink-secondary">আমরা দেখেছি, অনেকেই অনুমানের ওপর ভর করে পুঁজি খাটান। তাই আমরা চেয়েছি তথ্য সবার জন্য খোলা ও সহজলভ্য করতে।</p>
+          <Heading
+            id="why-title"
+            title={lang === "en" ? "Why We Built It" : "কেন বানানো হলো"}
+            text={
+              lang === "en"
+                ? "Born from a common struggle: starting a business is hard when transparent market pricing is difficult to obtain."
+                : "একটি সাধারণ সমস্যা থেকেই শুরু। নতুন ব্যবসা শুরু করতে গেলে সঠিক তথ্যই সবচেয়ে কঠিন জোগাড়।"
+            }
+          />
+          <p className="text-ink-secondary">
+            {lang === "en"
+              ? "We saw too many storekeepers risking capital based on guesswork. We set out to make market data transparent and accessible to everyone."
+              : "আমরা দেখেছি, অনেকেই অনুমানের ওপর ভর করে পুঁজি খাটান। তাই আমরা চেয়েছি তথ্য সবার জন্য খোলা ও সহজলভ্য করতে।"}
+          </p>
         </FadeIn>
         <Stagger className="space-y-4">
-          {PAIN_POINTS.map((p) => (
-            <StaggerItem key={p}>
+          {PAIN_POINTS[lang].map((p, idx) => (
+            <StaggerItem key={idx}>
               <div className="flex gap-4 rounded-2xl border border-border bg-card p-5 shadow-sm">
-                <span className="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-success-soft text-success-soft-foreground"><Check className="h-4 w-4" aria-hidden /></span>
+                <span className="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-success-soft text-success-soft-foreground">
+                  <Check className="h-4 w-4" aria-hidden />
+                </span>
                 <p>{p}</p>
               </div>
             </StaggerItem>
@@ -93,18 +129,31 @@ export function WhyWeBuilt() {
 }
 
 export function HowItWorksSteps() {
+  const lang = useLangStore((s) => s.lang);
   return (
     <section className="section" aria-labelledby="steps-title">
       <div className="container-page">
-        <Heading id="steps-title" title="কীভাবে কাজ করে" text="তিনটি সহজ ধাপে আপনার ব্যবসার সিদ্ধান্ত।" />
+        <Heading
+          id="steps-title"
+          title={lang === "en" ? "How It Works" : "কীভাবে কাজ করে"}
+          text={
+            lang === "en"
+              ? "Three simple steps to make confident business decisions."
+              : "তিনটি সহজ ধাপে আপনার ব্যবসার সিদ্ধান্ত।"
+          }
+        />
         <Stagger className="grid gap-6 md:grid-cols-3">
           {STEPS.map(({ icon: Icon, title, text }, i) => (
-            <StaggerItem key={title} className="h-full">
+            <StaggerItem key={title.bn} className="h-full">
               <Card className="relative h-full space-y-4 overflow-hidden p-6">
-                <span aria-hidden className="absolute right-4 top-2 text-6xl font-bold text-border">{toBanglaNumber(i + 1)}</span>
-                <span className="relative flex h-12 w-12 items-center justify-center rounded-xl bg-primary text-primary-foreground"><Icon className="h-6 w-6" aria-hidden /></span>
-                <h3 className="relative text-lg font-semibold md:text-xl">{title}</h3>
-                <p className="relative text-ink-secondary">{text}</p>
+                <span aria-hidden className="absolute right-4 top-2 text-6xl font-bold text-border">
+                  {toFormattedNumber(i + 1, lang)}
+                </span>
+                <span className="relative flex h-12 w-12 items-center justify-center rounded-xl bg-primary text-primary-foreground">
+                  <Icon className="h-6 w-6" aria-hidden />
+                </span>
+                <h3 className="relative text-lg font-semibold md:text-xl">{title[lang]}</h3>
+                <p className="relative text-ink-secondary">{text[lang]}</p>
               </Card>
             </StaggerItem>
           ))}
@@ -115,18 +164,27 @@ export function HowItWorksSteps() {
 }
 
 export function TeamSection() {
+  const lang = useLangStore((s) => s.lang);
   return (
     <section className="section border-y border-border bg-surface" aria-labelledby="team-title">
       <div className="container-page">
-        <Heading id="team-title" title="আমাদের টিম" text="যাদের হাত ধরে প্ল্যাটফর্মটি এগিয়ে চলছে।" />
+        <Heading
+          id="team-title"
+          title={lang === "en" ? "Our Team" : "আমাদের টিম"}
+          text={
+            lang === "en"
+              ? "The passionate team driving the platform forward."
+              : "যাদের হাত ধরে প্ল্যাটফর্মটি এগিয়ে চলছে।"
+          }
+        />
         <Stagger className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {TEAM.map((m) => (
-            <StaggerItem key={m.name}>
+            <StaggerItem key={m.name.bn}>
               <Card className="flex items-center gap-4 p-5">
-                <UserAvatar name={m.name} className="h-14 w-14 text-lg" />
+                <UserAvatar name={m.name[lang]} className="h-14 w-14 text-lg" />
                 <div>
-                  <p className="font-semibold">{m.name}</p>
-                  <p className="text-sm text-ink-secondary">{m.role}</p>
+                  <p className="font-semibold">{m.name[lang]}</p>
+                  <p className="text-sm text-ink-secondary">{m.role[lang]}</p>
                 </div>
               </Card>
             </StaggerItem>
@@ -138,10 +196,19 @@ export function TeamSection() {
 }
 
 export function ContactSection() {
+  const lang = useLangStore((s) => s.lang);
   return (
     <section id="contact" className="section scroll-mt-20" aria-labelledby="contact-title">
       <div className="container-page">
-        <Heading id="contact-title" title="যোগাযোগ করুন" text="প্রশ্ন, পরামর্শ বা সহযোগিতার প্রস্তাব থাকলে আমাদের জানান।" />
+        <Heading
+          id="contact-title"
+          title={lang === "en" ? "Contact Us" : "যোগাযোগ করুন"}
+          text={
+            lang === "en"
+              ? "Have questions, suggestions, or partnership inquiries? Send us a message."
+              : "প্রশ্ন, পরামর্শ বা সহযোগিতার প্রস্তাব থাকলে আমাদের জানান।"
+          }
+        />
         <ContactForm />
       </div>
     </section>
@@ -149,15 +216,24 @@ export function ContactSection() {
 }
 
 export function FaqSection() {
+  const lang = useLangStore((s) => s.lang);
   return (
     <section id="faq" className="section scroll-mt-20 border-y border-border bg-surface" aria-labelledby="faq-title">
       <div className="container-page grid gap-10 lg:grid-cols-[1fr_2fr] lg:gap-16">
-        <Heading id="faq-title" title="সচরাচর জিজ্ঞাসা" text="সবচেয়ে বেশি করা প্রশ্নগুলোর উত্তর এখানে পাবেন।" />
+        <Heading
+          id="faq-title"
+          title={lang === "en" ? "Frequently Asked Questions" : "সচরাচর জিজ্ঞাসা"}
+          text={
+            lang === "en"
+              ? "Find answers to the most common questions about Business Hub BD."
+              : "সবচেয়ে বেশি করা প্রশ্নগুলোর উত্তর এখানে পাবেন।"
+          }
+        />
         <Accordion type="single" collapsible className="border-t border-border">
           {FAQS.map((f, i) => (
-            <AccordionItem key={f.q} value={`faq-${i}`}>
-              <AccordionTrigger>{f.q}</AccordionTrigger>
-              <AccordionContent>{f.a}</AccordionContent>
+            <AccordionItem key={i} value={`faq-${i}`}>
+              <AccordionTrigger>{f.q[lang]}</AccordionTrigger>
+              <AccordionContent>{f.a[lang]}</AccordionContent>
             </AccordionItem>
           ))}
         </Accordion>
@@ -167,6 +243,7 @@ export function FaqSection() {
 }
 
 export function AboutCta() {
+  const lang = useLangStore((s) => s.lang);
   return (
     <section className="section" aria-labelledby="cta-title">
       <div className="container-page">
@@ -174,11 +251,25 @@ export function AboutCta() {
           <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-primary to-primary-deep px-6 py-12 text-primary-foreground shadow-md md:px-14 md:py-16">
             <div aria-hidden className="pointer-events-none absolute -right-16 -top-16 h-64 w-64 rounded-full bg-secondary/25 blur-3xl" />
             <div className="relative max-w-2xl">
-              <h2 id="cta-title" className="text-2xl font-semibold leading-snug md:text-4xl">আজই আপনার ব্যবসার যাত্রা শুরু করুন</h2>
-              <p className="mt-3 text-blue-100">বিনামূল্যে অ্যাকাউন্ট খুলে আপনার এলাকার আইডিয়া দেখুন, প্রশ্ন করুন এবং নিজের অভিজ্ঞতা শেয়ার করুন।</p>
+              <h2 id="cta-title" className="text-2xl font-semibold leading-snug md:text-4xl">
+                {lang === "en" ? "Start Your Entrepreneurial Journey Today" : "আজই আপনার ব্যবসার যাত্রা শুরু করুন"}
+              </h2>
+              <p className="mt-3 text-blue-100">
+                {lang === "en"
+                  ? "Create a free account to explore district business ideas, ask questions, and share your shop experience."
+                  : "বিনামূল্যে অ্যাকাউন্ট খুলে আপনার এলাকার আইডিয়া দেখুন, প্রশ্ন করুন এবং নিজের অভিজ্ঞতা শেয়ার করুন।"}
+              </p>
               <div className="mt-8 flex flex-wrap gap-3">
-                <Button asChild variant="secondary" size="lg"><Link href="/signup">শুরু করুন <ArrowRight aria-hidden /></Link></Button>
-                <Button asChild size="lg" className="border border-white/30 bg-white/10 hover:bg-white/20"><Link href="/explore">আইডিয়া দেখুন</Link></Button>
+                <Button asChild variant="secondary" size="lg">
+                  <Link href="/signup">
+                    {lang === "en" ? "Get Started" : "শুরু করুন"} <ArrowRight aria-hidden />
+                  </Link>
+                </Button>
+                <Button asChild size="lg" className="border border-white/30 bg-white/10 hover:bg-white/20">
+                  <Link href="/explore">
+                    {lang === "en" ? "Explore Ideas" : "আইডিয়া দেখুন"}
+                  </Link>
+                </Button>
               </div>
             </div>
           </div>
