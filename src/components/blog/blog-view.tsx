@@ -164,9 +164,9 @@ export function BlogView() {
       </div>
 
       {/* Main Grid + Sidebar Layout */}
-      <div className="mt-8 grid gap-8 lg:grid-cols-12 lg:items-start">
-        {/* Main Content Area */}
-        <main className="lg:col-span-8 space-y-8">
+      <div className="mt-8 space-y-12">
+        {/* Main Content Area - 3 Cards per row */}
+        <main className="space-y-8">
           {list.isError ? (
             <QueryError onRetry={() => void list.refetch()} />
           ) : list.isPending ? (
@@ -185,7 +185,7 @@ export function BlogView() {
               }
             />
           ) : viewMode === "cards" ? (
-            <Stagger key={filteredItems.map((p) => p.id).join("|")} className="grid gap-6 sm:grid-cols-2">
+            <Stagger key={filteredItems.map((p) => p.id).join("|")} className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
               {filteredItems.map((p, idx) => (
                 <StaggerItem key={p.id} className="h-full">
                   <BlogCard post={p} index={idx + 1} />
@@ -206,9 +206,9 @@ export function BlogView() {
           )}
         </main>
 
-        {/* Right Sidebar Ledger */}
-        <div className="lg:col-span-4">
-          <BlogSidebarLedger totalPosts={list.data?.total ?? 12} />
+        {/* Sidebar Ledger at bottom */}
+        <div className="pt-4 border-t border-line">
+          <BlogSidebarLedger totalPosts={list.data?.total ?? 22} />
         </div>
       </div>
     </div>
