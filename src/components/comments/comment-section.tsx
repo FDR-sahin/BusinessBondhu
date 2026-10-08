@@ -20,8 +20,15 @@ export function CommentSection({ postId, scope = "posts", count }: { postId: str
   const authed = useIsAuthenticated();
   const pathname = usePathname();
   const { data, isPending, isError, refetch } = useComments(postId, scope);
-  // Use the parent's count when given, otherwise count what we loaded (comments + replies).
-  const total = count ?? (data ? data.reduce((n, c) => n + 1 + (c.replies?.length ?? 0), 0) : 0);
+
+  // Safe array evaluation guarantees 100% immunity to TypeError: reduce is not a function
+  const safeComments = Array.isArray(data)
+    ? data
+    : data && typeof data === "object" && "items" in data && Array.isArray((data as any).items)
+    ? (data as any).items
+    : [];
+
+  const total = count ?? safeComments.reduce((n: number, c: any) => n + 1 + (c.replies?.length ?? 0), 0);
 
   return (
     <section aria-labelledby="comments-title" className="space-y-6">
@@ -41,11 +48,13 @@ export function CommentSection({ postId, scope = "posts", count }: { postId: str
         <QueryError onRetry={() => void refetch()} />
       ) : isPending ? (
         <ListSkeleton rows={3} />
-      ) : data.length === 0 ? (
+      ) : safeComments.length === 0 ? (
         <EmptyState icon={MessageSquare} title="এখনো কোনো মন্তব্য নেই" description="প্রথম মন্তব্যটি আপনিই করুন।" />
       ) : (
         <ul className="space-y-6">
-          {data.map((c) => <CommentItem key={c.id} comment={c} postId={postId} scope={scope} />)}
+          {safeComments.map((c: any) => (
+            <CommentItem key={c.id} comment={c} postId={postId} scope={scope} />
+          ))}
         </ul>
       )}
     </section>

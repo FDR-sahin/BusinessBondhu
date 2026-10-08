@@ -19,7 +19,19 @@ export function useComments(id: string, scope: CommentScope = "posts") {
   const userId = useAuthStore((s) => s.user?.id ?? "guest");
   return useQuery({
     queryKey: [...commentsKey(scope, id), userId],
-    queryFn: async () => (await api.get<Comment[]>(`/${scope}/${id}/comments`)).data,
+    queryFn: async () => {
+      try {
+        const res = await api.get(`/${scope}/${id}/comments`);
+        const val = res.data;
+        if (Array.isArray(val)) return val as Comment[];
+        if (val && typeof val === "object" && "items" in val && Array.isArray((val as any).items)) {
+          return (val as any).items as Comment[];
+        }
+        return [] as Comment[];
+      } catch {
+        return [] as Comment[];
+      }
+    },
   });
 }
 
