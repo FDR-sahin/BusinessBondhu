@@ -127,6 +127,19 @@ const bn = {
   noPostsYet: "এখনো কোনো পোস্ট নেই",
   shareFirstIdea: "প্রথম ব্যবসার আইডিয়াটি আপনিই শেয়ার করুন।",
   loading: "লোড হচ্ছে...",
+
+  // Blog UI Brutalist Ledger
+  blogHeaderTitle: "ব্যবসার খাতা ও রিপোর্ট খতিয়ান",
+  blogHeaderDesc: "সফল উদ্যোক্তাদের বাস্তব অভিজ্ঞতা, এলাকাভিত্তিক বাজার গাইড ও লাভ-ক্ষতির বিশ্লেষণ।",
+  allOutcomes: "সব রিপোর্ট",
+  cardsView: "কার্ড",
+  tableView: "টেবিল",
+  searchBlog: "শিরোনাম বা বিষয় দিয়ে খুঁজুন...",
+  categoryLedger: "ক্যাটাগরি খাতা",
+  totalArticles: "মোট নিবন্ধ",
+  readReport: "রিপোর্ট দেখুন",
+  confirmReport: "যাচাইকৃত খাতা",
+  showingReportsCount: "মোট {total}টি খাতার মধ্যে {showing}টি প্রদর্শিত",
 } as const;
 
 const en: Record<keyof typeof bn, string> = {
@@ -251,6 +264,19 @@ const en: Record<keyof typeof bn, string> = {
   noPostsYet: "No posts yet",
   shareFirstIdea: "Be the first to share a business idea.",
   loading: "Loading...",
+
+  // Blog UI Brutalist Ledger
+  blogHeaderTitle: "Business Ledger & Reports",
+  blogHeaderDesc: "Field reports, wholesale market guides, and profitability ledgers for Bangladeshi entrepreneurs.",
+  allOutcomes: "All Reports",
+  cardsView: "Cards",
+  tableView: "Table",
+  searchBlog: "Search title, service or place...",
+  categoryLedger: "Category Ledger",
+  totalArticles: "Total Articles",
+  readReport: "Read Report",
+  confirmReport: "Verified Entry",
+  showingReportsCount: "Showing {showing} of {total} reports",
 };
 
 const dictionaries = { bn, en } as const;

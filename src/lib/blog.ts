@@ -1,9 +1,9 @@
 export const BLOG_CATEGORIES = [
-  { slug: "success-stories", label: "সাকসেস স্টোরি" },
-  { slug: "failure-stories", label: "ব্যর্থতার গল্প" },
-  { slug: "area-guides", label: "এলাকাভিত্তিক গাইড" },
-  { slug: "wholesale-markets", label: "পাইকারি বাজার" },
-  { slug: "govt-benefits", label: "সরকারি সুবিধা" },
+  { slug: "success-stories", label: "সাকসেস স্টোরি", labelEn: "Success Stories" },
+  { slug: "failure-stories", label: "ব্যর্থতার গল্প", labelEn: "Failure Stories" },
+  { slug: "area-guides", label: "এলাকাভিত্তিক গাইড", labelEn: "Area Guides" },
+  { slug: "wholesale-markets", label: "পাইকারি বাজার", labelEn: "Wholesale Markets" },
+  { slug: "govt-benefits", label: "সরকারি সুবিধা", labelEn: "Govt Schemes" },
 ] as const;
 
 export const getBlogCategory = (slug: string) => BLOG_CATEGORIES.find((c) => c.slug === slug);
