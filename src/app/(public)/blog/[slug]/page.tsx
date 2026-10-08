@@ -9,8 +9,8 @@ import { ShareButtons } from "@/components/blog/share-buttons";
 import { CommentSection } from "@/components/comments/comment-section";
 import { Badge } from "@/components/ui/badge";
 import { Breadcrumb } from "@/components/ui/breadcrumb";
+import { DETAILED_BLOG_POSTS } from "@/lib/blog-data";
 import { estimateReadingMinutes, getBlogCategory } from "@/lib/blog";
-import { MOCK_BLOG_POSTS } from "@/lib/mock-data";
 import { sanitizeContent } from "@/lib/sanitize";
 import type { BlogPostDetail } from "@/types";
 
@@ -20,44 +20,44 @@ interface PageProps {
 
 /**
  * Cached 60s; generateMetadata and the page share one request.
- * Guaranteed 100% crash-proof resolution: decodes slug, fetches API if valid URL,
- * and falls back to local MOCK_BLOG_POSTS with full HTML content.
+ * Direct zero-latency resolution from DETAILED_BLOG_POSTS with decoding and external API fallback.
  */
 const getArticle = cache(async (slug: string): Promise<{ post: BlogPostDetail | null; missing: boolean }> => {
   const decodedSlug = decodeURIComponent(slug);
-  const localPost = MOCK_BLOG_POSTS.find(
+  const localPost = DETAILED_BLOG_POSTS.find(
     (b) => b.slug === slug || b.slug === decodedSlug || b.id === slug || b.id === decodedSlug
   );
 
-  const base = process.env.NEXT_PUBLIC_API_URL;
-  let fetchedPost: BlogPostDetail | null = null;
+  if (localPost) {
+    return {
+      post: {
+        ...localPost,
+        content: localPost.content || `<p>${localPost.excerpt}</p>`,
+        commentsEnabled: true,
+      },
+      missing: false,
+    };
+  }
 
+  // If not found locally, try fetching from external API if configured
+  const base = process.env.NEXT_PUBLIC_API_URL;
   if (base && !base.startsWith("/")) {
     try {
       const res = await fetch(`${base}/blog/${encodeURIComponent(slug)}`, { next: { revalidate: 60 } });
       if (res.ok) {
-        fetchedPost = (await res.json()) as BlogPostDetail;
+        const fetchedPost = (await res.json()) as BlogPostDetail;
+        return {
+          post: {
+            ...fetchedPost,
+            content: fetchedPost.content || `<p>${fetchedPost.excerpt}</p>`,
+            commentsEnabled: fetchedPost.commentsEnabled ?? true,
+          },
+          missing: false,
+        };
       }
     } catch {
-      // Ignore network errors and use localPost below
+      // Ignore network errors
     }
-  }
-
-  const finalPost = fetchedPost || (localPost ? {
-    ...localPost,
-    content: localPost.content || `<p>${localPost.excerpt}</p>`,
-    commentsEnabled: true,
-  } : null);
-
-  if (finalPost) {
-    return {
-      post: {
-        ...finalPost,
-        content: finalPost.content || (localPost?.content ?? `<p>${finalPost.excerpt || ""}</p>`),
-        commentsEnabled: finalPost.commentsEnabled ?? true,
-      },
-      missing: false,
-    };
   }
 
   return { post: null, missing: true };
@@ -106,7 +106,7 @@ export default async function BlogArticlePage({ params }: PageProps) {
                 <Badge variant="default" className="px-3 py-1">{category.label}</Badge>
               </Link>
             )}
-            <h1 className="text-3xl font-bold leading-snug md:text-5xl md:leading-snug">{post.title}</h1>
+            <h1 className="text-3xl font-bold leading-snug md:text-5xl md:leading-snug text-ink">{post.title}</h1>
             <BlogMeta author={post.author} date={post.publishedAt} readingTime={readingTime} />
           </header>
 
