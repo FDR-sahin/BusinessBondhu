@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Noto_Serif_Bengali, Hind_Siliguri, Fraunces, Inter } from "next/font/google";
 import { Providers } from "@/components/providers";
+import { BgMapWatermark } from "@/components/layout/bg-map-watermark";
 import { cn } from "@/lib/utils";
 import "./globals.css";
 
@@ -68,7 +69,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           "min-h-screen ledger-paper font-sans antialiased text-ink bg-background"
         )}
       >
-        <Providers>{children}</Providers>
+        <Providers>
+          <BgMapWatermark />
+          {children}
+        </Providers>
       </body>
     </html>
   );
