@@ -159,6 +159,7 @@ export interface BlogPost {
   publishedAt: string;
   /** minutes; computed from content if the API doesn't send it */
   readingTime?: number;
+  content?: string;
 }
 
 export interface BlogPostDetail extends BlogPost {

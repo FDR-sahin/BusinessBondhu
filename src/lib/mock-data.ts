@@ -201,38 +201,9 @@ export const MOCK_TOP_DISTRICTS: DistrictStat[] = [
   { district: "Pabna", division: "Rajshahi", count: 39 },
 ];
 
-export const MOCK_BLOG_POSTS: BlogPost[] = [
-  {
-    id: "blog-1",
-    slug: "small-business-registration-bangladesh",
-    title: "বাংলাদেশে ক্ষুদ্র ব্যবসার ট্রেড লাইসেন্স ও ই-টিন নেওয়ার সহজ গাইড",
-    excerpt: "আইনি জটিলতা এড়িয়ে মাত্র ৩ দিনে ইউনিয়ন পরিষদ বা সিটি কর্পোরেশন থেকে ট্রেড লাইসেন্স সংগ্রহের ধাপসমূহ।",
-    category: "govt-benefits",
-    author: { id: "u-admin", name: "কমিউনিটি অ্যাডমিন" },
-    publishedAt: "2026-09-28T09:00:00Z",
-    readingTime: 4,
-  },
-  {
-    id: "blog-2",
-    slug: "wholesale-market-sourcing-dhaka",
-    title: "ঢাকার চকবাজার ও ইসলামপুরের পাইকারি বাজার থেকে পণ্য কেনার সিক্রেট টিপস",
-    excerpt: "সঠিক কোয়ালিটি চেনা, দাম কমানো এবং ধোঁকাবাজি থেকে বাঁচার বাস্তব অভিজ্ঞতা।",
-    category: "wholesale-markets",
-    author: { id: "u-1", name: "মহসিন হোসেন" },
-    publishedAt: "2026-10-01T11:20:00Z",
-    readingTime: 6,
-  },
-  {
-    id: "blog-3",
-    slug: "facebook-f-commerce-growth-hacks",
-    title: "কম খরচে এফ-কমার্স ব্যবসা বাড়ানোর ৫টি পরীক্ষিত মেথড",
-    excerpt: "অর্গানিক রিচ বাড়ানো, কাস্টমার ট্রাস্ট গঠন এবং দ্রুত ডেলিভারি নিশ্চিত করার কৌশল।",
-    category: "success-stories",
-    author: { id: "u-2", name: "তানভীর আহমেদ" },
-    publishedAt: "2026-10-03T14:40:00Z",
-    readingTime: 5,
-  },
-];
+import { DETAILED_BLOG_POSTS } from "./blog-data";
+
+export const MOCK_BLOG_POSTS: BlogPost[] = DETAILED_BLOG_POSTS;
 
 export const MOCK_ANALYSIS_DATA: AnalysisData = {
   totals: { posts: 850, users: 3420, comments: 4190, districts: 64 },
