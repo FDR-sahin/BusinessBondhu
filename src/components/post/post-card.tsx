@@ -39,7 +39,7 @@ export function PostCard({ post }: { post: Post }) {
     >
       <Link
         href={`/post/${post.id}`}
-        className="flex h-full flex-col overflow-hidden rounded-xl border border-line bg-surface p-5 transition-colors duration-200 group-hover:border-ink shadow-sm"
+        className="flex h-full flex-col overflow-hidden rounded-xl border border-line/80 bg-surface p-5 shadow-sm transition-all duration-200 group-hover:border-green group-hover:shadow-md"
       >
         {/* Top Micro-label row: Category • District */}
         <div className="flex items-center justify-between gap-2 text-[11px] font-mono uppercase tracking-wider text-muted">
@@ -56,7 +56,7 @@ export function PostCard({ post }: { post: Post }) {
         </h3>
 
         {/* Price Slip Ledger Numbers */}
-        <div className="mt-4 grid grid-cols-2 gap-2 rounded-md border border-line bg-background/50 p-3 text-xs">
+        <div className="mt-4 grid grid-cols-2 gap-2 rounded-md border border-line bg-surface p-3 text-xs shadow-inner">
           <div>
             <span className="block micro-label text-muted">{lang === "bn" ? "পাইকারি" : "Wholesale"}</span>
             <span className="font-mono text-sm font-semibold tabular-nums text-ink">

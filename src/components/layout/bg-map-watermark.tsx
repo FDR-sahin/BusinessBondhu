@@ -5,7 +5,8 @@ import Image from "next/image";
 
 /**
  * Senior UI/UX 3D Bangladesh Map Watermark Component
- * Zoomed-in, soft-focused full-page watermark with gentle division radar indicators.
+ * Ultra-subtle paper watermark (opacity 5%) with soft blur, ensuring all cards
+ * and text components stay 100% crisp and opaque over the background.
  */
 export function BgMapWatermark() {
   return (
@@ -17,10 +18,10 @@ export function BgMapWatermark() {
         initial={{ opacity: 0, scale: 1.2 }}
         animate={{
           opacity: 1,
-          scale: [1.25, 1.3, 1.25],
-          y: [0, -18, 0],
-          rotateX: [12, 16, 12],
-          rotateY: [-5, -1, -5],
+          scale: [1.2, 1.25, 1.2],
+          y: [0, -14, 0],
+          rotateX: [10, 14, 10],
+          rotateY: [-4, -1, -4],
         }}
         transition={{
           opacity: { duration: 1.2 },
@@ -35,12 +36,12 @@ export function BgMapWatermark() {
           transformStyle: "preserve-3d",
         }}
       >
-        {/* Ambient Soft Emerald Glow */}
-        <div className="absolute inset-0 -bottom-24 rounded-full bg-gradient-radial from-green/10 via-primary-soft/5 to-transparent blur-3xl opacity-50" />
+        {/* Soft Ambient Glow Aura */}
+        <div className="absolute inset-0 -bottom-24 rounded-full bg-gradient-radial from-green/5 via-primary-soft/5 to-transparent blur-3xl opacity-40" />
 
-        {/* Zoomed-In Official Bangladesh Map Image (Soft Blurry Watermark) */}
+        {/* Ultra-Subtle Zoomed Bangladesh Map Image Watermark */}
         <div
-          className="relative h-full w-full opacity-[0.11] dark:opacity-[0.07] filter blur-[4px] transition-all duration-500"
+          className="relative h-full w-full opacity-[0.05] dark:opacity-[0.04] filter blur-[6px] transition-all duration-500"
           style={{ transform: "translateZ(0px)" }}
         >
           <Image
@@ -54,7 +55,7 @@ export function BgMapWatermark() {
 
         {/* Soft, Blurry 3D Division Radar Nodes Overlay */}
         <div
-          className="absolute inset-0 h-full w-full filter blur-[1.5px] opacity-45 dark:opacity-35"
+          className="absolute inset-0 h-full w-full filter blur-[2.5px] opacity-25 dark:opacity-20"
           style={{ transform: "translateZ(15px)" }}
         >
           <svg
@@ -80,7 +81,7 @@ export function BgMapWatermark() {
                   cx={node.cx}
                   cy={node.cy}
                   r="18"
-                  className="fill-green/5 stroke-green/20 animate-ping origin-center"
+                  className="fill-green/5 stroke-green/15 animate-ping origin-center"
                   style={{ animationDuration: `${3.5 + idx * 0.4}s` }}
                 />
 
@@ -89,7 +90,7 @@ export function BgMapWatermark() {
                   cx={node.cx}
                   cy={node.cy}
                   r="7"
-                  className="fill-green/15 stroke-green/40"
+                  className="fill-green/10 stroke-green/30"
                   strokeWidth="1"
                 />
 
@@ -98,14 +99,14 @@ export function BgMapWatermark() {
                   cx={node.cx}
                   cy={node.cy}
                   r="3"
-                  className="fill-green/60"
+                  className="fill-green/40"
                 />
 
                 {/* Soft Division Label */}
                 <text
                   x={node.cx + 10}
                   y={node.cy + 4}
-                  className="fill-ink-secondary text-[11px] font-mono font-medium tracking-widest uppercase opacity-50"
+                  className="fill-ink-secondary text-[11px] font-mono font-medium tracking-widest uppercase opacity-40"
                 >
                   {node.label}
                 </text>
