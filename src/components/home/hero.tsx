@@ -146,15 +146,15 @@ export function Hero() {
               </div>
 
               {/* 3 MINI Result Rows */}
-              <div className="mt-4 space-y-1 border-t border-line/60 pt-3">
-                <div className="micro-label mb-2 text-[10px] text-muted">
+              <div className="mt-4 space-y-1.5 border-t border-line/60 pt-3">
+                <div className="micro-label mb-2 text-[10px] text-muted uppercase tracking-wider font-mono">
                   {lang === "bn" ? "বাজেট উপযোগী নমুনা খাতা" : "Matching sample entries"}
                 </div>
                 {isLoading ? (
                   <div className="space-y-2">
-                    <Skeleton className="h-8 w-full rounded" />
-                    <Skeleton className="h-8 w-full rounded" />
-                    <Skeleton className="h-8 w-full rounded" />
+                    <Skeleton className="h-10 w-full rounded-lg" />
+                    <Skeleton className="h-10 w-full rounded-lg" />
+                    <Skeleton className="h-10 w-full rounded-lg" />
                   </div>
                 ) : matchingPosts.length > 0 ? (
                   matchingPosts.slice(0, 3).map((post) => {
@@ -165,16 +165,18 @@ export function Hero() {
                       <Link
                         key={post.id}
                         href={`/post/${post.id}`}
-                        className="flex h-9 items-center justify-between gap-2 rounded px-2 py-1 transition-colors hover:bg-background/80"
+                        className="group flex items-center justify-between gap-3 rounded-lg border border-line/60 bg-background/50 px-3 py-2 transition-all hover:border-green/50 hover:bg-green/10 shadow-2xs"
                       >
-                        <div className="min-w-0 flex-1 truncate">
-                          <span className="font-medium text-xs text-ink hover:text-green truncate block">{post.title}</span>
+                        <div className="min-w-0 flex-1">
+                          <span className="font-semibold text-xs sm:text-sm text-ink group-hover:text-green truncate block leading-snug">
+                            {post.title}
+                          </span>
                         </div>
                         <div className="flex items-center gap-2 shrink-0">
-                          <span className="text-[10px] text-muted">
+                          <span className="rounded bg-surface px-1.5 py-0.5 text-[10px] font-mono text-muted border border-line/50">
                             {getDistrictLabel(post.district) || post.district}
                           </span>
-                          <span className="font-mono text-[11px] font-semibold text-green">
+                          <span className="font-mono text-xs font-bold text-green">
                             +{marginPct}%
                           </span>
                         </div>
@@ -182,7 +184,7 @@ export function Hero() {
                     );
                   })
                 ) : (
-                  <div className="py-2 text-center text-xs text-muted">
+                  <div className="py-3 text-center text-xs text-muted border border-dashed border-line rounded-lg">
                     {lang === "bn" ? "এই বাজেটে নমুনা খাতা পাওয়া যায়নি" : "No sample entries found for this budget"}
                   </div>
                 )}
@@ -205,6 +207,25 @@ export function Hero() {
         {/* Full width Live Proof Strip below hero (24px top margin) */}
         <div className="mt-6">
           <LiveProofStrip />
+        </div>
+
+        {/* Scroll Notification Indicator to notify users of Explore Section below */}
+        <div className="mt-8 flex flex-col items-center justify-center text-center">
+          <Link
+            href="/explore"
+            className="group inline-flex items-center gap-2 rounded-full border border-green/30 bg-surface px-4 py-2 text-xs font-medium text-ink shadow-sm hover:border-green hover:text-green hover:shadow-md transition-all"
+          >
+            <span className="relative flex h-2 w-2">
+              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-green opacity-75" />
+              <span className="relative inline-flex h-2 w-2 rounded-full bg-green" />
+            </span>
+            <span>
+              {lang === "bn"
+                ? "নিচে শত শত জেলাভিত্তিক ব্যবসার আইডিয়া এক্সপ্লোর করুন"
+                : "Explore Hundreds of District Venture Ideas Below"}
+            </span>
+            <ArrowRight className="h-3.5 w-3.5 text-green transition-transform duration-200 group-hover:translate-x-1" />
+          </Link>
         </div>
       </div>
     </section>

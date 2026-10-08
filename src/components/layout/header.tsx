@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Menu, Plus } from "lucide-react";
+import { Menu, Plus, Search } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -15,24 +15,39 @@ import { NAV_LINKS } from "@/lib/constants";
 import { useT } from "@/lib/i18n";
 import { cn } from "@/lib/utils";
 import { useIsAuthenticated } from "@/store/auth-store";
+import { useLangStore } from "@/store/lang-store";
 import { MobileNav } from "./mobile-nav";
 import { NotificationBell } from "./notification-bell";
 import { UserMenu } from "./user-menu";
 import { TrustStrip } from "./trust-strip";
+import { GlobalSearchDialog } from "./global-search-dialog";
 
 export function Header() {
   const pathname = usePathname();
   const t = useT();
+  const lang = useLangStore((s) => s.lang);
   const mounted = useMounted();
   const authed = useIsAuthenticated();
   const [scrolled, setScrolled] = useState(false);
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const [searchOpen, setSearchOpen] = useState(false);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 8);
     onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
+  useEffect(() => {
+    const onKeyDown = (e: KeyboardEvent) => {
+      if ((e.ctrlKey || e.metaKey) && e.key === "k") {
+        e.preventDefault();
+        setSearchOpen((prev) => !prev);
+      }
+    };
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
   }, []);
 
   useEffect(() => setDrawerOpen(false), [pathname]);
@@ -91,6 +106,19 @@ export function Header() {
           </nav>
 
           <div className="ml-auto flex items-center gap-2 lg:ml-0">
+            {/* Global Instant Search Trigger Button */}
+            <button
+              onClick={() => setSearchOpen(true)}
+              className="flex items-center gap-2 rounded-full border border-line bg-background px-3 py-1.5 text-xs text-muted hover:border-green hover:text-ink transition-all shadow-sm"
+              aria-label={lang === "en" ? "Search posts and products" : "সার্চ করুন"}
+            >
+              <Search className="h-3.5 w-3.5 text-green" />
+              <span className="hidden sm:inline-block">{lang === "bn" ? "খুঁজুন..." : "Search..."}</span>
+              <kbd className="hidden md:inline-block rounded border border-line bg-surface px-1.5 py-0.2 font-mono text-[10px]">
+                Ctrl K
+              </kbd>
+            </button>
+
             <div className="hidden sm:block">
               <LanguageToggle />
             </div>
@@ -135,6 +163,7 @@ export function Header() {
       </header>
 
       <MobileNav open={drawerOpen} onOpenChange={setDrawerOpen} />
+      <GlobalSearchDialog open={searchOpen} onOpenChange={setSearchOpen} />
     </>
   );
 }
