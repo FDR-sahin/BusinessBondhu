@@ -15,6 +15,7 @@ import { formatDateBn, toBanglaNumber } from "@/lib/utils";
 import type { PostDetail, ProfitPotential } from "@/types";
 import { ActionBar } from "./action-bar";
 import { PriceCards } from "./price-cards";
+import { ShopMapCard } from "./shop-map-card";
 import { RelatedPosts } from "./related-posts";
 import { ReportDialog } from "./report-dialog";
 
@@ -93,6 +94,9 @@ export function PostDetailView({ id, initialPost }: { id: string; initialPost?: 
             </div>
             <PriceCards post={post} />
           </section>
+
+          {/* Shop Location & Car Route Navigation Map */}
+          <ShopMapCard post={post} />
 
           <ActionBar post={post} />
 

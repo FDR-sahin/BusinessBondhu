@@ -12,17 +12,17 @@ export async function POST(req: Request) {
       return NextResponse.json({
         reply:
           lang === "en"
-            ? `I am your Business Bondhu AI Assistant. To get real-time Gemini AI insights for "${lastUserMsg}", please set GEMINI_API_KEY in your Vercel environment variables!`
-            : `আমি আপনার বিজনেস বন্ধু এআই সহকারী। "${lastUserMsg}" সম্পর্কিত গুগল জেমিনাই এআই পরামর্শ সক্রিয় করতে Vercel Environment Variables-এ GEMINI_API_KEY যোগ করুন!`,
+            ? `I am your Business Bondhu AI Assistant. To activate real-time AI responses for "${lastUserMsg}", please set GEMINI_API_KEY in your Vercel environment variables!`
+            : `আমি আপনার বিজনেস বন্ধু এআই সহকারী। "${lastUserMsg}" সম্পর্কিত লাইভ এআই পরামর্শ সক্রিয় করতে Vercel Environment Variables-এ GEMINI_API_KEY যোগ করুন!`,
       });
     }
 
     const systemPrompt =
       lang === "en"
-        ? "You are Business Bondhu AI Assistant, a friendly expert advisor for Bangladeshi entrepreneurs. Provide concise, realistic, and practical business advice regarding wholesale/retail prices, capital budgets, shop setup, and district-level market opportunities in Bangladesh. Use clear markdown formatting."
-        : "আপনি বিজনেস বন্ধু এআই সহকারী, বাংলাদেশের উদ্যোক্তাদের জন্য একজন বিশ্বস্ত উপদেষ্টা। বাংলাদেশের জেলাভিত্তিক ব্যবসার সুযোগ, পাইকারি-খুচরা দাম, পুঁজি ও লাভ-ক্ষতির বাস্তবসম্মত তথ্য সহজ ও সাবলীল বাংলায় দিন।";
+        ? "You are Business Bondhu AI Assistant, a friendly expert advisor for Bangladeshi entrepreneurs. Never state that you are Gemini or a Google AI model—always introduce yourself as Business Bondhu AI Assistant. Provide concise, realistic, and practical business advice regarding wholesale/retail prices, capital budgets, shop setup, and district-level market opportunities in Bangladesh. Use clear markdown formatting."
+        : "আপনি বিজনেস বন্ধু এআই সহকারী, বাংলাদেশের উদ্যোক্তাদের জন্য একজন বিশ্বস্ত উপদেষ্টা। নিজেকে সবসময় বিজনেস বন্ধু এআই সহকারী হিসেবে পরিচয় দিন। বাংলাদেশের জেলাভিত্তিক ব্যবসার সুযোগ, পাইকারি-খুচরা দাম, পুঁজি ও লাভ-ক্ষতির বাস্তবসম্মত তথ্য সহজ ও সাবলীল বাংলায় দিন।";
 
-    // Format chat history for Gemini REST API
+    // Format chat history for REST API
     const contents = [
       { role: "user", parts: [{ text: systemPrompt }] },
       ...messages.map((m: { role: string; content: string }) => ({
@@ -42,13 +42,13 @@ export async function POST(req: Request) {
 
     if (!response.ok) {
       const errText = await response.text();
-      console.error("Gemini API Error:", errText);
+      console.error("Chat API Error:", errText);
       return NextResponse.json(
         {
           reply:
             lang === "en"
-              ? "Sorry, Gemini AI service is currently unavailable. Please try again shortly."
-              : "দুঃখিত, জেমিনাই এআই সেবা এই মুহূর্তে সাড়া দিচ্ছে না। কিছুক্ষণ পর আবার চেষ্টা করুন।",
+              ? "Sorry, Business Bondhu Assistant is currently unavailable. Please try again shortly."
+              : "দুঃখিত, বিজনেস বন্ধু এআই সেবা এই মুহূর্তে সাড়া দিচ্ছে না। কিছুক্ষণ পর আবার চেষ্টা করুন।",
         },
         { status: 500 }
       );

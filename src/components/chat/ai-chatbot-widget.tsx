@@ -114,7 +114,7 @@ export function AiChatbotWidget() {
                 <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-green" />
               </span>
               <span className="font-mono text-xs font-semibold text-ink">
-                {lang === "en" ? "Gemini AI Online" : "জেমিনাই এআই লাইভ"}
+                {lang === "en" ? "AI Assistant Online" : "এআই সহকারী লাইভ"}
               </span>
             </motion.div>
           )}
@@ -168,7 +168,7 @@ export function AiChatbotWidget() {
                     </div>
                     <p className="flex items-center gap-1 text-[11px] text-muted">
                       <span className="h-1.5 w-1.5 rounded-full bg-green" />
-                      {lang === "en" ? "Gemini 1.5 Flash • Live" : "গুগল জেমিনাই ১.৫ • লাইভ"}
+                      {lang === "en" ? "Smart Assistant • Active" : "স্মার্ট সহকারী • অ্যাক্টিভ"}
                     </p>
                   </div>
                 </div>
@@ -250,7 +250,7 @@ export function AiChatbotWidget() {
                   value={input}
                   onChange={(e) => setInput(e.target.value)}
                   placeholder={
-                    lang === "en" ? "Ask Gemini AI..." : "এআই সহকারীকে প্রশ্ন করুন..."
+                    lang === "en" ? "Ask Business Bondhu Assistant..." : "বিজনেস বন্ধু সহকারীকে প্রশ্ন করুন..."
                   }
                   className="h-10 text-sm"
                   disabled={loading}
