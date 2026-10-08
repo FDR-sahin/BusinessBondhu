@@ -82,15 +82,7 @@ export function PostDetailView({ id, initialPost }: { id: string; initialPost?: 
             </div>
           </header>
 
-          <div className="relative aspect-video overflow-hidden rounded-2xl border border-border bg-muted">
-            {post.image ? (
-              <Image src={post.image} alt={post.title} fill priority sizes="(min-width: 1024px) 896px, 100vw" className="object-cover" />
-            ) : (
-              <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-primary/10 to-secondary/15 text-primary/60 dark:text-foreground/50">
-                {CategoryIcon && <CategoryIcon className="h-16 w-16" aria-hidden />}
-              </div>
-            )}
-          </div>
+
 
           <section aria-labelledby="price-title" className="space-y-4">
             <div className="flex flex-wrap items-center justify-between gap-3">

@@ -74,10 +74,15 @@
     font-family: var(--font-noto-serif-bn), var(--font-fraunces), serif;
   }
 
-  /* 2px visible focus ring */
-  :focus-visible {
-    outline: none;
-    box-shadow: 0 0 0 2px rgb(var(--bg)), 0 0 0 4px rgb(var(--green));
+  /* Focus ring style per guidelines (2px visible focus ring via :focus-visible ONLY) */
+  *:focus {
+    outline: none !important;
+    box-shadow: none !important;
+  }
+
+  *:focus-visible {
+    outline: 2px solid rgb(var(--green)) !important;
+    outline-offset: 2px !important;
   }
 
   ::selection {
@@ -98,7 +103,7 @@
   }
 }
 
-/* Ledger paper texture (< 6% opacity horizontal rules) */
+/* Flat ledger paper texture (< 6% opacity horizontal rules, NO gradients/blobs) */
 .ledger-paper {
   background-image: repeating-linear-gradient(
     0deg,
