@@ -1,11 +1,13 @@
 "use client";
 
 import { motion } from "framer-motion";
+import Image from "next/image";
 
 /**
- * Animated 3D Bangladesh Map Watermark Component
- * Renders an elegant 3D isometric perspective outline of Bangladesh
- * with division node indicators and subtle floating animation in the background.
+ * Senior UI/UX 3D Bangladesh Map Watermark Component
+ * Uses the exact official Bangladesh map with district outlines & red national circle,
+ * rendered in 3D isometric perspective with floating depth layers, radial lighting,
+ * and pulsing division radar nodes.
  */
 export function BgMapWatermark() {
   return (
@@ -13,115 +15,123 @@ export function BgMapWatermark() {
       aria-hidden="true"
       className="pointer-events-none fixed inset-0 z-0 overflow-hidden select-none"
     >
-      <div className="absolute inset-0 flex items-center justify-center opacity-10 dark:opacity-[0.07] transition-opacity duration-500">
+      <div className="absolute inset-0 flex items-center justify-center transition-opacity duration-700">
         <motion.div
-          initial={{ opacity: 0, scale: 0.95 }}
+          initial={{ opacity: 0, scale: 0.92 }}
           animate={{
             opacity: 1,
             scale: 1,
-            y: [0, -12, 0],
-            rotateX: [12, 16, 12],
-            rotateY: [-8, -4, -8],
+            y: [0, -14, 0],
+            rotateX: [18, 22, 18],
+            rotateY: [-10, -6, -10],
+            rotateZ: [1, -1, 1],
           }}
           transition={{
-            opacity: { duration: 1 },
-            scale: { duration: 1 },
-            y: { repeat: Infinity, duration: 8, ease: "easeInOut" },
-            rotateX: { repeat: Infinity, duration: 10, ease: "easeInOut" },
-            rotateY: { repeat: Infinity, duration: 12, ease: "easeInOut" },
+            opacity: { duration: 1.2 },
+            scale: { duration: 1.2 },
+            y: { repeat: Infinity, duration: 9, ease: "easeInOut" },
+            rotateX: { repeat: Infinity, duration: 11, ease: "easeInOut" },
+            rotateY: { repeat: Infinity, duration: 13, ease: "easeInOut" },
+            rotateZ: { repeat: Infinity, duration: 15, ease: "easeInOut" },
           }}
-          className="relative h-[650px] w-[600px] transform-gpu preserve-3d"
+          className="relative h-[680px] w-[580px] transform-gpu preserve-3d"
           style={{
-            perspective: "1200px",
+            perspective: "1400px",
             transformStyle: "preserve-3d",
           }}
         >
-          {/* 3D Depth Shadow / Floor Mesh */}
-          <div className="absolute inset-0 -bottom-10 rounded-full bg-gradient-radial from-green/20 via-primary-soft/10 to-transparent blur-3xl" />
+          {/* Layer 1: Ambient Emerald Radial Glow Base */}
+          <div className="absolute inset-0 -bottom-16 -top-10 rounded-full bg-gradient-radial from-green/20 via-primary-soft/15 to-transparent blur-3xl opacity-70" />
 
-          {/* SVG Map Silhouette of Bangladesh with Division Grid */}
-          <svg
-            viewBox="0 0 600 700"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-            className="h-full w-full drop-shadow-[0_20px_35px_rgba(11,107,69,0.15)]"
+          {/* Layer 2: 3D Depth Shadow / Extrusion Offset */}
+          <div
+            className="absolute inset-0 opacity-15 dark:opacity-10 filter blur-[2px] transition-transform duration-300"
+            style={{ transform: "translateZ(-30px) translateY(24px) scale(0.98)" }}
           >
-            {/* Outer Boundary Path of Bangladesh */}
-            <motion.path
-              d="M310 40 
-                 C330 45, 360 60, 375 80
-                 C390 100, 420 110, 440 135
-                 C460 160, 430 190, 425 215
-                 C420 240, 455 265, 470 295
-                 C485 325, 470 355, 445 385
-                 C420 415, 410 450, 400 480
-                 C390 510, 365 545, 345 580
-                 C325 615, 310 650, 295 670
-                 C280 650, 275 610, 260 570
-                 C245 530, 220 500, 195 475
-                 C170 450, 140 435, 120 405
-                 C100 375, 90 340, 95 305
-                 C100 270, 125 245, 140 215
-                 C155 185, 180 165, 205 140
-                 C230 115, 265 80, 285 55
-                 Z"
-              stroke="currentColor"
-              strokeWidth="2.5"
-              strokeDasharray="6 4"
-              className="text-green/80"
-              initial={{ pathLength: 0 }}
-              animate={{ pathLength: 1 }}
-              transition={{ duration: 3, ease: "easeInOut" }}
+            <Image
+              src="/images/bd-map.png"
+              alt=""
+              fill
+              className="object-contain brightness-0 contrast-200"
+              priority
             />
+          </div>
 
-            {/* Division Internal Network Lines */}
-            <path
-              d="M285 55 L310 220 L425 215 M310 220 L300 350 L445 385 M300 350 L260 570 M300 350 L195 475 M310 220 L140 215 M300 350 L345 580"
-              stroke="currentColor"
-              strokeWidth="1.2"
-              strokeDasharray="3 3"
-              className="text-green/40"
+          {/* Layer 3: Official Bangladesh Map Image (Primary 3D Layer) */}
+          <div
+            className="relative h-full w-full opacity-20 dark:opacity-15 mix-blend-multiply dark:mix-blend-screen transition-all duration-500 drop-shadow-[0_25px_40px_rgba(11,107,69,0.25)]"
+            style={{ transform: "translateZ(10px)" }}
+          >
+            <Image
+              src="/images/bd-map.png"
+              alt="Official Bangladesh Map"
+              fill
+              className="object-contain"
+              priority
             />
+          </div>
 
-            {/* Division Hub Nodes with Pulsing Rings */}
-            {[
-              { label: "Dhaka", cx: 300, cy: 330 },
-              { label: "Chittagong", cx: 430, cy: 450 },
-              { label: "Sylhet", cx: 410, cy: 190 },
-              { label: "Rajshahi", cx: 180, cy: 230 },
-              { label: "Khulna", cx: 220, cy: 460 },
-              { label: "Barisal", cx: 290, cy: 490 },
-              { label: "Rangpur", cx: 220, cy: 120 },
-              { label: "Mymensingh", cx: 310, cy: 210 },
-            ].map((node, idx) => (
-              <g key={node.label}>
-                {/* Glowing Outer Ring */}
-                <circle
-                  cx={node.cx}
-                  cy={node.cy}
-                  r="12"
-                  className="fill-green/10 stroke-green/30 animate-ping origin-center"
-                  style={{ animationDuration: `${3 + idx * 0.5}s` }}
-                />
-                {/* Hub Point */}
-                <circle
-                  cx={node.cx}
-                  cy={node.cy}
-                  r="4"
-                  className="fill-green stroke-surface"
-                  strokeWidth="1.5"
-                />
-                {/* Node Label watermark */}
-                <text
-                  x={node.cx + 8}
-                  y={node.cy + 4}
-                  className="fill-ink-secondary text-[10px] font-mono tracking-widest uppercase opacity-60 font-semibold"
-                >
-                  {node.label}
-                </text>
-              </g>
-            ))}
-          </svg>
+          {/* Layer 4: Floating 3D Division Radar Nodes Overlay */}
+          <div
+            className="absolute inset-0 h-full w-full"
+            style={{ transform: "translateZ(25px)" }}
+          >
+            <svg
+              viewBox="0 0 580 680"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-full w-full"
+            >
+              {/* 8 Division Radar Hub Centers */}
+              {[
+                { label: "Dhaka", cx: 290, cy: 335 },
+                { label: "Chittagong", cx: 445, cy: 450 },
+                { label: "Sylhet", cx: 415, cy: 195 },
+                { label: "Rajshahi", cx: 165, cy: 235 },
+                { label: "Khulna", cx: 205, cy: 465 },
+                { label: "Barisal", cx: 285, cy: 495 },
+                { label: "Rangpur", cx: 200, cy: 115 },
+                { label: "Mymensingh", cx: 305, cy: 215 },
+              ].map((node, idx) => (
+                <g key={node.label}>
+                  {/* Outer Pulsing Ping Ring */}
+                  <circle
+                    cx={node.cx}
+                    cy={node.cy}
+                    r="14"
+                    className="fill-green/15 stroke-green/40 animate-ping origin-center"
+                    style={{ animationDuration: `${3.2 + idx * 0.4}s` }}
+                  />
+
+                  {/* Inner Solid Hub Ring */}
+                  <circle
+                    cx={node.cx}
+                    cy={node.cy}
+                    r="6"
+                    className="fill-green/20 stroke-green/80"
+                    strokeWidth="1.5"
+                  />
+
+                  {/* Center Core Dot */}
+                  <circle
+                    cx={node.cx}
+                    cy={node.cy}
+                    r="2.5"
+                    className="fill-green"
+                  />
+
+                  {/* Division Tag Label */}
+                  <text
+                    x={node.cx + 9}
+                    y={node.cy + 4}
+                    className="fill-ink-secondary text-[10px] font-mono font-bold tracking-widest uppercase opacity-70"
+                  >
+                    {node.label}
+                  </text>
+                </g>
+              ))}
+            </svg>
+          </div>
         </motion.div>
       </div>
     </div>
