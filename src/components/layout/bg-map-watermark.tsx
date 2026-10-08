@@ -5,8 +5,7 @@ import Image from "next/image";
 
 /**
  * Senior UI/UX 3D Bangladesh Map Watermark Component
- * Soft, full-page coverage watermark with subtle blur, emerald theme integration,
- * no dark shadows, and 3D floating division radar nodes.
+ * Zoomed-in, soft-focused full-page watermark with gentle division radar indicators.
  */
 export function BgMapWatermark() {
   return (
@@ -15,48 +14,48 @@ export function BgMapWatermark() {
       className="pointer-events-none fixed inset-0 z-0 overflow-hidden select-none flex items-center justify-center"
     >
       <motion.div
-        initial={{ opacity: 0, scale: 0.95 }}
+        initial={{ opacity: 0, scale: 1.2 }}
         animate={{
           opacity: 1,
-          scale: 1,
-          y: [0, -16, 0],
-          rotateX: [14, 18, 14],
-          rotateY: [-6, -2, -6],
+          scale: [1.25, 1.3, 1.25],
+          y: [0, -18, 0],
+          rotateX: [12, 16, 12],
+          rotateY: [-5, -1, -5],
         }}
         transition={{
           opacity: { duration: 1.2 },
-          scale: { duration: 1.2 },
+          scale: { repeat: Infinity, duration: 14, ease: "easeInOut" },
           y: { repeat: Infinity, duration: 10, ease: "easeInOut" },
           rotateX: { repeat: Infinity, duration: 12, ease: "easeInOut" },
-          rotateY: { repeat: Infinity, duration: 14, ease: "easeInOut" },
+          rotateY: { repeat: Infinity, duration: 15, ease: "easeInOut" },
         }}
-        className="relative h-[85vh] w-full max-w-[1250px] transform-gpu preserve-3d px-4"
+        className="relative h-[105vh] w-full max-w-[1600px] transform-gpu preserve-3d px-2"
         style={{
           perspective: "1400px",
           transformStyle: "preserve-3d",
         }}
       >
-        {/* Soft Emerald Glow Aura (No dark shadow) */}
-        <div className="absolute inset-0 -bottom-20 rounded-full bg-gradient-radial from-green/15 via-primary-soft/10 to-transparent blur-3xl opacity-60" />
+        {/* Ambient Soft Emerald Glow */}
+        <div className="absolute inset-0 -bottom-24 rounded-full bg-gradient-radial from-green/10 via-primary-soft/5 to-transparent blur-3xl opacity-50" />
 
-        {/* Full Page Official Bangladesh Map Image (Soft Blurry Watermark) */}
+        {/* Zoomed-In Official Bangladesh Map Image (Soft Blurry Watermark) */}
         <div
-          className="relative h-full w-full opacity-[0.12] dark:opacity-[0.08] filter blur-[3px] transition-all duration-500"
+          className="relative h-full w-full opacity-[0.11] dark:opacity-[0.07] filter blur-[4px] transition-all duration-500"
           style={{ transform: "translateZ(0px)" }}
         >
           <Image
             src="/images/bd-map.png"
             alt="Official Bangladesh Map Watermark"
             fill
-            className="object-contain"
+            className="object-contain scale-110"
             priority
           />
         </div>
 
-        {/* Floating 3D Division Radar Nodes Overlay */}
+        {/* Soft, Blurry 3D Division Radar Nodes Overlay */}
         <div
-          className="absolute inset-0 h-full w-full"
-          style={{ transform: "translateZ(20px)" }}
+          className="absolute inset-0 h-full w-full filter blur-[1.5px] opacity-45 dark:opacity-35"
+          style={{ transform: "translateZ(15px)" }}
         >
           <svg
             viewBox="0 0 1000 800"
@@ -67,8 +66,8 @@ export function BgMapWatermark() {
             {/* 8 Division Radar Hub Centers */}
             {[
               { label: "Dhaka", cx: 500, cy: 390 },
-              { label: "Chittagong", cx: 770, cy: 530 },
-              { label: "Sylhet", cx: 710, cy: 220 },
+              { label: "Chittagong", cx: 760, cy: 530 },
+              { label: "Sylhet", cx: 700, cy: 220 },
               { label: "Rajshahi", cx: 280, cy: 270 },
               { label: "Khulna", cx: 350, cy: 540 },
               { label: "Barisal", cx: 490, cy: 580 },
@@ -76,22 +75,22 @@ export function BgMapWatermark() {
               { label: "Mymensingh", cx: 520, cy: 250 },
             ].map((node, idx) => (
               <g key={node.label}>
-                {/* Outer Pulsing Ping Ring */}
+                {/* Outer Soft Ping Ring */}
                 <circle
                   cx={node.cx}
                   cy={node.cy}
-                  r="16"
-                  className="fill-green/10 stroke-green/30 animate-ping origin-center"
-                  style={{ animationDuration: `${3.2 + idx * 0.4}s` }}
+                  r="18"
+                  className="fill-green/5 stroke-green/20 animate-ping origin-center"
+                  style={{ animationDuration: `${3.5 + idx * 0.4}s` }}
                 />
 
-                {/* Inner Solid Hub Ring */}
+                {/* Inner Soft Ring */}
                 <circle
                   cx={node.cx}
                   cy={node.cy}
                   r="7"
-                  className="fill-green/20 stroke-green/70"
-                  strokeWidth="1.5"
+                  className="fill-green/15 stroke-green/40"
+                  strokeWidth="1"
                 />
 
                 {/* Center Core Dot */}
@@ -99,14 +98,14 @@ export function BgMapWatermark() {
                   cx={node.cx}
                   cy={node.cy}
                   r="3"
-                  className="fill-green"
+                  className="fill-green/60"
                 />
 
-                {/* Division Tag Label */}
+                {/* Soft Division Label */}
                 <text
                   x={node.cx + 10}
                   y={node.cy + 4}
-                  className="fill-ink-secondary text-[11px] font-mono font-bold tracking-widest uppercase opacity-65"
+                  className="fill-ink-secondary text-[11px] font-mono font-medium tracking-widest uppercase opacity-50"
                 >
                   {node.label}
                 </text>
