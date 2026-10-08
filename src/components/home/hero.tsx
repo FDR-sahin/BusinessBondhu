@@ -76,7 +76,7 @@ export function Hero() {
             </div>
 
             {/* Headline with PenMarks */}
-            <h1 className="mt-3 font-display text-[clamp(34px,4.6vw,60px)] font-bold leading-[1.1] :lang(bn):leading-[1.25] text-ink tracking-tight">
+            <h1 className="mt-3 font-display text-[clamp(34px,4.6vw,60px)] font-bold leading-[1.18] :lang(bn):leading-[1.3] text-ink tracking-tight">
               {lang === "bn" ? (
                 <>
                   <div>

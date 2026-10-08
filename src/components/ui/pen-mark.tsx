@@ -36,9 +36,9 @@ export function PenMark({ children, variant = "underline" }: Props) {
             : {
                 position: "absolute",
                 left: 0,
-                bottom: "-0.28em",
+                bottom: "-0.05em",
                 width: "100%",
-                height: "0.35em",
+                height: "0.2em",
                 zIndex: 0,
                 pointerEvents: "none",
                 overflow: "visible",

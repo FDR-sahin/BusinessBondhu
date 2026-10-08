@@ -72,7 +72,7 @@ export function Header() {
                   aria-current={active ? "page" : undefined}
                   className={cn(
                     "relative flex h-16 items-center px-3.5 text-sm font-medium transition-colors",
-                    active ? "text-ink font-semibold" : "text-ink/60 hover:text-ink"
+                    active ? "text-ink font-semibold" : "text-muted hover:text-ink"
                   )}
                 >
                   {t(l.key)}
