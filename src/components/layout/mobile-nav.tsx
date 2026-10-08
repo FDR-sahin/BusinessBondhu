@@ -45,7 +45,7 @@ export function MobileNav({ open, onOpenChange }: { open: boolean; onOpenChange:
             key={l.href}
             href={l.href}
             aria-current={isActive(l.href) ? "page" : undefined}
-            className={cn("flex h-12 items-center rounded-lg px-3 text-base font-medium transition-colors", isActive(l.href) ? "bg-primary-soft text-primary-soft-foreground" : "text-ink-secondary hover:bg-muted hover:text-foreground")}
+            className={cn("flex h-12 items-center rounded-lg px-3 text-base font-medium transition-colors", isActive(l.href) ? "bg-primary-soft text-primary-soft-foreground" : "text-ink-secondary hover:bg-primary-soft hover:text-primary-soft-foreground")}
           >
             {t(l.key)}
           </Link>
@@ -61,7 +61,7 @@ export function MobileNav({ open, onOpenChange }: { open: boolean; onOpenChange:
               </div>
             </div>
             {accountLinks.map(({ href, label, icon: Icon }) => (
-              <Link key={href} href={href} className="flex h-11 items-center gap-3 rounded-lg px-3 text-base text-ink-secondary transition-colors hover:bg-muted hover:text-foreground">
+              <Link key={href} href={href} className="flex h-11 items-center gap-3 rounded-lg px-3 text-base text-ink-secondary transition-colors hover:bg-primary-soft hover:text-primary-soft-foreground">
                 <Icon className="h-4 w-4" />{label}
               </Link>
             ))}
