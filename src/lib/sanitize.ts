@@ -26,4 +26,4 @@ const OPTIONS: sanitizeHtml.IOptions = {
   },
 };
 
-export const sanitizeContent = (html: string) => sanitizeHtml(html, OPTIONS);
+export const sanitizeContent = (html?: string) => sanitizeHtml(html || "", OPTIONS);

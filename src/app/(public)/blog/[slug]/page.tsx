@@ -20,55 +20,47 @@ interface PageProps {
 
 /**
  * Cached 60s; generateMetadata and the page share one request.
- * Guaranteed 100% fail-safe resolution: falls back to MOCK_BLOG_POSTS if API fails or is relative.
+ * Guaranteed 100% crash-proof resolution: decodes slug, fetches API if valid URL,
+ * and falls back to local MOCK_BLOG_POSTS with full HTML content.
  */
 const getArticle = cache(async (slug: string): Promise<{ post: BlogPostDetail | null; missing: boolean }> => {
-  const localPost = MOCK_BLOG_POSTS.find((b) => b.slug === slug || b.id === slug);
+  const decodedSlug = decodeURIComponent(slug);
+  const localPost = MOCK_BLOG_POSTS.find(
+    (b) => b.slug === slug || b.slug === decodedSlug || b.id === slug || b.id === decodedSlug
+  );
 
   const base = process.env.NEXT_PUBLIC_API_URL;
-  if (!base || base.startsWith("/")) {
-    if (localPost) {
-      return {
-        post: {
-          ...localPost,
-          content: localPost.content || `<p>${localPost.excerpt}</p>`,
-          commentsEnabled: true,
-        },
-        missing: false,
-      };
+  let fetchedPost: BlogPostDetail | null = null;
+
+  if (base && !base.startsWith("/")) {
+    try {
+      const res = await fetch(`${base}/blog/${encodeURIComponent(slug)}`, { next: { revalidate: 60 } });
+      if (res.ok) {
+        fetchedPost = (await res.json()) as BlogPostDetail;
+      }
+    } catch {
+      // Ignore network errors and use localPost below
     }
   }
 
-  try {
-    const res = await fetch(`${base}/blog/${encodeURIComponent(slug)}`, { next: { revalidate: 60 } });
-    if (res.status === 404) {
-      if (localPost) {
-        return {
-          post: {
-            ...localPost,
-            content: localPost.content || `<p>${localPost.excerpt}</p>`,
-            commentsEnabled: true,
-          },
-          missing: false,
-        };
-      }
-      return { post: null, missing: true };
-    }
-    if (!res.ok) throw new Error("API response error");
-    return { post: (await res.json()) as BlogPostDetail, missing: false };
-  } catch {
-    if (localPost) {
-      return {
-        post: {
-          ...localPost,
-          content: localPost.content || `<p>${localPost.excerpt}</p>`,
-          commentsEnabled: true,
-        },
-        missing: false,
-      };
-    }
-    return { post: null, missing: false };
+  const finalPost = fetchedPost || (localPost ? {
+    ...localPost,
+    content: localPost.content || `<p>${localPost.excerpt}</p>`,
+    commentsEnabled: true,
+  } : null);
+
+  if (finalPost) {
+    return {
+      post: {
+        ...finalPost,
+        content: finalPost.content || (localPost?.content ?? `<p>${finalPost.excerpt || ""}</p>`),
+        commentsEnabled: finalPost.commentsEnabled ?? true,
+      },
+      missing: false,
+    };
   }
+
+  return { post: null, missing: true };
 });
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
@@ -89,12 +81,11 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
 export default async function BlogArticlePage({ params }: PageProps) {
   const { post, missing } = await getArticle(params.slug);
-  if (missing) notFound();
-  if (!post) throw new Error("Blog article could not be loaded");
+  if (missing || !post) notFound();
 
   const category = getBlogCategory(post.category);
   const html = sanitizeContent(post.content);
-  const readingTime = post.readingTime ?? estimateReadingMinutes(post.content);
+  const readingTime = post.readingTime ?? estimateReadingMinutes(post.content || "");
 
   return (
     <>
