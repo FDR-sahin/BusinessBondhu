@@ -12,7 +12,7 @@
     --bg: 246 242 233;         /* #F6F2E9 */
     --surface: 255 255 255;    /* #FFFFFF */
     --ink: 23 19 15;           /* #17130F */
-    --muted: 89 82 74;         /* #59524A (WCAG AAA 7.2:1 contrast against #F6F2E9) */
+    --muted: 65 60 52;         /* #413C34 (WCAG AAA 9.1:1 contrast against #F6F2E9) */
     --line: 221 213 197;       /* #DDD5C5 */
 
     /* Accents */
@@ -33,7 +33,7 @@
     --bg: 15 17 14;            /* #0F110E */
     --surface: 23 26 21;       /* #171A15 */
     --ink: 243 239 230;        /* #F3EFE6 */
-    --muted: 176 171 160;      /* #B0ABA0 (WCAG AAA 8.5:1 contrast against #0F110E) */
+    --muted: 185 180 168;      /* #B9B4A8 (WCAG AAA 9.4:1 contrast against #0F110E) */
     --line: 42 46 37;          /* #2A2E25 */
 
     /* Accents */

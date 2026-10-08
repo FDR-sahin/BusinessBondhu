@@ -90,10 +90,12 @@ const districtLabelMap = new Map(DIVISIONS.flatMap((x) => x.districts.map((y) =>
 export function getDistricts(divisionValue: string): District[] {
   return divisionMap.get(divisionValue)?.districts ?? [];
 }
-export function getDivisionLabel(value: string): string {
+export function getDivisionLabel(value: string, lang: "bn" | "en" = "bn"): string {
+  if (lang === "en") return value;
   return divisionMap.get(value)?.label ?? value;
 }
-export function getDistrictLabel(value: string): string {
+export function getDistrictLabel(value: string, lang: "bn" | "en" = "bn"): string {
+  if (lang === "en") return value;
   return districtLabelMap.get(value) ?? value;
 }
 
@@ -106,6 +108,9 @@ export const DHAKA_AREAS = [
 ] as const;
 
 /** "ঢাকা → ঢাকা → মিরপুর" */
-export function formatLocation(p: { division: string; district: string; area?: string }): string {
-  return [getDivisionLabel(p.division), getDistrictLabel(p.district), p.area].filter(Boolean).join(" → ");
+export function formatLocation(
+  p: { division: string; district: string; area?: string },
+  lang: "bn" | "en" = "bn"
+): string {
+  return [getDivisionLabel(p.division, lang), getDistrictLabel(p.district, lang), p.area].filter(Boolean).join(" → ");
 }

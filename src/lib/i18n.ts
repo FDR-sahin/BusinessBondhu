@@ -105,6 +105,28 @@ const bn = {
   resetFilters: "ফিল্টার রিসেট করুন",
   applyResults: "ফলাফল দেখুন",
   sortBy: "সাজানোর ধরন",
+
+  // Homepage section headers i18n
+  trendingTitle: "ট্রেন্ডিং ব্যবসার আইডিয়া",
+  trendingDesc: "এখন সবচেয়ে বেশি আলোচিত ও পছন্দের পোস্টগুলো",
+  categoriesTitle: "ক্যাটাগরি অনুযায়ী খুঁজুন",
+  categoriesDesc: "আপনার আগ্রহের খাত বেছে নিন",
+  allCategories: "সব ক্যাটাগরি",
+  activeDistrictsTitle: "সবচেয়ে সক্রিয় জেলা",
+  activeDistrictsDesc: "যেসব জেলায় সবচেয়ে বেশি ব্যবসার তথ্য শেয়ার হয়েছে",
+  allDistricts: "সব জেলা",
+  aiAdvisorBadge: "এআই ব্যবসা পরামর্শক",
+  aiAdvisorCtaTitle: "১০ হাজার টাকায় কী ব্যবসা করবেন?",
+  aiAdvisorCtaDesc: "আপনার বাজেট আর এলাকা জানান। আমাদের এআই পরামর্শক বলে দেবে কোন ব্যবসায় কত খরচ, সম্ভাব্য লাভ কত এবং ঝুঁকি কতটা।",
+  getAdvice: "পরামর্শ নিন",
+  recentPostsTitle: "সাম্প্রতিক পোস্ট",
+  recentPostsDesc: "কমিউনিটির সদস্যরা সম্প্রতি যা শেয়ার করেছেন",
+  viewMore: "আরও দেখুন",
+  successStoriesTitle: "সদস্যদের সাফল্যের গল্প",
+  successStoriesDesc: "যারা কমিউনিটির তথ্য কাজে লাগিয়ে এগিয়ে যাচ্ছেন",
+  noPostsYet: "এখনো কোনো পোস্ট নেই",
+  shareFirstIdea: "প্রথম ব্যবসার আইডিয়াটি আপনিই শেয়ার করুন।",
+  loading: "লোড হচ্ছে...",
 } as const;
 
 const en: Record<keyof typeof bn, string> = {
@@ -207,6 +229,28 @@ const en: Record<keyof typeof bn, string> = {
   resetFilters: "Reset Filters",
   applyResults: "View Results",
   sortBy: "Sort by",
+
+  // Homepage section headers i18n
+  trendingTitle: "Trending Business Ideas",
+  trendingDesc: "Most discussed and popular ideas right now",
+  categoriesTitle: "Search by Category",
+  categoriesDesc: "Explore business ideas by sector",
+  allCategories: "All Categories",
+  activeDistrictsTitle: "Most Active Districts",
+  activeDistrictsDesc: "Districts with the highest number of shared entries",
+  allDistricts: "All Districts",
+  aiAdvisorBadge: "AI Business Advisor",
+  aiAdvisorCtaTitle: "What business to start with 10k BDT?",
+  aiAdvisorCtaDesc: "Tell us your budget and area. Our AI advisor calculates startup costs, estimated profits, and risks.",
+  getAdvice: "Get Advice",
+  recentPostsTitle: "Recent Posts",
+  recentPostsDesc: "Latest business ideas shared by community members",
+  viewMore: "View More",
+  successStoriesTitle: "Member Success Stories",
+  successStoriesDesc: "Entrepreneurs growing with community insights",
+  noPostsYet: "No posts yet",
+  shareFirstIdea: "Be the first to share a business idea.",
+  loading: "Loading...",
 };
 
 const dictionaries = { bn, en } as const;
