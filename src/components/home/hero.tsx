@@ -6,7 +6,6 @@ import { ArrowRight, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
 import { Skeleton } from "@/components/ui/skeleton";
-import { PenMark } from "@/components/ui/pen-mark";
 import { getDistrictLabel } from "@/lib/bd-data";
 import { usePosts, useTopDistricts } from "@/hooks/use-posts";
 import { useT } from "@/lib/i18n";
@@ -75,26 +74,18 @@ export function Hero() {
               )}
             </div>
 
-            {/* Rule B: Compact 3-line Headline with PenMarks */}
+            {/* Headline */}
             <h1 className="mt-3 font-display text-[clamp(34px,4.6vw,60px)] font-bold leading-[1.1] :lang(bn):leading-[1.25] text-ink tracking-tight">
               {lang === "bn" ? (
                 <>
-                  <div>
-                    হাতে <PenMark variant="underline">সামান্য পুঁজি</PenMark>।
-                  </div>
-                  <div>
-                    মাথায় <PenMark variant="circle">বড় আইডিয়া</PenMark>।
-                  </div>
+                  <div>হাতে সামান্য পুঁজি।</div>
+                  <div>মাথায় বড় আইডিয়া।</div>
                   <div>খুঁজে নিন নিজের ব্যবসা।</div>
                 </>
               ) : (
                 <>
-                  <div>
-                    Small <PenMark variant="underline">capital</PenMark>.
-                  </div>
-                  <div>
-                    Big <PenMark variant="circle">idea</PenMark>.
-                  </div>
+                  <div>Small capital.</div>
+                  <div>Big idea.</div>
                   <div>Find your business.</div>
                 </>
               )}
