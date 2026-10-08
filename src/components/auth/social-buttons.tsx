@@ -3,6 +3,7 @@
 import { Facebook } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { POST_LOGIN_KEY } from "@/lib/auth";
+import { useT } from "@/lib/i18n";
 
 function GoogleIcon() {
   return (
@@ -15,17 +16,14 @@ function GoogleIcon() {
   );
 }
 
-/**
- * Redirect-based OAuth: the browser goes to {API}/auth/google (or /facebook); after the provider
- * approves, the API redirects back to /auth/callback?code=… (see oauth-callback.tsx).
- * We remember where the user wanted to go in sessionStorage, because the round trip loses the URL.
- */
 export function SocialButtons({ redirectTo }: { redirectTo: string }) {
+  const t = useT();
+
   function start(provider: "google" | "facebook") {
     try {
       sessionStorage.setItem(POST_LOGIN_KEY, redirectTo);
     } catch {
-      /* storage blocked: user lands on /dashboard instead */
+      /* storage blocked */
     }
     window.location.assign(`${process.env.NEXT_PUBLIC_API_URL}/auth/${provider}`);
   }
@@ -40,8 +38,8 @@ export function SocialButtons({ redirectTo }: { redirectTo: string }) {
           <Facebook className="fill-[#1877F2] text-[#1877F2]" aria-hidden /> Facebook
         </Button>
       </div>
-      <div className="my-6 flex items-center gap-3 text-sm text-ink-secondary" role="separator" aria-label="অথবা">
-        <span className="h-px flex-1 bg-border" />অথবা<span className="h-px flex-1 bg-border" />
+      <div className="my-6 flex items-center gap-3 text-sm text-ink-secondary" role="separator" aria-label={t("or")}>
+        <span className="h-px flex-1 bg-border" />{t("or")}<span className="h-px flex-1 bg-border" />
       </div>
     </>
   );

@@ -13,8 +13,10 @@ import { Label } from "@/components/ui/label";
 import { useAuthRedirect } from "@/hooks/use-auth-redirect";
 import { api } from "@/lib/api";
 import { authErrorMessage } from "@/lib/auth";
+import { useT } from "@/lib/i18n";
 import { loginSchema, type LoginValues } from "@/lib/validation";
 import { useAuthStore } from "@/store/auth-store";
+import { useLangStore } from "@/store/lang-store";
 import type { AuthResponse } from "@/types";
 import { AuthCard } from "./auth-card";
 import { FormAlert } from "./form-alert";
@@ -24,6 +26,8 @@ import { SocialButtons } from "./social-buttons";
 export function LoginForm() {
   const { target, go, withRedirect } = useAuthRedirect();
   const login = useAuthStore((s) => s.login);
+  const t = useT();
+  const lang = useLangStore((s) => s.lang);
 
   const { register, control, handleSubmit, formState: { errors } } = useForm<LoginValues>({
     resolver: zodResolver(loginSchema),
@@ -34,27 +38,27 @@ export function LoginForm() {
     mutationFn: async (v: LoginValues) => (await api.post<AuthResponse>("/auth/login", v)).data,
     onSuccess: (data, v) => {
       login({ ...data, remember: v.remember });
-      toast.success(`স্বাগতম, ${data.user.name}`);
+      toast.success(lang === "bn" ? `স্বাগতম, ${data.user.name}` : `Welcome back, ${data.user.name}`);
       go();
     },
   });
 
   return (
     <AuthCard
-      title="আপনার অ্যাকাউন্টে লগইন করুন"
-      description="আবার স্বাগতম! চালিয়ে যেতে লগইন করুন।"
-      footer={<>অ্যাকাউন্ট নেই? <Link href={withRedirect("/signup")} className="font-medium text-link hover:underline">সাইন আপ করুন</Link></>}
+      title={t("loginTitle")}
+      description={t("loginDesc")}
+      footer={<>{t("loginNoAccount")} <Link href={withRedirect("/signup")} className="font-medium text-link hover:underline">{t("signup")}</Link></>}
     >
       <SocialButtons redirectTo={target} />
 
       <form onSubmit={handleSubmit((v) => mutate(v))} noValidate className="space-y-4">
-        <FormAlert message={error ? authErrorMessage(error, "login") : null} />
+        <FormAlert message={error ? authErrorMessage(error, "login", lang) : null} />
 
-        <FormField label="ইমেইল" htmlFor="login-email" required error={errors.email?.message}>
+        <FormField label={t("email")} htmlFor="login-email" required error={errors.email?.message}>
           <Input id="login-email" type="email" autoComplete="email" inputMode="email" invalid={!!errors.email} {...register("email")} />
         </FormField>
 
-        <FormField label="পাসওয়ার্ড" htmlFor="login-password" required error={errors.password?.message}>
+        <FormField label={t("password")} htmlFor="login-password" required error={errors.password?.message}>
           <PasswordInput id="login-password" autoComplete="current-password" invalid={!!errors.password} {...register("password")} />
         </FormField>
 
@@ -62,13 +66,13 @@ export function LoginForm() {
           <Controller control={control} name="remember" render={({ field }) => (
             <div className="flex items-center gap-2">
               <Checkbox id="login-remember" checked={field.value} onCheckedChange={(c) => field.onChange(c === true)} />
-              <Label htmlFor="login-remember" className="cursor-pointer font-normal">আমাকে মনে রাখুন</Label>
+              <Label htmlFor="login-remember" className="cursor-pointer font-normal text-sm">{t("rememberMe")}</Label>
             </div>
           )} />
-          <Link href="/forgot-password" className="text-sm font-medium text-link hover:underline">পাসওয়ার্ড ভুলে গেছেন?</Link>
+          <Link href="/forgot-password" className="text-sm font-medium text-link hover:underline">{t("forgotPassword")}</Link>
         </div>
 
-        <Button type="submit" size="lg" className="w-full" loading={isPending}>লগইন</Button>
+        <Button type="submit" size="lg" className="w-full bg-green text-white hover:bg-green/90" loading={isPending}>{t("login")}</Button>
       </form>
     </AuthCard>
   );

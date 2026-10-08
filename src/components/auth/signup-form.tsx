@@ -13,8 +13,10 @@ import { useAuthRedirect } from "@/hooks/use-auth-redirect";
 import { api } from "@/lib/api";
 import { authErrorMessage, getFieldErrors } from "@/lib/auth";
 import { DIVISIONS, getDistricts } from "@/lib/bd-data";
+import { useT } from "@/lib/i18n";
 import { signupSchema, type SignupValues } from "@/lib/validation";
 import { useAuthStore } from "@/store/auth-store";
+import { useLangStore } from "@/store/lang-store";
 import type { AuthResponse } from "@/types";
 import { AuthCard } from "./auth-card";
 import { FormAlert } from "./form-alert";
@@ -26,6 +28,8 @@ const FIELDS: (keyof SignupValues)[] = ["name", "email", "password", "division",
 export function SignupForm() {
   const { target, go, withRedirect } = useAuthRedirect();
   const login = useAuthStore((s) => s.login);
+  const t = useT();
+  const lang = useLangStore((s) => s.lang);
 
   const { register, control, handleSubmit, setValue, setError, watch, formState: { errors } } = useForm<SignupValues>({
     resolver: zodResolver(signupSchema),
@@ -36,16 +40,15 @@ export function SignupForm() {
 
   const { mutate, isPending, error } = useMutation({
     mutationFn: async (v: SignupValues) => {
-      const { confirmPassword: _omit, ...body } = v; // the API doesn't need the confirmation
+      const { confirmPassword: _omit, ...body } = v;
       return (await api.post<AuthResponse>("/auth/signup", body)).data;
     },
     onSuccess: (data) => {
       login({ ...data, remember: true });
-      toast.success(`অ্যাকাউন্ট তৈরি হয়েছে। স্বাগতম, ${data.user.name}!`);
+      toast.success(lang === "bn" ? `অ্যাকাউন্ট তৈরি হয়েছে। স্বাগতম, ${data.user.name}!` : `Account created. Welcome, ${data.user.name}!`);
       go();
     },
     onError: (e) => {
-      // Field-level messages from the API (e.g. "email already used") land under the right input.
       const fieldErrors = getFieldErrors(e);
       FIELDS.forEach((f) => fieldErrors[f] && setError(f, { message: fieldErrors[f] }));
     },
@@ -53,55 +56,55 @@ export function SignupForm() {
 
   return (
     <AuthCard
-      title="নতুন অ্যাকাউন্ট খুলুন"
-      description="কয়েক মিনিটেই শুরু করুন। আপনার এলাকার আইডিয়া অপেক্ষা করছে।"
-      footer={<>আগে থেকেই অ্যাকাউন্ট আছে? <Link href={withRedirect("/login")} className="font-medium text-link hover:underline">লগইন করুন</Link></>}
+      title={t("signupTitle")}
+      description={t("signupDesc")}
+      footer={<>{t("signupAlreadyHaveAcc")} <Link href={withRedirect("/login")} className="font-medium text-link hover:underline">{t("login")}</Link></>}
     >
       <SocialButtons redirectTo={target} />
 
       <form onSubmit={handleSubmit((v) => mutate(v))} noValidate className="space-y-4">
-        <FormAlert message={error && Object.keys(getFieldErrors(error)).length === 0 ? authErrorMessage(error, "signup") : null} />
+        <FormAlert message={error && Object.keys(getFieldErrors(error)).length === 0 ? authErrorMessage(error, "signup", lang) : null} />
 
-        <FormField label="পুরো নাম" htmlFor="su-name" required error={errors.name?.message}>
+        <FormField label={t("fullName")} htmlFor="su-name" required error={errors.name?.message}>
           <Input id="su-name" autoComplete="name" invalid={!!errors.name} {...register("name")} />
         </FormField>
 
-        <FormField label="ইমেইল" htmlFor="su-email" required error={errors.email?.message}>
+        <FormField label={t("email")} htmlFor="su-email" required error={errors.email?.message}>
           <Input id="su-email" type="email" autoComplete="email" inputMode="email" invalid={!!errors.email} {...register("email")} />
         </FormField>
 
         <div className="space-y-2">
-          <FormField label="পাসওয়ার্ড" htmlFor="su-password" required error={errors.password?.message} hint="কমপক্ষে ৮ অক্ষর, অন্তত একটি ইংরেজি অক্ষর ও একটি সংখ্যা">
+          <FormField label={t("password")} htmlFor="su-password" required error={errors.password?.message} hint={t("passwordHint")}>
             <PasswordInput id="su-password" autoComplete="new-password" invalid={!!errors.password} {...register("password")} />
           </FormField>
           <PasswordStrength value={password} />
         </div>
 
-        <FormField label="পাসওয়ার্ড নিশ্চিত করুন" htmlFor="su-confirm" required error={errors.confirmPassword?.message}>
+        <FormField label={t("confirmPassword")} htmlFor="su-confirm" required error={errors.confirmPassword?.message}>
           <PasswordInput id="su-confirm" autoComplete="new-password" invalid={!!errors.confirmPassword} {...register("confirmPassword")} />
         </FormField>
 
         <div className="grid gap-4 sm:grid-cols-2">
-          <FormField label="বিভাগ" htmlFor="su-division" required error={errors.division?.message}>
+          <FormField label={t("division")} htmlFor="su-division" required error={errors.division?.message}>
             <Controller control={control} name="division" render={({ field }) => (
               <Select value={field.value} onValueChange={(v) => { field.onChange(v); setValue("district", ""); }}>
-                <SelectTrigger id="su-division" invalid={!!errors.division}><SelectValue placeholder="বিভাগ বেছে নিন" /></SelectTrigger>
-                <SelectContent>{DIVISIONS.map((d) => <SelectItem key={d.value} value={d.value}>{d.label}</SelectItem>)}</SelectContent>
+                <SelectTrigger id="su-division" invalid={!!errors.division}><SelectValue placeholder={t("selectDivision")} /></SelectTrigger>
+                <SelectContent>{DIVISIONS.map((d) => <SelectItem key={d.value} value={d.value}>{lang === "bn" ? d.label : d.value}</SelectItem>)}</SelectContent>
               </Select>
             )} />
           </FormField>
 
-          <FormField label="জেলা" htmlFor="su-district" required error={errors.district?.message}>
+          <FormField label={t("district")} htmlFor="su-district" required error={errors.district?.message}>
             <Controller control={control} name="district" render={({ field }) => (
               <Select value={field.value} onValueChange={field.onChange} disabled={!division}>
-                <SelectTrigger id="su-district" invalid={!!errors.district}><SelectValue placeholder="জেলা বেছে নিন" /></SelectTrigger>
-                <SelectContent>{getDistricts(division).map((d) => <SelectItem key={d.value} value={d.value}>{d.label}</SelectItem>)}</SelectContent>
+                <SelectTrigger id="su-district" invalid={!!errors.district}><SelectValue placeholder={t("selectDistrict")} /></SelectTrigger>
+                <SelectContent>{getDistricts(division).map((d) => <SelectItem key={d.value} value={d.value}>{lang === "bn" ? d.label : d.value}</SelectItem>)}</SelectContent>
               </Select>
             )} />
           </FormField>
         </div>
 
-        <Button type="submit" size="lg" className="w-full" loading={isPending}>অ্যাকাউন্ট খুলুন</Button>
+        <Button type="submit" size="lg" className="w-full bg-green text-white hover:bg-green/90" loading={isPending}>{t("signupSubmit")}</Button>
       </form>
     </AuthCard>
   );
