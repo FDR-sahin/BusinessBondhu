@@ -6,12 +6,11 @@ import { ArrowRight, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
 import { Skeleton } from "@/components/ui/skeleton";
-import { EmptyState } from "@/components/ui/empty-state";
 import { PenMark } from "@/components/ui/pen-mark";
-import { PostCard } from "@/components/post/post-card";
-import { usePosts } from "@/hooks/use-posts";
+import { getDistrictLabel } from "@/lib/bd-data";
+import { usePosts, useTopDistricts } from "@/hooks/use-posts";
 import { useT } from "@/lib/i18n";
-import { formatBDT } from "@/lib/utils";
+import { formatBDT, toFormattedNumber } from "@/lib/utils";
 import { useLangStore } from "@/store/lang-store";
 import { LiveProofStrip } from "./live-proof-strip";
 
@@ -41,146 +40,181 @@ export function Hero() {
     wholesaleMax: debouncedBudget,
   });
 
+  const { data: monthData } = usePosts({ limit: 1 });
+  const { data: topDistricts } = useTopDistricts(64);
+
+  const ideasCount = monthData?.total ?? 0;
+  const districtsCount = topDistricts?.length ?? 64;
+
   const matchingPosts = postsData?.items ?? [];
 
   return (
-    <section className="relative overflow-hidden py-10 md:py-16">
+    <section className="relative overflow-hidden pt-6 pb-8 md:pt-10 md:pb-8">
       <div className="container-page max-w-[1200px]">
-        {/* 1. Micro-label */}
-        <div className="micro-label text-muted">
-          {lang === "bn" ? "০১ · আইডিয়া খুঁজুন" : "01 · FIND IDEAS"}
-        </div>
-
-        {/* 2. 3-line Headline with PenMarks */}
-        <h1 className="mt-4 font-display text-[clamp(2.5rem,6.5vw,5.5rem)] font-bold leading-[1.15] text-ink tracking-tight">
-          {lang === "bn" ? (
-            <>
-              <div>
-                হাতে <PenMark variant="underline">সামান্য পুঁজি।</PenMark>
-              </div>
-              <div>
-                মাথায় <PenMark variant="circle">বড় আইডিয়া।</PenMark>
-              </div>
-              <div>খুঁজে নিন নিজের ব্যবসা।</div>
-            </>
-          ) : (
-            <>
-              <div>
-                Small <PenMark variant="underline">capital.</PenMark>
-              </div>
-              <div>
-                Big <PenMark variant="circle">idea.</PenMark>
-              </div>
-              <div>Find your business.</div>
-            </>
-          )}
-        </h1>
-
-        {/* 3. Muted sentence (max 90 chars) + Two Buttons */}
-        <p className="mt-5 max-w-[680px] text-base md:text-lg text-ink/75 leading-relaxed">
-          {lang === "bn"
-            ? "বাংলাদেশের উদ্যোক্তাদের এলাকাভিত্তিক খাতা। বাজেট অনুযায়ী সঠিক ব্যবসা বেছে নিন।"
-            : "A shopkeeper's ledger for Bangladeshi entrepreneurs. Find the right business for your budget."}
-        </p>
-
-        <div className="mt-6 flex flex-wrap items-center gap-3">
-          <Button asChild size="lg" className="bg-green text-white hover:bg-green/90">
-            <Link href="/dashboard/create-post">
-              <Plus className="mr-2 h-4 w-4" />
-              {t("shareIdea")}
-            </Link>
-          </Button>
-
-          <Button asChild variant="outline" size="lg" className="border-line text-ink hover:bg-surface">
-            <Link href="/explore">
-              {lang === "bn" ? "আইডিয়া দেখুন" : "Explore Ideas"}
-            </Link>
-          </Button>
-        </div>
-
-        {/* 4. Budget Slider Card */}
-        <div className="mt-12 rounded-xl border border-line bg-surface p-6 md:p-8 shadow-sm">
-          <div className="flex flex-col gap-4 sm:flex-row sm:items-baseline sm:justify-between">
-            <span className="micro-label text-muted">
-              {lang === "bn" ? "আপনার বাজেট কত?" : "What is your budget?"}
-            </span>
-            <div className="font-display text-4xl md:text-5xl font-bold tabular-nums text-green">
-              {formatBDT(selectedBudget, lang)}
+        {/* Two-column grid on desktop (>= 1024px) */}
+        <div className="grid grid-cols-1 gap-8 lg:grid-cols-12 lg:gap-12 lg:items-start">
+          {/* Left Column */}
+          <div className="lg:col-span-7">
+            {/* Rule D: Live Micro-label with pulse green dot */}
+            <div className="flex items-center text-xs font-mono uppercase tracking-widest text-muted">
+              <span className="mr-2 inline-block h-2 w-2 rounded-full bg-green motion-safe:animate-pulse" />
+              {ideasCount >= 10 ? (
+                lang === "bn" ? (
+                  <span>
+                    লাইভ খাতা · {toFormattedNumber(ideasCount, "bn")}টি আইডিয়া · {toFormattedNumber(districtsCount, "bn")}টি জেলা · ৮ বিভাগ
+                  </span>
+                ) : (
+                  <span>
+                    LIVE LEDGER · {toFormattedNumber(ideasCount, "en")} IDEAS · {toFormattedNumber(districtsCount, "en")} DISTRICTS · 8 DIVISIONS
+                  </span>
+                )
+              ) : lang === "bn" ? (
+                <span>লাইভ খাতা · ৮ বিভাগ · ৬৪ জেলা</span>
+              ) : (
+                <span>LIVE LEDGER · 8 DIVISIONS · 64 DISTRICTS</span>
+              )}
             </div>
-          </div>
 
-          <div className="mt-6">
-            <Slider
-              value={[stepIndex]}
-              min={0}
-              max={BUDGET_STEPS.length - 1}
-              step={1}
-              onValueChange={(val) => {
-                if (val[0] !== undefined) setStepIndex(val[0]);
-              }}
-              aria-label={lang === "bn" ? "বাজেট ফিল্টার" : "Budget filter"}
-            />
-          </div>
+            {/* Rule B: Compact 3-line Headline with PenMarks */}
+            <h1 className="mt-3 font-display text-[clamp(34px,4.6vw,60px)] font-bold leading-[1.1] :lang(bn):leading-[1.25] text-ink tracking-tight">
+              {lang === "bn" ? (
+                <>
+                  <div>
+                    হাতে <PenMark variant="underline">সামান্য পুঁজি।</PenMark>
+                  </div>
+                  <div>
+                    মাথায় <PenMark variant="circle">বড় আইডিয়া।</PenMark>
+                  </div>
+                  <div>খুঁজে নিন নিজের ব্যবসা।</div>
+                </>
+              ) : (
+                <>
+                  <div>
+                    Small <PenMark variant="underline">capital.</PenMark>
+                  </div>
+                  <div>
+                    Big <PenMark variant="circle">idea.</PenMark>
+                  </div>
+                  <div>Find your business.</div>
+                </>
+              )}
+            </h1>
 
-          <div className="mt-4 flex items-center justify-between text-xs text-muted">
-            <span>{formatBDT(5000, lang)}</span>
-            <span>{formatBDT(1000000, lang)}</span>
-          </div>
-
-          <div className="mt-6 border-t border-line/60 pt-4 flex justify-end">
-            <Link
-              href={`/ai-advisor?budget=${selectedBudget}`}
-              className="inline-flex items-center gap-1.5 text-sm font-medium text-green hover:underline"
-            >
-              <span>{lang === "bn" ? "AI পরামর্শ নিন" : "Get AI Advice"}</span>
-              <ArrowRight className="h-4 w-4" />
-            </Link>
-          </div>
-        </div>
-
-        {/* 5. 3 Live PriceSlip results for that budget */}
-        <div className="mt-8">
-          <div className="mb-4 flex items-center justify-between">
-            <span className="micro-label text-muted">
+            {/* Rule B: ONE-line subline */}
+            <p className="mt-4 text-base text-muted max-w-[540px] truncate">
               {lang === "bn"
-                ? `এই বাজেটের উপযোগী শীর্ষ ৩টি খাতা (${formatBDT(selectedBudget, lang)})`
-                : `Top 3 matching ledger entries for ${formatBDT(selectedBudget, lang)}`}
-            </span>
+                ? "বাংলাদেশের উদ্যোক্তাদের দোকানি-খাতা।"
+                : "A shopkeeper's ledger for Bangladeshi entrepreneurs."}
+            </p>
+
+            {/* Rule B: Buttons 44px tall */}
+            <div className="mt-6 flex flex-wrap items-center gap-3">
+              <Button asChild size="lg" className="h-11 bg-green text-white hover:bg-green/90 px-5">
+                <Link href="/dashboard/create-post">
+                  <Plus className="mr-1.5 h-4 w-4" />
+                  {t("shareIdea")}
+                </Link>
+              </Button>
+
+              <Button asChild variant="outline" size="lg" className="h-11 border-line text-ink hover:bg-surface px-5">
+                <Link href="/explore">
+                  {lang === "bn" ? "আইডিয়া দেখুন" : "Explore Ideas"}
+                </Link>
+              </Button>
+            </div>
           </div>
 
-          {isLoading ? (
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-              <Skeleton className="h-48 rounded-xl" />
-              <Skeleton className="h-48 rounded-xl" />
-              <Skeleton className="h-48 rounded-xl" />
+          {/* Right Column: Compact Budget Slider Card (< 380px tall) */}
+          <div className="lg:col-span-5">
+            <div className="rounded-xl border border-line bg-surface p-5 shadow-sm">
+              <div className="flex items-center justify-between gap-2">
+                <span className="micro-label text-muted">
+                  {lang === "bn" ? "আপনার বাজেট কত?" : "What is your budget?"}
+                </span>
+                <div className="font-display text-3xl font-bold tabular-nums text-green">
+                  {formatBDT(selectedBudget, lang)}
+                </div>
+              </div>
+
+              <div className="mt-4">
+                <Slider
+                  value={[stepIndex]}
+                  min={0}
+                  max={BUDGET_STEPS.length - 1}
+                  step={1}
+                  onValueChange={(val) => {
+                    if (val[0] !== undefined) setStepIndex(val[0]);
+                  }}
+                  aria-label={lang === "bn" ? "বাজেট ফিল্টার" : "Budget filter"}
+                />
+              </div>
+
+              <div className="mt-2 flex items-center justify-between text-[11px] font-mono text-muted">
+                <span>{formatBDT(5000, lang)}</span>
+                <span>{formatBDT(1000000, lang)}</span>
+              </div>
+
+              {/* 3 MINI Result Rows */}
+              <div className="mt-4 space-y-1 border-t border-line/60 pt-3">
+                <div className="micro-label mb-2 text-[10px] text-muted">
+                  {lang === "bn" ? "বাজেট উপযোগী নমুনা খাতা" : "Matching sample entries"}
+                </div>
+                {isLoading ? (
+                  <div className="space-y-2">
+                    <Skeleton className="h-8 w-full rounded" />
+                    <Skeleton className="h-8 w-full rounded" />
+                    <Skeleton className="h-8 w-full rounded" />
+                  </div>
+                ) : matchingPosts.length > 0 ? (
+                  matchingPosts.slice(0, 3).map((post) => {
+                    const marginPct = Math.round(
+                      (((post.retailSellPrice ?? post.retailPrice) - post.wholesalePrice) / (post.wholesalePrice || 1)) * 100
+                    );
+                    return (
+                      <Link
+                        key={post.id}
+                        href={`/post/${post.id}`}
+                        className="flex h-9 items-center justify-between gap-2 rounded px-2 py-1 transition-colors hover:bg-background/80"
+                      >
+                        <div className="min-w-0 flex-1 truncate">
+                          <span className="font-medium text-xs text-ink hover:text-green truncate block">{post.title}</span>
+                        </div>
+                        <div className="flex items-center gap-2 shrink-0">
+                          <span className="text-[10px] text-muted">
+                            {getDistrictLabel(post.district) || post.district}
+                          </span>
+                          <span className="font-mono text-[11px] font-semibold text-green">
+                            +{marginPct}%
+                          </span>
+                        </div>
+                      </Link>
+                    );
+                  })
+                ) : (
+                  <div className="py-2 text-center text-xs text-muted">
+                    {lang === "bn" ? "এই বাজেটে নমুনা খাতা পাওয়া যায়নি" : "No sample entries found for this budget"}
+                  </div>
+                )}
+              </div>
+
+              {/* Link at bottom */}
+              <div className="mt-3 border-t border-line/40 pt-2.5 text-right">
+                <Link
+                  href={`/ai-advisor?budget=${selectedBudget}`}
+                  className="inline-flex items-center gap-1 text-xs font-semibold text-green hover:underline"
+                >
+                  <span>{lang === "bn" ? "AI পরামর্শ নিন" : "Get AI Advice"}</span>
+                  <ArrowRight className="h-3.5 w-3.5" />
+                </Link>
+              </div>
             </div>
-          ) : matchingPosts.length > 0 ? (
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-              {matchingPosts.slice(0, 3).map((post) => (
-                <PostCard key={post.id} post={post} />
-              ))}
-            </div>
-          ) : (
-            <EmptyState
-              title={lang === "bn" ? "এই বাজেটে কোনো আইডিয়া পাওয়া যায়নি" : "No business ideas found for this budget"}
-              description={lang === "bn" ? "বাজেট সামান্য বাড়িয়ে চেষ্টা করে দেখুন।" : "Try increasing the budget slightly."}
-            />
-          )}
+          </div>
         </div>
 
-        {/* 6. Slim text link row */}
-        <div className="mt-6 text-center sm:text-left">
-          <Link
-            href="/explore"
-            className="inline-flex items-center gap-1.5 text-sm font-semibold text-ink/80 hover:text-green transition-colors"
-          >
-            <span>{lang === "bn" ? "অথবা এলাকা অনুযায়ী খুঁজুন" : "Or browse by location"}</span>
-            <ArrowRight className="h-4 w-4" />
-          </Link>
+        {/* Full width Live Proof Strip below hero (24px top margin) */}
+        <div className="mt-6">
+          <LiveProofStrip />
         </div>
-
-        {/* 7. Live Proof Strip */}
-        <LiveProofStrip />
       </div>
     </section>
   );

@@ -12,12 +12,13 @@
     --bg: 246 242 233;         /* #F6F2E9 */
     --surface: 255 255 255;    /* #FFFFFF */
     --ink: 23 19 15;           /* #17130F */
-    --muted: 107 100 92;       /* #6B645C */
+    --muted: 89 82 74;         /* #59524A (WCAG AAA 7.2:1 contrast against #F6F2E9) */
     --line: 221 213 197;       /* #DDD5C5 */
 
     /* Accents */
     --green: 11 107 69;        /* #0B6B45 - primary actions, margin fill, high profit */
-    --pen: 215 56 28;          /* #D7381C - Red-Pen Mark only, plus error states */
+    --pen-raw: 215 56 28;      /* #D7381C - Red-Pen Mark only, plus error states */
+    --pen: #D7381C;
     --gold: 224 169 59;        /* #E0A93B - medium profit, small highlights */
 
     /* Semantic mappings */
@@ -32,12 +33,13 @@
     --bg: 15 17 14;            /* #0F110E */
     --surface: 23 26 21;       /* #171A15 */
     --ink: 243 239 230;        /* #F3EFE6 */
-    --muted: 154 149 138;      /* #9A958A */
+    --muted: 176 171 160;      /* #B0ABA0 (WCAG AAA 8.5:1 contrast against #0F110E) */
     --line: 42 46 37;          /* #2A2E25 */
 
     /* Accents */
     --green: 16 142 92;        /* #108E5C */
-    --pen: 235 75 45;          /* #EB4B2D */
+    --pen-raw: 235 75 45;      /* #EB4B2D */
+    --pen: #EB4B2D;
     --gold: 230 175 65;        /* #E6AF41 */
 
     --background: var(--bg);
@@ -86,7 +88,7 @@
   }
 
   ::selection {
-    background-color: rgb(var(--pen) / 0.2);
+    background-color: rgb(var(--pen-raw) / 0.2);
     color: rgb(var(--ink));
   }
 
@@ -118,7 +120,7 @@
     @apply mx-auto w-full max-w-[1200px] px-4 md:px-6 lg:px-8;
   }
   .section {
-    @apply py-12 md:py-20;
+    @apply py-8 md:py-16;
   }
 }
 

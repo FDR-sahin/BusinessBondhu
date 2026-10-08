@@ -19,7 +19,7 @@ export function LanguageToggle({ className }: { className?: string }) {
     <div
       role="group"
       aria-label={t("language")}
-      className={cn("inline-flex items-center rounded-full border border-line bg-surface p-0.5 shadow-sm", className)}
+      className={cn("inline-flex items-center rounded-full border border-line bg-surface p-0.5 shadow-xs", className)}
     >
       {OPTIONS.map((o) => (
         <button
@@ -32,7 +32,7 @@ export function LanguageToggle({ className }: { className?: string }) {
             "h-7 rounded-full px-3 text-xs font-semibold transition-all duration-200",
             lang === o.value
               ? "bg-green text-white shadow-xs"
-              : "text-muted hover:text-ink"
+              : "text-ink hover:text-green"
           )}
         >
           {o.label}

@@ -79,7 +79,7 @@ export function Header() {
                   {active && (
                     <motion.span
                       layoutId="nav-underline"
-                      className="absolute inset-x-3 bottom-0 h-[2px] rounded-full bg-pen"
+                      className="absolute inset-x-3 bottom-0 h-[2px] rounded-full bg-green"
                       transition={{ type: "spring", stiffness: 300, damping: 30 }}
                     />
                   )}
