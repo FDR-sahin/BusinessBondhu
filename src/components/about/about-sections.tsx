@@ -36,15 +36,15 @@ export function AboutHero() {
           <Badge variant="secondary" className="mb-5 px-3 py-1">
             {lang === "en" ? "About Us" : "আমাদের সম্পর্কে"}
           </Badge>
-          <h1 className="text-4xl font-bold leading-[1.3] tracking-tight md:text-6xl md:leading-[1.25]">
+          <h1 className="text-4xl font-bold leading-[1.3] tracking-tight md:text-5xl md:leading-[1.25]">
             {lang === "en"
-              ? "Empowering Every Entrepreneur with Real Market Data"
-              : "প্রতিটি উদ্যোক্তার হাতে সঠিক তথ্য পৌঁছে দেওয়াই আমাদের লক্ষ্য"}
+              ? "Business Idea Zone — Your Guided Pathway to Launching a Business"
+              : "বিজনেস আইডিয়া জোন — আপনার ব্যবসা শুরুর বিশ্বস্ত গাইডলাইন"}
           </h1>
-          <p className="mt-5 max-w-2xl text-lg text-ink-secondary">
+          <p className="mt-5 max-w-2xl text-lg leading-relaxed text-ink-secondary">
             {lang === "en"
-              ? "Business Hub BD is an open ledger community where Bangladeshi entrepreneurs share region-specific business ideas, wholesale rates, and real-world operational insights."
-              : "Business Hub BD এমন একটি জায়গা, যেখানে বাংলাদেশের ছোট ও মাঝারি উদ্যোক্তারা এলাকাভিত্তিক ব্যবসার আইডিয়া, বাজারদর ও নিজেদের অভিজ্ঞতা ভাগাভাগি করেন।"}
+              ? "Want to start a new business, but not sure what to begin with? Or searching for which products have high demand and where the best market opportunities lie? Business Idea Zone is built to answer all these questions for you."
+              : "নতুন ব্যবসা শুরু করতে চান, কিন্তু কী নিয়ে শুরু করবেন বুঝতে পারছেন না? কিংবা কোন পণ্যের চাহিদা বেশি, কোথায় সুযোগ রয়েছে- তা খুঁজছেন? আপনাদের এই প্রশ্নগুলোর উত্তর খুঁজে দিতেই আমাদের বিজনেস আইডিয়া জোন ।"}
           </p>
         </FadeIn>
       </div>
@@ -58,17 +58,22 @@ export function WhoWeAre() {
     <section className="section" aria-labelledby="who-title">
       <div className="container-page grid gap-10 lg:grid-cols-2 lg:gap-16">
         <FadeIn>
-          <Heading id="who-title" title={lang === "en" ? "Who We Are" : "আমরা কারা"} />
-          <div className="space-y-4 text-ink-secondary">
+          <Heading id="who-title" title={lang === "en" ? "About Business Idea Zone" : "বিজনেস আইডিয়া জোন সম্পর্কে"} />
+          <div className="space-y-4 text-ink-secondary leading-relaxed">
             <p>
               {lang === "en"
-                ? "We are a team of technologists and business enthusiasts dedicated to simplifying data-driven decision-making for entrepreneurs across Bangladesh."
-                : "আমরা একদল প্রযুক্তিবিদ ও ব্যবসা-অনুরাগী মানুষ। দেশের উদ্যোক্তাদের জন্য তথ্যভিত্তিক সিদ্ধান্ত নেওয়া সহজ করতে আমরা Business Hub BD তৈরি করেছি।"}
+                ? "We believe that starting a successful business requires more than just capital—it takes the right insights, deep market understanding, and timely decisions. Keeping these challenges of entrepreneurs in mind, Regards Tech presents Business Idea Zone. It is a dedicated platform where entrepreneurs can discover new business ideas, learn about different products, and find new growth possibilities for their initiatives."
+                : "আমরা বিশ্বাস করি, ভালো একটি ব্যবসা শুরু করার জন্য শুধু পুঁজি থাকলেই হয় না, দরকার সঠিক ধারণা, বাজার সম্পর্কে জানা এবং সময়মতো সঠিক সিদ্ধান্ত নেওয়া। উদ্যোক্তাদের এই চ্যালেঞ্জগুলোর কথা মাথায় রেখেই Regards Tech নিয়ে এসেছে বিজনেস আইডিয়া জোন । এটি এমন একটি প্ল্যাটফর্ম, যেখানে উদ্যোক্তারা নতুন ব্যবসার আইডিয়া খুঁজে পাবেন, বিভিন্ন পণ্য সম্পর্কে জানতে পারবেন এবং নিজের উদ্যোগের জন্য নতুন সম্ভাবনা খুঁজে নিতে পারবেন।"}
             </p>
             <p>
               {lang === "en"
-                ? "We believe an entrepreneur's greatest asset isn't just capital—it's timely, accurate market intelligence. We combine community ledger insights with modern tech tools to help businesses succeed."
-                : "আমাদের বিশ্বাস, একজন উদ্যোক্তার সবচেয়ে বড় পুঁজি শুধু টাকা নয়, সঠিক সময়ে সঠিক তথ্য। তাই আমরা এমন একটি প্ল্যাটফর্ম বানাচ্ছি, যেখানে কমিউনিটির অভিজ্ঞতা আর আধুনিক প্রযুক্তি একসঙ্গে কাজ করে।"}
+                ? "Our sole mission is to make your business setup journey smoother, turning your bright ideas into real, thriving ventures. From business ideas to market insights—everything in one place."
+                : "আমাদের লক্ষ্য একটাই, আপনার ব্যবসা শুরু করার পথটা আরও সহজ করে দেওয়া, যেন আপনার ভালো একটি ভাবনা একদিন বাস্তব উদ্যোগে রূপ নিতে পারে।ব্যবসার আইডিয়া থেকে বাজারের খোঁজ, সব এক জায়গায়।"}
+            </p>
+            <p className="font-medium text-ink">
+              {lang === "en"
+                ? "Whatever business you want to start or whatever market demand you wish to analyze, Business Idea Zone is right by your side."
+                : "কী নিয়ে ব্যবসা শুরু করবেন, কোন পণ্যের চাহিদা কেমন- এমন নানা প্রশ্নের উত্তর খুঁজতে আপনার পাশে আছে বিজনেস আইডিয়া জোন।"}
             </p>
           </div>
         </FadeIn>

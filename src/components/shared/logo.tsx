@@ -23,7 +23,7 @@ export function Logo({ className, showText = true }: { className?: string; showT
       </span>
       {showText && (
         <span className="flex items-center gap-1.5">
-          <span>{lang === "bn" ? "বিজনেস বন্ধু" : "BUSINESS BONDHU"}</span>
+          <span>{lang === "bn" ? "বিজনেস আইডিয়া জোন" : "BUSINESS IDEA ZONE"}</span>
           <span className="rounded bg-pen/10 px-1.5 py-0.5 font-mono text-[10px] uppercase tracking-widest text-pen">
             BD
           </span>
