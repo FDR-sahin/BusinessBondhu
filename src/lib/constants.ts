@@ -12,7 +12,6 @@ import {
 import type { TKey } from "@/lib/i18n";
 
 export const SITE_NAME = "Business Idea Zone";
-export const SITE_NAME_BN = "বিজনেস আইডিয়া জোন";
 
 export const NAV_LINKS: { href: string; key: TKey }[] = [
   { href: "/", key: "navHome" },
@@ -36,7 +35,7 @@ export const CATEGORIES: { slug: string; nameBn: string; nameEn: string; icon: L
 ];
 
 export const CONTACT = {
-  email: "hello@businesshubbd.com", // placeholder — replace
+  email: "regardstech.team@gmail.com", // placeholder — replace
   phone: "+৮৮০ ১৭০০-০০০০০০", // placeholder — replace
   address: "ঢাকা, বাংলাদেশ",
 };

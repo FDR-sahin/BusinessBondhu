@@ -6,6 +6,7 @@ import { useT } from "@/lib/i18n";
 
 export function NewsletterCta() {
   const t = useT();
+  
 
   return (
     <section className="section" aria-labelledby="newsletter-title">
@@ -17,9 +18,9 @@ export function NewsletterCta() {
                 <h2 id="newsletter-title" className="font-display text-2xl font-bold leading-snug text-ink md:text-4xl">
                   {t("newsletterTitle")}
                 </h2>
-                <p className="mt-3 text-muted text-base leading-relaxed">
+                {/* <p className="mt-3 text-muted text-base leading-relaxed">
                   {t("newsletterText")}
-                </p>
+                </p> */}
               </div>
               <NewsletterForm tone="dark" />
             </div>

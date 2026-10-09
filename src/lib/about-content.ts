@@ -120,8 +120,8 @@ export interface FaqItem {
 export const FAQS: FaqItem[] = [
   {
     q: {
-      bn: "Business Hub BD কী এবং এটি কাদের জন্য?",
-      en: "What is Business Hub BD and who is it for?",
+      bn: "বিজনেস আইডিয়া জোন কী এবং এটি কাদের জন্য?",
+      en: "What is Business Idea Zone and who is it for?",
     },
     a: {
       bn: "এটি বাংলাদেশের উদ্যোক্তাদের একটি অনলাইন কমিউনিটি। যারা নতুন ব্যবসা শুরু করতে চান বা বিদ্যমান ব্যবসা বাড়াতে চান, তারা এখানে এলাকাভিত্তিক আইডিয়া, পাইকারি-খুচরা দাম ও অন্যদের অভিজ্ঞতা পাবেন।",

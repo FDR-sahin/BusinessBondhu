@@ -164,3 +164,13 @@
   .prose-blog pre { @apply overflow-x-auto rounded-xl border border-line bg-surface p-4; }
   .prose-blog pre code { @apply bg-transparent p-0; }
 }
+
+@keyframes gradient-move {
+  0% { background-position: 0% center; }
+  50% { background-position: 100% center; }
+  100% { background-position: 0% center; }
+}
+
+.animate-gradient {
+  animation: gradient-move 4s ease infinite;
+}

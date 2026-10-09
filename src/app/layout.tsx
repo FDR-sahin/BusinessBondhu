@@ -41,7 +41,7 @@ const inter = Inter({
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000"),
   title: {
-    default: "বিজনেস আইডিয়া জোন — এলাকাভিত্তিক ব্যবসার খাতা",
+    default: "বিজনেস আইডিয়া জোন — Business Idea Zone",
     template: "%s | বিজনেস আইডিয়া জোন",
   },
   description:

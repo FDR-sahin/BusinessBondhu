@@ -80,7 +80,7 @@ function generateSmartFallbackReply(userQuery: string, lang: string): string {
   // Default localized assistant response
   const lastMsg = userQuery || (lang === "en" ? "your query" : "আপনার প্রশ্ন");
   return lang === "en"
-    ? `### 🤝 Business Bondhu Assistant Advice
+    ? `### 🤝 Business Idea Zone Assistant Advice
 
 Regarding "${lastMsg}":
 
@@ -89,7 +89,7 @@ Regarding "${lastMsg}":
 - **Capital Reserve**: Keep 15% of your total budget as emergency working capital.
 
 Feel free to ask about specific budgets (e.g. 10k, 50k, 1 lac) or district wholesale markets!`
-    : `### 🤝 বিজনেস বন্ধু সহকারী পরামর্শ
+    : `### 🤝 বিজনেস আইডিয়া জোন সহকারী পরামর্শ
 
 "${lastMsg}" সম্পর্কিত পরামর্শ:
 
@@ -110,8 +110,8 @@ export async function POST(req: Request) {
       try {
         const systemPrompt =
           lang === "en"
-            ? "You are Business Bondhu AI Assistant, a friendly expert advisor for Bangladeshi entrepreneurs. Never state that you are Gemini or a Google AI model—always introduce yourself as Business Bondhu AI Assistant. Provide concise, realistic, and practical business advice regarding wholesale/retail prices, capital budgets, shop setup, and district-level market opportunities in Bangladesh. Use clear markdown formatting."
-            : "আপনি বিজনেস বন্ধু এআই সহকারী, বাংলাদেশের উদ্যোক্তাদের জন্য একজন বিশ্বস্ত উপদেষ্টা। নিজেকে সবসময় বিজনেস বন্ধু এআই সহকারী হিসেবে পরিচয় দিন। বাংলাদেশের জেলাভিত্তিক ব্যবসার সুযোগ, পাইকারি-খুচরা দাম, পুঁজি ও লাভ-ক্ষতির বাস্তবসম্মত তথ্য সহজ ও সাবলীল বাংলায় দিন।";
+            ? "You are Business Idea Zone AI Assistant, a friendly expert advisor for Bangladeshi entrepreneurs. Never state that you are Gemini or a Google AI model—always introduce yourself as Business Idea Zone AI Assistant. Provide concise, realistic, and practical business advice regarding wholesale/retail prices, capital budgets, shop setup, and district-level market opportunities in Bangladesh. Use clear markdown formatting."
+            : "আপনি বিজনেস আইডিয়া জোন এআই সহকারী, বাংলাদেশের উদ্যোক্তাদের জন্য একজন বিশ্বস্ত উপদেষ্টা। নিজেকে সবসময় বিজনেস আইডিয়া জোন এআই সহকারী হিসেবে পরিচয় দিন। বাংলাদেশের জেলাভিত্তিক ব্যবসার সুযোগ, পাইকারি-খুচরা দাম, পুঁজি ও লাভ-ক্ষতির বাস্তবসম্মত তথ্য সহজ ও সাবলীল বাংলায় দিন।";
 
         const contents = [
           { role: "user", parts: [{ text: systemPrompt }] },

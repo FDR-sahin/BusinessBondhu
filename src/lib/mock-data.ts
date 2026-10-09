@@ -18,7 +18,7 @@ import type {
 export const MOCK_POSTS: Post[] = [
   {
     "id": "post-sheet-1",
-    "title": "Savar-এ MILK পাইকারি সোর্সিং",
+    "title": "MILK",
     "category": "agriculture-livestock",
     "division": "Dhaka",
     "district": "Dhaka",
@@ -74,7 +74,7 @@ export const MOCK_POSTS: Post[] = [
   },
   {
     "id": "post-sheet-3",
-    "title": "Ramgoti-এ সুপারি পাইকারি সোর্সিং",
+    "title": "সুপারি",
     "category": "agriculture-livestock",
     "division": "Chattogram",
     "district": "Lakshmipur",
@@ -102,7 +102,7 @@ export const MOCK_POSTS: Post[] = [
   },
   {
     "id": "post-sheet-4",
-    "title": "ইলিশ মাছ পাইকারি সরবরাহ ও সরাসরি সোর্সিং",
+    "title": "ইলিশ মাছ",
     "category": "food-beverage",
     "division": "Barishal",
     "district": "Patuakhali",
@@ -130,7 +130,7 @@ export const MOCK_POSTS: Post[] = [
   },
   {
     "id": "post-sheet-5",
-    "title": "Islampur old Dhaka-এ থ্রি-পিস, থান কাপড় ও গজ কাপড়, শাড়ি ও লুঙ্গি পাইকারি সোর্সিং",
+    "title": "থ্রি-পিস, থান কাপড় ও গজ কাপড়, শাড়ি ও লুঙ্গি",
     "category": "clothing",
     "division": "Dhaka",
     "district": "Dhaka",
@@ -158,7 +158,7 @@ export const MOCK_POSTS: Post[] = [
   },
   {
     "id": "post-sheet-6",
-    "title": "Chawkbazar, Old Dhaka-এ Ladies Bag পাইকারি সোর্সিং",
+    "title": "Chawkbazar, Ladies Bag ",
     "category": "clothing",
     "division": "Dhaka",
     "district": "Dhaka",
@@ -186,7 +186,7 @@ export const MOCK_POSTS: Post[] = [
   },
   {
     "id": "post-sheet-7",
-    "title": "চকবাজার-এ কসমেটিকস পাইকারি সোর্সিং",
+    "title": "কসমেটিকস",
     "category": "cosmetics",
     "division": "Dhaka",
     "district": "Dhaka",
@@ -214,7 +214,7 @@ export const MOCK_POSTS: Post[] = [
   },
   {
     "id": "post-sheet-8",
-    "title": "সরিষা পাইকারি সরবরাহ ও সরাসরি সোর্সিং",
+    "title": "সরিষা",
     "category": "agriculture-livestock",
     "division": "Chattogram",
     "district": "Lakshmipur",
@@ -232,7 +232,7 @@ export const MOCK_POSTS: Post[] = [
     "commentsCount": 11,
     "viewsCount": 1015,
     "createdAt": "2026-10-08T10:00:00Z",
-    "description": "পণ্য: সরিষা  সরাসরি সোর্সিং লোকেশন: দক্ষিণ টুমচর,চরগাজী,রামগতি, লক্ষীপুর মূল সোর্সিং এলাকা / উৎপত্তি: দক্ষিণ টুমচর  পাইকারি মূল্য / রেঞ্জ: ৳4000 খুচরা বাজার মূল্য: ৳5200 নূন্যতম অর্ডার পরিমাণ (MOQ): ২০০০মণ তথ্য হালনাগাদ তারিখ: 10/7/2026  সংক্ষিপ্ত বিবরণ: স্থানীয় নিবন্ধিত পাইকারি হাব ও প্রকৃত সরবরাহকারীদের থেকে সরাসরি সংগৃহীত তথ্য। সঠিক মান ও সুলভ মূল্যে পাইকারি অর্ডারের জন্য গুগল ম্যাপস লোকেশন অনুযায়ী সরাসরি যোগাযোগ করুন।",
+    "description": "পণ্য: সরিষা  সরাসরি সোর্সিং লোকেশন: দক্ষিণ টুমচর, চরগাজী, রামগতি, লক্ষীপুর মূল সোর্সিং এলাকা / উৎপত্তি: দক্ষিণ টুমচর  পাইকারি মূল্য / রেঞ্জ: ৳4000 খুচরা বাজার মূল্য: ৳5200 নূন্যতম অর্ডার পরিমাণ (MOQ): ২০০০মণ তথ্য হালনাগাদ তারিখ: 10/7/2026  সংক্ষিপ্ত বিবরণ: স্থানীয় নিবন্ধিত পাইকারি হাব ও প্রকৃত সরবরাহকারীদের থেকে সরাসরি সংগৃহীত তথ্য। সঠিক মান ও সুলভ মূল্যে পাইকারি অর্ডারের জন্য গুগল ম্যাপস লোকেশন অনুযায়ী সরাসরি যোগাযোগ করুন।",
     "tags": [
       "agriculture-livestock",
       "Lakshmipur",
@@ -270,7 +270,7 @@ export const MOCK_POSTS: Post[] = [
   },
   {
     "id": "post-sheet-10",
-    "title": "কারওয়ান বাজার-এ শাকসবজি ও নিত্যপ্রয়োজনীয় কৃষিপণ্যে পাইকারি সোর্সিং",
+    "title": "শাকসবজি ও নিত্যপ্রয়োজনীয় কৃষিপণ্য",
     "category": "agriculture-livestock",
     "division": "Dhaka",
     "district": "Dhaka",
@@ -298,7 +298,7 @@ export const MOCK_POSTS: Post[] = [
   },
   {
     "id": "post-sheet-11",
-    "title": "Lakshmipur-এ সয়াবিন পাইকারি সোর্সিং",
+    "title": "সয়াবিন",
     "category": "agriculture-livestock",
     "division": "Chattogram",
     "district": "Lakshmipur",
@@ -326,7 +326,7 @@ export const MOCK_POSTS: Post[] = [
   },
   {
     "id": "post-sheet-12",
-    "title": "ইলিশ পাইকারি সরবরাহ ও সরাসরি সোর্সিং",
+    "title": "ইলিশ",
     "category": "food-beverage",
     "division": "Chattogram",
     "district": "Lakshmipur",
@@ -354,7 +354,7 @@ export const MOCK_POSTS: Post[] = [
   },
   {
     "id": "post-sheet-13",
-    "title": "চাঁদপুর-এ ইলিশ পাইকারি সোর্সিং",
+    "title": "ইলিশ",
     "category": "food-beverage",
     "division": "Chattogram",
     "district": "Chandpur",
@@ -438,7 +438,7 @@ export const MOCK_POSTS: Post[] = [
   },
   {
     "id": "post-sheet-17",
-    "title": "গদখালী-এ ফুল পাইকারি সোর্সিং",
+    "title": "গদখালী-এ ফুল",
     "category": "agriculture-livestock",
     "division": "Khulna",
     "district": "Jashore",
@@ -466,7 +466,7 @@ export const MOCK_POSTS: Post[] = [
   },
   {
     "id": "post-sheet-18",
-    "title": "মেশিনারি, ইলেকট্রনিক্স এবং হার্ডওয়্যার পাইকারি সরবরাহ ও সরাসরি সোর্সিং",
+    "title": "মেশিনারি, ইলেকট্রনিক্স এবং হার্ডওয়্যার",
     "category": "electronics",
     "division": "Dhaka",
     "district": "Dhaka",
@@ -494,7 +494,7 @@ export const MOCK_POSTS: Post[] = [
   },
   {
     "id": "post-sheet-19",
-    "title": "Noakhali-এ Speed পাইকারি সোর্সিং",
+    "title": "Noakhali-এ Speed",
     "category": "food-beverage",
     "division": "Chattogram",
     "district": "Noakhali",
@@ -522,7 +522,7 @@ export const MOCK_POSTS: Post[] = [
   },
   {
     "id": "post-sheet-20",
-    "title": "কক্সবাজার-এ শুঁটকি, সামুদ্রিক মাছ পাইকারি সোর্সিং",
+    "title": "কক্সবাজার-এ শুঁটকি, সামুদ্রিক মাছ",
     "category": "food-beverage",
     "division": "Chattogram",
     "district": "Cox's Bazar",
@@ -550,7 +550,7 @@ export const MOCK_POSTS: Post[] = [
   },
   {
     "id": "post-sheet-21",
-    "title": "Birulia, Savar-এ গোলাপ ফুল পাইকারি সোর্সিং",
+    "title": "Birulia, Savar-এ গোলাপ",
     "category": "agriculture-livestock",
     "division": "Dhaka",
     "district": "Dhaka",
@@ -578,7 +578,7 @@ export const MOCK_POSTS: Post[] = [
   },
   {
     "id": "post-sheet-22",
-    "title": "গোলাপ গ্রাম, বিরুলিয়া , সাভার-এ গোলাপ ফুল পাইকারি সোর্সিং",
+    "title": "গোলাপ গ্রাম, সাভার-এ গোলাপ ফুল",
     "category": "agriculture-livestock",
     "division": "Dhaka",
     "district": "Dhaka",
@@ -606,7 +606,7 @@ export const MOCK_POSTS: Post[] = [
   },
   {
     "id": "post-sheet-23",
-    "title": "ধান পাইকারি সরবরাহ ও সরাসরি সোর্সিং",
+    "title": "ধান",
     "category": "agriculture-livestock",
     "division": "Chattogram",
     "district": "Lakshmipur",
@@ -662,7 +662,7 @@ export const MOCK_POSTS: Post[] = [
   },
   {
     "id": "post-sheet-25",
-    "title": "খাতুনগঞ্জ-এ মসলা পাইকারি সোর্সিং",
+    "title": "খাতুনগঞ্জ-এ মসলা",
     "category": "others",
     "division": "Chattogram",
     "district": "Chattogram",
@@ -690,7 +690,7 @@ export const MOCK_POSTS: Post[] = [
   },
   {
     "id": "post-sheet-26",
-    "title": "পাঁচআনী বাজার, টাঙ্গাইল-এ পোড়াবাড়ির চমচম পাইকারি সোর্সিং",
+    "title": "টাঙ্গাইল-এ পোড়াবাড়ির চমচম",
     "category": "food-beverage",
     "division": "Dhaka",
     "district": "Tangail",
@@ -718,7 +718,7 @@ export const MOCK_POSTS: Post[] = [
   },
   {
     "id": "post-sheet-27",
-    "title": "পাথরাইল ও বাজিতপুর-এ টাঙ্গাইল শাড়ি পাইকারি সোর্সিং",
+    "title": "পাথরাইল ও বাজিতপুর-এ টাঙ্গাইল শাড়ি",
     "category": "clothing",
     "division": "Dhaka",
     "district": "Tangail",
@@ -746,7 +746,7 @@ export const MOCK_POSTS: Post[] = [
   },
   {
     "id": "post-sheet-28",
-    "title": "টাঙ্গাইলের মধুপুর উপজেলা-এ মধুপুরের আনারস পাইকারি সোর্সিং",
+    "title": "মধুপুরের আনারস",
     "category": "food-beverage",
     "division": "Dhaka",
     "district": "Tangail",
@@ -802,7 +802,7 @@ export const MOCK_POSTS: Post[] = [
   },
   {
     "id": "post-sheet-30",
-    "title": "খাজুরা হাট ও চৌগাছা বাজার-এ খেজুরের গুড় পাইকারি সোর্সিং",
+    "title": "খেজুরের গুড়",
     "category": "food-beverage",
     "division": "Khulna",
     "district": "Jashore",
@@ -830,7 +830,7 @@ export const MOCK_POSTS: Post[] = [
   },
   {
     "id": "post-sheet-31",
-    "title": "ঈশ্বরদী, পাবনা-এ লিচু পাইকারি সোর্সিং",
+    "title": "লিচু",
     "category": "food-beverage",
     "division": "Rajshahi",
     "district": "Pabna",
@@ -858,7 +858,7 @@ export const MOCK_POSTS: Post[] = [
   },
   {
     "id": "post-sheet-32",
-    "title": "বাঁশ-বেত পণ্য পাইকারি সরবরাহ ও সরাসরি সোর্সিং",
+    "title": "বাঁশ-বেত",
     "category": "others",
     "division": "Dhaka",
     "district": "Dhaka",
@@ -886,7 +886,7 @@ export const MOCK_POSTS: Post[] = [
   },
   {
     "id": "post-sheet-33",
-    "title": "লো-গ্রেড বা কমার্শিয়াল জামদানি শাড়ি পাইকারি সরবরাহ ও সরাসরি সোর্সিং",
+    "title": "কমার্শিয়াল জামদানি শাড়ি",
     "category": "clothing",
     "division": "Dhaka",
     "district": "Narayanganj",
@@ -914,7 +914,7 @@ export const MOCK_POSTS: Post[] = [
   },
   {
     "id": "post-sheet-34",
-    "title": "হাফ-সিল্ক জামদানি পাইকারি সরবরাহ ও সরাসরি সোর্সিং",
+    "title": "হাফ-সিল্ক জামদানি",
     "category": "clothing",
     "division": "Dhaka",
     "district": "Narayanganj",
@@ -942,7 +942,7 @@ export const MOCK_POSTS: Post[] = [
   },
   {
     "id": "post-sheet-35",
-    "title": "পিওর কটন বা রেশম জামদানি পাইকারি সরবরাহ ও সরাসরি সোর্সিং",
+    "title": "পিওর কটন বা রেশম জামদানি",
     "category": "clothing",
     "division": "Dhaka",
     "district": "Narayanganj",
@@ -970,7 +970,7 @@ export const MOCK_POSTS: Post[] = [
   },
   {
     "id": "post-sheet-36",
-    "title": "কানাইপুর হাট, ফরিদপুর-এ কাঁচা পাট (তোষা পাট) পাইকারি সোর্সিং",
+    "title": "কাঁচা পাট (তোষা পাট)",
     "category": "agriculture-livestock",
     "division": "Dhaka",
     "district": "Faridpur",
@@ -998,7 +998,7 @@ export const MOCK_POSTS: Post[] = [
   },
   {
     "id": "post-sheet-37",
-    "title": "কাঁচা পাট পাইকারি সরবরাহ ও সরাসরি সোর্সিং",
+    "title": "কাঁচা পাট",
     "category": "agriculture-livestock",
     "division": "Dhaka",
     "district": "Narayanganj",
@@ -1026,7 +1026,7 @@ export const MOCK_POSTS: Post[] = [
   },
   {
     "id": "post-sheet-38",
-    "title": "রাজবাড়ীর বালিয়াকান্দি-এ কাঁচা পাট পাইকারি সোর্সিং",
+    "title": "কাঁচা পাট পাইকারি সোর্সিং",
     "category": "agriculture-livestock",
     "division": "Dhaka",
     "district": "Rajbari",
@@ -1082,7 +1082,7 @@ export const MOCK_POSTS: Post[] = [
   },
   {
     "id": "post-sheet-40",
-    "title": "কুষ্টিয়ার কুমারখালী-এ কাঁচা পাট পাইকারি সোর্সিং",
+    "title": "কাঁচা পাট",
     "category": "agriculture-livestock",
     "division": "Khulna",
     "district": "Kushtia",
@@ -1110,11 +1110,11 @@ export const MOCK_POSTS: Post[] = [
   },
   {
     "id": "post-sheet-41",
-    "title": "মৃৎশিল্পের পণ্য পাইকারি সরবরাহ ও সরাসরি সোর্সিং",
+    "title": "মৃৎশিল্পের পণ্য",
     "category": "others",
     "division": "Dhaka",
     "district": "Dhaka",
-    "area": "কারওয়ান বাজারের কামারপট্টি, দোয়েল চত্বর",
+    "area": "কামারপট্টি, দোয়েল চত্বর",
     "wholesalePrice": 50,
     "retailPrice": 1000,
     "retailSellPrice": 1000,
@@ -1138,7 +1138,7 @@ export const MOCK_POSTS: Post[] = [
   },
   {
     "id": "post-sheet-42",
-    "title": "কারওয়ান বাজার,  শ্যামবাজার-এ পান পাইকারি সোর্সিং",
+    "title": "কারওয়ান বাজার,  শ্যামবাজার-এ পান",
     "category": "agriculture-livestock",
     "division": "Dhaka",
     "district": "Dhaka",
@@ -1166,7 +1166,7 @@ export const MOCK_POSTS: Post[] = [
   },
   {
     "id": "post-sheet-43",
-    "title": "মোহনপুর ও দুর্গাপুর হাট-এ মিষ্টি পান পাইকারি সোর্সিং",
+    "title": "মিষ্টি পান পাইকারি সোর্সিং",
     "category": "agriculture-livestock",
     "division": "Rajshahi",
     "district": "Rajshahi",
@@ -1194,7 +1194,7 @@ export const MOCK_POSTS: Post[] = [
   },
   {
     "id": "post-sheet-44",
-    "title": "রসমালাই পাইকারি সরবরাহ ও সরাসরি সোর্সিং",
+    "title": "রসমালাই",
     "category": "food-beverage",
     "division": "Chattogram",
     "district": "Cumilla",
@@ -1222,7 +1222,7 @@ export const MOCK_POSTS: Post[] = [
   },
   {
     "id": "post-sheet-45",
-    "title": "পাটুয়াটুলী রোড, পুরান ঢাকা-এ সানগ্লাস ও ঘড়ি পাইকারি সোর্সিং",
+    "title": "সানগ্লাস ও ঘড়ি পাইকারি সোর্সিং",
     "category": "cosmetics",
     "division": "Dhaka",
     "district": "Dhaka",
@@ -1250,7 +1250,7 @@ export const MOCK_POSTS: Post[] = [
   },
   {
     "id": "post-1",
-    "title": "গাজীপুরে পরিবেশবান্ধব কাগজের কাপ তৈরির লাভজনক ব্যবসা",
+    "title": "গাজীপুরে পরিবেশবান্ধব কাগজের কাপ",
     "category": "food-beverage",
     "division": "Dhaka",
     "district": "Gazipur",
@@ -1271,7 +1271,7 @@ export const MOCK_POSTS: Post[] = [
   },
   {
     "id": "post-2",
-    "title": "বগুড়ার বিখ্যাত দই ও দুগ্ধজাত সামগ্রীর অনলাইন রিটেইল",
+    "title": "বগুড়ার বিখ্যাত দই ও দুগ্ধজাত",
     "category": "food-beverage",
     "division": "Rajshahi",
     "district": "Bogura",
@@ -1292,7 +1292,7 @@ export const MOCK_POSTS: Post[] = [
   },
   {
     "id": "post-3",
-    "title": "চট্টগ্রামে অর্গানিক ড্রাই ফিশ (শুঁটকি) প্যাকেজিং ও ব্র্যান্ডিং",
+    "title": "অর্গানিক ড্রাই ফিশ (শুঁটকি)",
     "category": "food-beverage",
     "division": "Chattogram",
     "district": "Chattogram",
@@ -1313,7 +1313,7 @@ export const MOCK_POSTS: Post[] = [
   },
   {
     "id": "post-4",
-    "title": "নারায়ণগঞ্জে হোসিয়ারি ও রেডিমেড টি-শার্ট পাইকারি সরবরাহ",
+    "title": "টি-শার্ট",
     "category": "clothing",
     "division": "Dhaka",
     "district": "Narayanganj",
@@ -1334,7 +1334,7 @@ export const MOCK_POSTS: Post[] = [
   },
   {
     "id": "post-5",
-    "title": "যশোরে নার্সারি ও হাইব্রিড ফলের চারা উৎপাদন ব্যবসা",
+    "title": "যশোরে নার্সারি ও হাইব্রিড ফলের চারা",
     "category": "agriculture-livestock",
     "division": "Khulna",
     "district": "Jashore",
@@ -1355,7 +1355,7 @@ export const MOCK_POSTS: Post[] = [
   },
   {
     "id": "post-6",
-    "title": "সিলেটে অর্গানিক গ্রিন টি ও ভেষজ চায়ের স্মল-স্কেল প্যাকেজিং",
+    "title": "অর্গানিক গ্রিন টি ও ভেষজ চায়ের স্মল-স্কেল প্যাকেজিং",
     "category": "food-beverage",
     "division": "Sylhet",
     "district": "Sylhet",
@@ -1376,7 +1376,7 @@ export const MOCK_POSTS: Post[] = [
   },
   {
     "id": "post-7",
-    "title": "ঢাকার প্রাণকেন্দ্রে মোবাইল রিপ্রেয়ারিং ও এক্সেসরিজ পয়েন্ট",
+    "title": "মোবাইল রিপ্রেয়ারিং ও এক্সেসরিজ পয়েন্ট",
     "category": "electronics",
     "division": "Dhaka",
     "district": "Dhaka",
@@ -1397,7 +1397,7 @@ export const MOCK_POSTS: Post[] = [
   },
   {
     "id": "post-8",
-    "title": "রংপুরে হোমমেড ভেষজ রূপচর্চা সামগ্রী ও স্কিনকেয়ার ব্র্যান্ড",
+    "title": "রূপচর্চা সামগ্রী ও স্কিনকেয়ার ব্র্যান্ড",
     "category": "cosmetics",
     "division": "Rangpur",
     "district": "Rangpur",

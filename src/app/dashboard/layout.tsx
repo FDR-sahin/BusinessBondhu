@@ -3,7 +3,7 @@ import { AuthGuard } from "@/components/dashboard/auth-guard";
 import { DashboardShell } from "@/components/dashboard/dashboard-shell";
 
 export const metadata: Metadata = {
-  title: { default: "ড্যাশবোর্ড", template: "%s | ড্যাশবোর্ড | Business Hub BD" },
+  title: { default: "ড্যাশবোর্ড", template: "%s | ড্যাশবোর্ড | বিজনেস আইডিয়া জোন" },
   robots: { index: false, follow: false }, // private area: keep it out of search engines
 };
 
