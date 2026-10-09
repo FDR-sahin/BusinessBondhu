@@ -62,13 +62,13 @@ export function ExploreView() {
                 <SlidersHorizontal aria-hidden /> {t("filterTitle")}
                 {activeCount > 0 && <Badge className="ml-0.5 px-1.5 bg-green text-white">{toFormattedNumber(activeCount, lang)}</Badge>}
               </Button>
-              <p className="text-sm text-muted" aria-live="polite">
+              <div className="text-sm text-muted" aria-live="polite">
                 {isPending ? (
                   <Skeleton className="h-5 w-24" />
                 ) : (
                   t("totalResults").replace("{count}", toFormattedNumber(data?.total ?? 0, lang))
                 )}
-              </p>
+              </div>
             </div>
             <SortSelect value={filters.sort} onChange={(sort) => setFilters({ sort })} />
           </div>
