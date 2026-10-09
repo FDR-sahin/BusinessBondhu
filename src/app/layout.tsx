@@ -9,7 +9,7 @@ import "./globals.css";
 // Professional Bangla display font
 const anekBangla = Anek_Bangla({
   subsets: ["bengali"],
-  weight: ["600", "700"],
+  weight: ["400", "500", "600", "700"],
   variable: "--font-bn-display",
   display: "swap",
 });
@@ -17,7 +17,7 @@ const anekBangla = Anek_Bangla({
 // Bangla UI / body font
 const hindSiliguri = Hind_Siliguri({
   subsets: ["bengali", "latin"],
-  weight: ["400", "600"],
+  weight: ["400", "500", "600", "700"],
   variable: "--font-hind",
   display: "swap",
 });

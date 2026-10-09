@@ -25,7 +25,7 @@ export function PriceCards({ post }: { post: Pick<PostDetail, "wholesalePrice" |
                 <Icon className="h-4 w-4" aria-hidden />
               </span>
             </div>
-            <p className="text-2xl font-bold tracking-tight md:text-3xl">{value != null ? formatBDT(value) : "—"}</p>
+            <p className="text-2xl font-bold font-bangla tracking-normal md:text-3xl text-ink">{value != null ? formatBDT(value) : "—"}</p>
           </Card>
         </StaggerItem>
       ))}

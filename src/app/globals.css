@@ -74,12 +74,19 @@
 
   :lang(bn) body,
   :lang(bn) {
-    font-family: var(--font-hind), var(--font-inter), system-ui, sans-serif;
+    font-family: var(--font-hind), var(--font-bn-display), var(--font-inter), system-ui, sans-serif;
     line-height: 1.65;
+    letter-spacing: normal;
   }
 
   h1, h2, h3, h4, .font-display {
-    font-family: var(--font-noto-serif-bn), var(--font-fraunces), serif;
+    font-family: var(--font-bn-display), var(--font-hind), var(--font-fraunces), sans-serif;
+  }
+
+  /* Ensure Bengali numbers and ligatures do not suffer from compressed letter-spacing */
+  :lang(bn) .tracking-tight,
+  :lang(bn) .tracking-tighter {
+    letter-spacing: 0em !important;
   }
 
   /* Focus ring style per guidelines (2px visible focus ring via :focus-visible ONLY) */

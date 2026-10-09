@@ -49,9 +49,9 @@ const config: Config = {
         line: token("line"),
       },
       fontFamily: {
-        sans: ["var(--font-inter)", "var(--font-hind)", "system-ui", "sans-serif"],
-        bangla: ["var(--font-hind)", "system-ui", "sans-serif"],
-        display: ["var(--font-noto-serif-bn)", "var(--font-fraunces)", "serif"],
+        sans: ["var(--font-hind)", "var(--font-inter)", "system-ui", "sans-serif"],
+        bangla: ["var(--font-hind)", "var(--font-bn-display)", "system-ui", "sans-serif"],
+        display: ["var(--font-bn-display)", "var(--font-hind)", "var(--font-fraunces)", "sans-serif"],
         mono: ["var(--font-inter)", "monospace"],
       },
       borderRadius: {
