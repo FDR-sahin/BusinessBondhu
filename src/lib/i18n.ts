@@ -44,7 +44,7 @@ const bn = {
   // Layout & Trust Strip
   trustStripFree: "বিনামূল্যে ব্যবহার করুন",
   trustStripModerated: "মডারেটেড পোস্ট",
-  trustStripDistricts: "সকল ৬৪ জেলা",
+  trustStripDistricts: "৬৪ জেলা",
   shareIdea: "আইডিয়া শেয়ার করুন",
   createPost: "আইডিয়া যোগ",
   closingNote: "একটি আইডিয়া একটি শুরু। অনেক আইডিয়া একটি বাজার।",
@@ -211,7 +211,7 @@ const en: Record<keyof typeof bn, string> = {
   // Layout & Trust Strip
   trustStripFree: "Free to use",
   trustStripModerated: "Moderated posts",
-  trustStripDistricts: "All 64 districts",
+  trustStripDistricts: "64 districts",
   shareIdea: "Share Idea",
   createPost: "Add Idea",
   closingNote: "One idea is a start. Many ideas make a market.",
