@@ -469,7 +469,7 @@ export function Footer() {
 
   const address = lang === "bn" ? "ঢাকা, বাংলাদেশ" : "Dhaka, Bangladesh";
 
-  const phone = lang === "bn" ? "+০১৯৪৩-৯০৭৭৪৩" : "+880 19439 07743";
+  const phone = lang === "bn" ? CONTACT.phoneBn : CONTACT.phone;
 
   // Replace these placeholder URLs with your actual social profiles.
   const socialLinks = [

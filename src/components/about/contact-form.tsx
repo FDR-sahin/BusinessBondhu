@@ -79,7 +79,7 @@ export function ContactForm() {
         <h3 className="text-lg font-semibold">{lang === "en" ? "Direct Contact" : "সরাসরি যোগাযোগ"}</h3>
         <ul className="space-y-4 text-ink-secondary">
           <li className="flex gap-3"><Mail className="mt-1 h-4 w-4 shrink-0" aria-hidden /><a href={`mailto:${CONTACT.email}`} className="break-all hover:text-foreground">{CONTACT.email}</a></li>
-          <li className="flex gap-3"><Phone className="mt-1 h-4 w-4 shrink-0" aria-hidden /><span>{CONTACT.phone}</span></li>
+          <li className="flex gap-3"><Phone className="mt-1 h-4 w-4 shrink-0 text-green" aria-hidden /><a href={`tel:${CONTACT.phone.replace(/[^\d+]/g, "")}`} className="hover:text-green hover:underline font-mono">{lang === "bn" ? CONTACT.phoneBn : CONTACT.phone}</a></li>
           <li className="flex gap-3"><MapPin className="mt-1 h-4 w-4 shrink-0" aria-hidden /><span>{CONTACT.address}</span></li>
         </ul>
       </Card>

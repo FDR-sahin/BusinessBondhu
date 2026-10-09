@@ -35,8 +35,9 @@ export const CATEGORIES: { slug: string; nameBn: string; nameEn: string; icon: L
 ];
 
 export const CONTACT = {
-  email: "regardstech.team@gmail.com", // placeholder — replace
-  phone: "+৮৮০ ১৭০০-০০০০০০", // placeholder — replace
+  email: "regardstech.team@gmail.com",
+  phone: "+880 1943-907743",
+  phoneBn: "+৮৮০ ১৯৪৩-৯০৭৭৪৩",
   address: "ঢাকা, বাংলাদেশ",
 };
 
