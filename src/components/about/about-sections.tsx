@@ -38,13 +38,13 @@ export function AboutHero() {
           </Badge>
           <h1 className="text-3xl font-bold leading-[1.3] tracking-tight md:text-5xl md:leading-[1.25]">
             {lang === "en"
-              ? "Business Idea Zone — Complete Business Sourcing & Market Intelligence"
-              : "বিজনেস আইডিয়া জোন — এলাকাভিত্তিক ব্যবসার সঠিক সমাধান"}
+              ? "Business Idea Zone: Complete Business Sourcing & Market Intelligence"
+              : "বিজনেস আইডিয়া জোন: এলাকাভিত্তিক ব্যবসার সঠিক সমাধান"}
           </h1>
           <p className="mt-5 max-w-2xl text-lg text-ink-secondary whitespace-pre-line">
             {lang === "en"
               ? "Want to start a new business, but not sure where to begin? Or searching for high-demand products and market opportunities? Business Idea Zone is here to answer all your questions."
-              : "নতুন ব্যবসা শুরু করতে চান, কিন্তু কী নিয়ে শুরু করবেন বুঝতে পারছেন না? কিংবা কোন পণ্যের চাহিদা বেশি, কোথায় সুযোগ রয়েছে- তা খুঁজছেন? আপনাদের এই প্রশ্নগুলোর উত্তর খুঁজে দিতেই আমাদের বিজনেস আইডিয়া জোন।"}
+              : "নতুন ব্যবসা শুরু করতে চান, কিন্তু কী নিয়ে শুরু করবেন বুঝতে পারছেন না? কিংবা কোন পণ্যের চাহিদা বেশি, কোথায় সুযোগ রয়েছে, তা খুঁজছেন? আপনাদের এই প্রশ্নগুলোর উত্তর খুঁজে দিতেই আমাদের বিজনেস আইডিয়া জোন।"}
           </p>
         </FadeIn>
       </div>
@@ -62,18 +62,18 @@ export function WhoWeAre() {
           <div className="space-y-4 text-ink-secondary">
             <p>
               {lang === "en"
-                ? "We believe that starting a successful business requires more than just capital—it takes the right idea, market insights, and timely decisions. Keeping these entrepreneurial challenges in mind, Regard's Tech presents Business Idea Zone. This platform helps entrepreneurs discover new business ideas, explore various products, and unlock new potential for their ventures."
-                : "আমরা বিশ্বাস করি, ভালো একটি ব্যবসা শুরু করার জন্য শুধু পুঁজি থাকলেই হয় না, দরকার সঠিক ধারণা, বাজার সম্পর্কে জানা এবং সময়মতো সঠিক সিদ্ধান্ত নেওয়া। উদ্যোক্তাদের এই চ্যালেঞ্জগুলোর কথা মাথায় রেখেই Regards Tech নিয়ে এসেছে বিজনেস আইডিয়া জোন । এটি এমন একটি প্ল্যাটফর্ম, যেখানে উদ্যোক্তারা নতুন ব্যবসার আইডিয়া খুঁজে পাবেন, বিভিন্ন পণ্য সম্পর্কে জানতে পারবেন এবং নিজের উদ্যোগের জন্য নতুন সম্ভাবনা খুঁজে নিতে পারবেন।"}
+                ? "We believe that starting a successful business requires more than just capital, it takes the right idea, market insights, and timely decisions. Keeping these entrepreneurial challenges in mind, Regard's Tech presents Business Idea Zone. This platform helps entrepreneurs discover new business ideas, explore various products, and unlock new potential for their ventures."
+                : "আমরা বিশ্বাস করি, ভালো একটি ব্যবসা শুরু করার জন্য শুধু পুঁজি থাকলেই হয় না, দরকার সঠিক ধারণা, বাজার সম্পর্কে জানা এবং সময়মতো সঠিক সিদ্ধান্ত নেওয়া। উদ্যোক্তাদের এই চ্যালেঞ্জগুলোর কথা মাথায় রেখেই Regards Tech নিয়ে এসেছে বিজনেস আইডিয়া জোন। এটি এমন একটি প্ল্যাটফর্ম, যেখানে উদ্যোক্তারা নতুন ব্যবসার আইডিয়া খুঁজে পাবেন, বিভিন্ন পণ্য সম্পর্কে জানতে পারবেন এবং নিজের উদ্যোগের জন্য নতুন সম্ভাবনা খুঁজে নিতে পারবেন।"}
             </p>
             <p>
               {lang === "en"
-                ? "Our single mission is to make your business journey easier, so that your great idea can turn into a real venture. From business ideas to market research—everything in one place."
+                ? "Our single mission is to make your business journey easier, so that your great idea can turn into a real venture. From business ideas to market research, everything in one place."
                 : "আমাদের লক্ষ্য একটাই, আপনার ব্যবসা শুরু করার পথটা আরও সহজ করে দেওয়া, যেন আপনার ভালো একটি ভাবনা একদিন বাস্তব উদ্যোগে রূপ নিতে পারে। ব্যবসার আইডিয়া থেকে বাজারের খোঁজ, সব এক জায়গায়।"}
             </p>
             <p className="font-medium text-ink">
               {lang === "en"
                 ? "Whatever business questions you have, Business Idea Zone is right by your side."
-                : "কী নিয়ে ব্যবসা শুরু করবেন, কোন পণ্যের চাহিদা কেমন- এমন নানা প্রশ্নের উত্তর খুঁজতে আপনার পাশে আছে বিজনেস আইডিয়া জোন।"}
+                : "কী নিয়ে ব্যবসা শুরু করবেন, কোন পণ্যের চাহিদা কেমন, এমন নানা প্রশ্নের উত্তর খুঁজতে আপনার পাশে আছে বিজনেস আইডিয়া জোন।"}
             </p>
           </div>
         </FadeIn>
