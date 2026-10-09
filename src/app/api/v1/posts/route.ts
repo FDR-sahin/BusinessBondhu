@@ -5,7 +5,7 @@ import { getDistrictLabel } from "@/lib/bd-data";
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const params = Object.fromEntries(searchParams.entries());
-  const backendUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
+  const backendUrl = process.env.NEXT_PUBLIC_API_URL || "https://uddok-admin.vercel.app";
 
   try {
     const res = await fetch(`${backendUrl.replace(/\/$/, "")}/api/ideas`, {

@@ -41,7 +41,7 @@ export function BlogSection() {
 
         const baseUrl =
           process.env.NEXT_PUBLIC_API_URL ||
-          "http://localhost:3001";
+          "https://uddok-admin.vercel.app";
 
         const response = await fetch(
           `${baseUrl.replace(/\/$/, "")}/api/blogs`,

@@ -6,7 +6,7 @@ export async function GET(request: Request) {
   const category = searchParams.get("category");
   const page = parseInt(searchParams.get("page") || "1", 10);
   const limit = parseInt(searchParams.get("limit") || "9", 10);
-  const backendUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
+  const backendUrl = process.env.NEXT_PUBLIC_API_URL || "https://uddok-admin.vercel.app";
 
   try {
     const res = await fetch(`${backendUrl.replace(/\/$/, "")}/api/blogs`, {

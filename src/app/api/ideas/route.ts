@@ -2,8 +2,10 @@ import { NextResponse } from "next/server";
 import { MOCK_POSTS } from "@/lib/mock-data";
 import { getDistrictLabel } from "@/lib/bd-data";
 
+export const dynamic = "force-dynamic";
+
 export async function GET() {
-  const backendUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
+  const backendUrl = process.env.NEXT_PUBLIC_API_URL || "https://uddok-admin.vercel.app";
 
   try {
     const res = await fetch(`${backendUrl.replace(/\/$/, "")}/api/ideas`, {
