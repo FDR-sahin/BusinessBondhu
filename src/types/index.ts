@@ -69,6 +69,8 @@ export interface Post {
   commentsCount: number;
   viewsCount: number;
   createdAt: string;
+  description?: string;
+  tags?: string[];
 }
 
 export interface DistrictStat {

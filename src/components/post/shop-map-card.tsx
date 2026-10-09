@@ -75,7 +75,13 @@ export function ShopMapCard({ post }: { post: PostDetail }) {
       </div>
 
       {/* Embedded Google Map Preview Frame */}
-      <div className="relative aspect-[16/9] w-full overflow-hidden rounded-xl border border-line bg-background shadow-inner">
+      <a
+        href={googleMapsRouteUrl}
+        target="_blank"
+        rel="noopener noreferrer"
+        title={lang === "en" ? "Click to open in Google Maps" : "গুগল ম্যাপসে দেখতে ক্লিক করুন"}
+        className="group relative block aspect-[16/9] w-full overflow-hidden rounded-xl border border-line bg-background shadow-inner transition-all hover:border-green"
+      >
         <iframe
           title={locationText}
           width="100%"
@@ -85,16 +91,22 @@ export function ShopMapCard({ post }: { post: PostDetail }) {
           marginHeight={0}
           marginWidth={0}
           src={googleEmbedUrl}
-          className="h-full w-full grayscale-[15%] contrast-[105%] transition-all hover:grayscale-0"
+          className="pointer-events-none h-full w-full grayscale-[15%] contrast-[105%] transition-all group-hover:grayscale-0 group-hover:scale-[1.01]"
           loading="lazy"
         />
-        <div className="pointer-events-none absolute bottom-3 right-3 rounded-lg border border-line bg-surface/90 px-3 py-1.5 backdrop-blur-sm">
+        <div className="absolute inset-0 flex items-center justify-center bg-black/5 opacity-0 transition-opacity group-hover:opacity-100">
+          <span className="flex items-center gap-2 rounded-lg border border-line bg-surface/95 px-4 py-2 font-mono text-xs font-bold text-ink shadow-lg backdrop-blur-md">
+            <ExternalLink className="h-4 w-4 text-green" />
+            {lang === "en" ? "Open Location in Google Maps" : "গুগল ম্যাপসে সরাসরি নেভিগেট করুন"}
+          </span>
+        </div>
+        <div className="absolute bottom-3 right-3 rounded-lg border border-line bg-surface/90 px-3 py-1.5 shadow-sm backdrop-blur-sm">
           <p className="flex items-center gap-1.5 font-mono text-xs font-semibold text-ink">
             <Compass className="h-3.5 w-3.5 text-green" />
-            <span>Google Maps</span>
+            <span>Google Maps ↗</span>
           </p>
         </div>
-      </div>
+      </a>
     </Card>
   );
 }
