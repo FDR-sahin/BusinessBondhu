@@ -15,6 +15,7 @@ export const postSchema = z.object({
   division: z.string().min(1, "বিভাগ নির্বাচন করুন"),
   district: z.string().min(1, "জেলা নির্বাচন করুন"),
   area: z.string().trim().max(80, "এলাকার নাম সর্বোচ্চ ৮০ অক্ষরের হতে পারবে"),
+  exactLocation: z.string().trim().max(160, "সোর্সিং ঠিকানা সর্বোচ্চ ১৬০ অক্ষরের হতে পারবে").optional(),
   wholesalePrice: price("পাইকারি দাম"),
   retailPrice: price("খুচরা দাম"),
   retailSellPrice: z.string().refine((v) => v.trim() === "" || parseAmount(v) > 0, "সঠিক দাম লিখুন"),
@@ -26,7 +27,7 @@ export const postSchema = z.object({
 export type PostFormValues = z.infer<typeof postSchema>;
 
 export const EMPTY_POST: PostFormValues = {
-  title: "", category: "", division: "", district: "", area: "",
+  title: "", category: "", division: "", district: "", area: "", exactLocation: "",
   wholesalePrice: "", retailPrice: "", retailSellPrice: "",
   profitPotential: "medium", description: "", image: undefined, tags: [],
 };
@@ -45,6 +46,7 @@ export function toPostRequest(v: PostFormValues, status: "draft" | "pending") {
     division: v.division || undefined,
     district: v.district || undefined,
     area: v.area.trim() || undefined,
+    exactLocation: v.exactLocation?.trim() || undefined,
     wholesalePrice: num(v.wholesalePrice),
     retailPrice: num(v.retailPrice),
     retailSellPrice: num(v.retailSellPrice),
@@ -59,6 +61,7 @@ export function toPostRequest(v: PostFormValues, status: "draft" | "pending") {
 export function fromPost(p: MyPostDetail): PostFormValues {
   return {
     title: p.title, category: p.category, division: p.division, district: p.district, area: p.area ?? "",
+    exactLocation: p.exactLocation ?? "",
     wholesalePrice: String(p.wholesalePrice ?? ""), retailPrice: String(p.retailPrice ?? ""),
     retailSellPrice: p.retailSellPrice != null ? String(p.retailSellPrice) : "",
     profitPotential: p.profitPotential, description: p.description ?? "", image: p.image, tags: p.tags ?? [],

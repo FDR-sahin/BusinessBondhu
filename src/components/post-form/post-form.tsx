@@ -109,13 +109,14 @@ export function PostForm({ mode, postId, initial }: PostFormProps) {
     division: v.division,
     district: v.district,
     area: v.area.trim() || undefined,
+    exactLocation: v.exactLocation?.trim() || undefined,
     wholesalePrice: Number.isFinite(parseAmount(v.wholesalePrice)) ? parseAmount(v.wholesalePrice) : 0,
     retailPrice: Number.isFinite(parseAmount(v.retailPrice)) ? parseAmount(v.retailPrice) : 0,
     profitPotential: v.profitPotential,
     author: { id: user?.id ?? "me", name: user?.name ?? "আপনি", avatar: user?.avatar },
     likesCount: 0, dislikesCount: 0, commentsCount: 0, viewsCount: 0,
     createdAt: new Date().toISOString(),
-  }), [v.title, v.image, v.category, v.division, v.district, v.area, v.wholesalePrice, v.retailPrice, v.profitPotential, user]);
+  }), [v.title, v.image, v.category, v.division, v.district, v.area, v.exactLocation, v.wholesalePrice, v.retailPrice, v.profitPotential, user]);
 
   const descLen = Array.from(v.description.trim()).length;
 
@@ -138,7 +139,7 @@ export function PostForm({ mode, postId, initial }: PostFormProps) {
           </FormField>
         </Section>
 
-        <Section title="এলাকা" description="যে এলাকার তথ্য শেয়ার করছেন">
+        <Section title="এলাকা ও সোর্সিং ঠিকানা" description="যে এলাকার ও বাজারের তথ্য শেয়ার করছেন">
           <div className="grid gap-5 sm:grid-cols-2">
             <FormField label="বিভাগ" htmlFor="p-division" required error={errors.division?.message}>
               <Controller control={control} name="division" render={({ field }) => (
@@ -157,9 +158,12 @@ export function PostForm({ mode, postId, initial }: PostFormProps) {
               )} />
             </FormField>
           </div>
-          <FormField label="এলাকা" htmlFor="p-area" error={errors.area?.message}>
+          <FormField label="এলাকা / থানা" htmlFor="p-area" error={errors.area?.message}>
             <Input id="p-area" maxLength={80} autoComplete="off" placeholder="যেমন: মিরপুর ১০" list={dhakaCity ? "p-dhaka-areas" : undefined} invalid={!!errors.area} {...register("area")} />
             {dhakaCity && <datalist id="p-dhaka-areas">{DHAKA_AREAS.map((a) => <option key={a} value={a} />)}</datalist>}
+          </FormField>
+          <FormField label="নির্দিষ্ট সোর্সিং ঠিকানা / দোকান (Google Maps)" htmlFor="p-exactLocation" error={errors.exactLocation?.message} hint="সরাসরি পাইকারি দোকান বা বাজারের নাম ও ঠিকানা দিন">
+            <Input id="p-exactLocation" maxLength={160} autoComplete="off" placeholder="যেমন: গাবতলী পশুর হাট, সাভার, ঢাকা" invalid={!!errors.exactLocation} {...register("exactLocation")} />
           </FormField>
         </Section>
 

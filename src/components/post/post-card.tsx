@@ -1,12 +1,12 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Heart, MessageCircle } from "lucide-react";
+import { Heart, MapPin, ArrowRight } from "lucide-react";
 import Link from "next/link";
 import { UserAvatar } from "@/components/ui/avatar";
 import { getDistrictLabel } from "@/lib/bd-data";
 import { getCategory } from "@/lib/constants";
-import { formatBDT, timeAgo, toFormattedNumber } from "@/lib/utils";
+import { formatBDT, toFormattedNumber } from "@/lib/utils";
 import { useLangStore } from "@/store/lang-store";
 import type { Post } from "@/types";
 
@@ -15,6 +15,8 @@ export function PostCard({ post }: { post: Post }) {
   const category = getCategory(post.category);
   const CategoryIcon = category?.icon;
   const districtName = getDistrictLabel(post.district) || post.district;
+  const exactLoc = post.exactLocation || (post.area ? `${post.area}, ${districtName}` : districtName);
+  const profit = Math.max(0, (post.retailSellPrice ?? post.retailPrice) - post.wholesalePrice);
 
   // Profit potential badge styling
   const profitBadgeStyle =
@@ -55,24 +57,42 @@ export function PostCard({ post }: { post: Post }) {
           {post.title}
         </h3>
 
-        {/* Price Slip Ledger Numbers */}
-        <div className="mt-4 grid grid-cols-2 gap-2 rounded-md border border-line bg-surface p-3 text-xs shadow-inner">
+        {/* Exact Location Front View Badge */}
+        <div className="mt-2 flex items-center gap-1.5 text-xs text-ink-secondary">
+          <MapPin className="h-3.5 w-3.5 text-green shrink-0" aria-hidden />
+          <span className="truncate font-medium">{exactLoc}</span>
+        </div>
+
+        {/* Price Slip Ledger Numbers (Wholesale, Retail, Profit) */}
+        <div className="mt-4 grid grid-cols-3 gap-1.5 rounded-md border border-line bg-surface p-2.5 text-xs shadow-inner">
           <div>
             <span className="block micro-label text-muted">{lang === "bn" ? "পাইকারি" : "Wholesale"}</span>
-            <span className="font-mono text-sm font-semibold tabular-nums text-ink">
+            <span className="font-mono text-xs font-semibold tabular-nums text-ink">
               {formatBDT(post.wholesalePrice, lang)}
             </span>
           </div>
           <div>
-            <span className="block micro-label text-muted">{lang === "bn" ? "খুচরা বিক্রি" : "Retail Sell"}</span>
-            <span className="font-mono text-sm font-semibold tabular-nums text-green">
+            <span className="block micro-label text-muted">{lang === "bn" ? "খুচরা" : "Retail"}</span>
+            <span className="font-mono text-xs font-semibold tabular-nums text-ink">
               {formatBDT(post.retailSellPrice ?? post.retailPrice, lang)}
+            </span>
+          </div>
+          <div>
+            <span className="block micro-label text-green">{lang === "bn" ? "লাভ" : "Profit"}</span>
+            <span className="font-mono text-xs font-bold tabular-nums text-green">
+              {formatBDT(profit, lang)}
             </span>
           </div>
         </div>
 
+        {/* Map & Detail Action Bar */}
+        <div className="mt-3 flex items-center justify-between text-xs font-medium text-green transition-colors group-hover:underline">
+          <span>{lang === "bn" ? "ম্যাপ ও বিস্তারিত দেখুন" : "View Map & Details"}</span>
+          <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-1" />
+        </div>
+
         {/* Dotted Tear-off Divider */}
-        <div className="my-4 border-t border-dashed border-line" />
+        <div className="my-3 border-t border-dashed border-line" />
 
         {/* Footer: Author, Profit Badge & Stats */}
         <div className="mt-auto flex items-center justify-between gap-2 text-xs">

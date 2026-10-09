@@ -59,6 +59,7 @@ export interface Post {
   division: string;
   district: string;
   area?: string;
+  exactLocation?: string;
   wholesalePrice: number;
   retailPrice: number;
   retailSellPrice?: number;
