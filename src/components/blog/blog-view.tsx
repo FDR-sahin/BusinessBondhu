@@ -18,6 +18,7 @@ import { useLangStore } from "@/store/lang-store";
 import { BlogCard, FeaturedBlogCard } from "./blog-card";
 import { BlogSidebarLedger } from "./blog-sidebar-ledger";
 import { BlogTableView } from "./blog-table-view";
+import { BusinessIdeaSection } from "./business-idea-section";
 
 const ALL = "all";
 
@@ -205,6 +206,11 @@ export function BlogView() {
             />
           )}
         </main>
+
+        {/* Live Business Sourcing Ideas Section (fetches /api/ideas) */}
+        <div className="pt-8 border-t-2 border-line">
+          <BusinessIdeaSection />
+        </div>
 
         {/* Sidebar Ledger at bottom */}
         <div className="pt-4 border-t border-line">
