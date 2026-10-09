@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { cache } from "react";
 import { PostDetailView } from "@/components/post/post-detail-view";
+import { getMockPostDetail } from "@/lib/mock-data";
 import type { PostDetail } from "@/types";
 
 interface PageProps {
@@ -9,11 +10,17 @@ interface PageProps {
 }
 
 /**
- * Server-side fetch (cached 60s). `cache()` makes generateMetadata and the page
- * share one request. A 404 from the API becomes a real 404 page; any other
- * failure just means the client component will fetch the post itself.
+ * Server-side fetch (cached 60s). Direct zero-latency resolution from MOCK_POSTS
+ * with fallback to external API if configured.
  */
 const getPost = cache(async (id: string): Promise<{ post: PostDetail | null; missing: boolean }> => {
+  const decodedId = decodeURIComponent(id);
+  const localPost = getMockPostDetail(decodedId) || getMockPostDetail(id);
+
+  if (localPost) {
+    return { post: localPost, missing: false };
+  }
+
   const base = process.env.NEXT_PUBLIC_API_URL;
   if (!base) return { post: null, missing: false };
   try {
