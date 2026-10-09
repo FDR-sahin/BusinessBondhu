@@ -9,18 +9,18 @@ export function parseAmount(input: string): number {
 }
 
 export const QUICK_BUDGETS = [
-  { label: "৫ হাজার", value: 5_000 },
-  { label: "১০ হাজার", value: 10_000 },
-  { label: "২০ হাজার", value: 20_000 },
-  { label: "৫০ হাজার", value: 50_000 },
+  { labelBn: "৫ হাজার", labelEn: "5k", value: 5_000 },
+  { labelBn: "১০ হাজার", labelEn: "10k", value: 10_000 },
+  { labelBn: "২০ হাজার", labelEn: "20k", value: 20_000 },
+  { labelBn: "৫০ হাজার", labelEn: "50k", value: 50_000 },
 ];
 
 export const MIN_BUDGET = 1_000;
 export const MAX_BUDGET = 10_000_000;
 
 /** Spec: <30% green, 30–60% yellow, >60% red. */
-export function riskLevel(percent: number) {
-  if (percent < 30) return { label: "কম ঝুঁকি", bar: "bg-success", text: "text-success-soft-foreground" };
-  if (percent <= 60) return { label: "মাঝারি ঝুঁকি", bar: "bg-secondary", text: "text-secondary-soft-foreground" };
-  return { label: "বেশি ঝুঁকি", bar: "bg-danger", text: "text-danger-soft-foreground" };
+export function riskLevel(percent: number, lang: "bn" | "en" = "bn") {
+  if (percent < 30) return { label: lang === "en" ? "Low Risk" : "কম ঝুঁকি", bar: "bg-success", text: "text-success-soft-foreground" };
+  if (percent <= 60) return { label: lang === "en" ? "Medium Risk" : "মাঝারি ঝুঁকি", bar: "bg-secondary", text: "text-secondary-soft-foreground" };
+  return { label: lang === "en" ? "High Risk" : "বেশি ঝুঁকি", bar: "bg-danger", text: "text-danger-soft-foreground" };
 }
