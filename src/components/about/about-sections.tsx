@@ -1,6 +1,7 @@
 "use client";
 
-import { ArrowRight, Check, ExternalLink } from "lucide-react";
+import { ArrowRight, Check, ExternalLink, Code2, Globe, Sparkles } from "lucide-react";
+import { motion } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
 import { FadeIn, Stagger, StaggerItem } from "@/components/shared/motion";
@@ -179,17 +180,30 @@ export function TeamSection() {
           title={lang === "en" ? "Our Team & Technology Partner" : "আমাদের টিম ও টেকনোলজি পার্টনার"}
           text={
             lang === "en"
-              ? "Business Idea Zone is proudly developed and powered by Regards Tech."
-              : "বিজনেস আইডিয়া জোন প্ল্যাটফর্মটি Regards Tech এর কারিগরি পরিচালনায় পরিচালিত।"
+              ? "Business Idea Zone is proudly engineered and operated by Regards Tech."
+              : "বিজনেস আইডিয়া জোন প্ল্যাটফর্মটি Regards Tech এর ইঞ্জিনিয়ারিং ও কারিগরি পরিচালনায় পরিচালিত।"
           }
         />
 
-        {/* Feature Banner for Regards Tech */}
-        <div className="relative overflow-hidden rounded-2xl border-2 border-line bg-gradient-to-br from-background via-surface to-background p-6 shadow-md md:p-10">
-          <div className="flex flex-col items-center gap-8 md:flex-row md:items-center md:justify-between">
-            {/* Logo & Company Details */}
-            <div className="flex flex-col items-center gap-6 text-center md:flex-row md:text-left">
-              <div className="relative h-28 w-28 shrink-0 overflow-hidden rounded-2xl border-2 border-green/30 bg-black/95 p-2.5 shadow-xl transition-transform hover:scale-105">
+        {/* Entire Section Wrapped in Clickable Link to regards-tech website */}
+        <motion.a
+          href="https://regardstech.com/"
+          target="_blank"
+          rel="noopener noreferrer"
+          whileHover={{ y: -4, scale: 1.005 }}
+          whileTap={{ scale: 0.995 }}
+          transition={{ duration: 0.2, ease: [0.22, 1, 0.36, 1] }}
+          className="group relative block overflow-hidden rounded-3xl border-2 border-green/30 bg-[#0d120e] p-6 shadow-xl transition-all duration-300 hover:border-green hover:shadow-[0_0_40px_rgba(11,107,69,0.35)] md:p-10"
+        >
+          {/* Ambient Lighting & Backdrop Glow */}
+          <div aria-hidden className="pointer-events-none absolute -left-20 -top-20 h-64 w-64 rounded-full bg-green/20 blur-3xl transition-opacity group-hover:bg-green/30" />
+          <div aria-hidden className="pointer-events-none absolute -bottom-20 -right-20 h-64 w-64 rounded-full bg-emerald-500/15 blur-3xl" />
+
+          <div className="relative z-10 flex flex-col gap-8 lg:flex-row lg:items-center lg:justify-between">
+            {/* Left: Logo & Company Identity */}
+            <div className="flex flex-col gap-6 sm:flex-row sm:items-center">
+              {/* Metallic Logo Frame */}
+              <div className="relative h-28 w-28 shrink-0 overflow-hidden rounded-2xl border-2 border-green/40 bg-black/95 p-3 shadow-2xl transition-transform duration-300 group-hover:scale-105 group-hover:border-green">
                 <Image
                   src="/images/regards-tech-logo.png"
                   alt="Regards Tech Logo"
@@ -200,40 +214,52 @@ export function TeamSection() {
                 />
               </div>
 
-              <div className="space-y-2">
-                <div className="inline-flex items-center gap-2 rounded-full bg-green/10 px-3 py-1 text-xs font-mono font-bold text-green">
-                  <span>🚀 Web & Software Development Company</span>
+              {/* Text Info */}
+              <div className="space-y-2.5">
+                {/* Status Dot */}
+                <div className="inline-flex items-center gap-2 rounded-full border border-green/30 bg-green/10 px-3.5 py-1 font-mono text-xs font-semibold text-green">
+                  <span className="h-2 w-2 rounded-full bg-green animate-pulse" />
+                  <span>{lang === "en" ? "Official Engineering Studio" : "অফিসিয়াল টেকনোলজি স্টুডিও"}</span>
                 </div>
-                <h3 className="font-display text-2xl font-bold text-ink md:text-3xl">
+
+                <h3 className="font-display text-2xl font-bold tracking-tight text-white md:text-4xl transition-colors group-hover:text-green-300">
                   Regards Tech
                 </h3>
-                <p className="text-sm font-semibold text-green md:text-base">
-                  Regards Tech | Web & Software Development Company
+
+                <p className="font-mono text-sm font-semibold text-green/90 md:text-base">
+                  Regards Tech | Web & Software Development Company ↗
                 </p>
-                <p className="max-w-xl text-sm text-ink-secondary leading-relaxed">
+
+                <p className="max-w-xl text-sm leading-relaxed text-gray-300">
                   {lang === "en"
-                    ? "Building high-performance web applications, scalable enterprise platforms, and custom digital solutions for businesses worldwide."
-                    : "উচ্চমানের ওয়েব ডেভেলপমেন্ট, সফটওয়্যার সলিউশন ও আধুনিক ডিজিটাল সিস্টেম তৈরিতে নিবেদিত টেকনোলজি কোম্পানি।"}
+                    ? "Architecting high-performance web platforms, custom enterprise software, and innovative digital products."
+                    : "উচ্চমানের ওয়েব ডেভেলপমেন্ট, সফটওয়্যার আর্কিটেকচার ও উদ্ভাবনী প্রযুক্তি সলিউশন নিয়ে কাজ করছে Regards Tech।"}
                 </p>
+
+                {/* Capability Badges */}
+                <div className="flex flex-wrap gap-2 pt-2">
+                  <span className="inline-flex items-center gap-1 rounded-md border border-white/10 bg-white/5 px-2.5 py-1 text-[11px] font-mono text-gray-300">
+                    <Code2 className="h-3 w-3 text-green" /> Web Development
+                  </span>
+                  <span className="inline-flex items-center gap-1 rounded-md border border-white/10 bg-white/5 px-2.5 py-1 text-[11px] font-mono text-gray-300">
+                    <Sparkles className="h-3 w-3 text-green" /> Software Systems
+                  </span>
+                  <span className="inline-flex items-center gap-1 rounded-md border border-white/10 bg-white/5 px-2.5 py-1 text-[11px] font-mono text-gray-300">
+                    <Globe className="h-3 w-3 text-green" /> Digital Innovation
+                  </span>
+                </div>
               </div>
             </div>
 
-            {/* Link CTA Button */}
-            <div className="shrink-0">
-              <Button asChild size="lg" className="bg-green text-white hover:bg-green/90 shadow-md">
-                <a
-                  href="https://regardstech.com/"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 font-semibold"
-                >
-                  <span>{lang === "en" ? "Visit Regards Tech Website" : "Regards Tech ওয়েবসাইট দেখুন"}</span>
-                  <ExternalLink className="h-4 w-4" />
-                </a>
-              </Button>
+            {/* Right: Interactive Callout Button */}
+            <div className="shrink-0 self-start lg:self-center">
+              <div className="inline-flex items-center gap-2.5 rounded-2xl bg-green px-6 py-3.5 font-mono text-sm font-bold text-white shadow-lg transition-all duration-300 group-hover:bg-green/90 group-hover:shadow-[0_0_25px_rgba(34,197,94,0.5)]">
+                <span>{lang === "en" ? "Visit Regards Tech Website" : "Regards Tech ওয়েবসাইট দেখুন"}</span>
+                <ExternalLink className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1 group-hover:-translate-y-0.5" />
+              </div>
             </div>
           </div>
-        </div>
+        </motion.a>
       </div>
     </section>
   );
