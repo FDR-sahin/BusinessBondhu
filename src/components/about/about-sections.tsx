@@ -1,6 +1,7 @@
 "use client";
 
-import { ArrowRight, Check } from "lucide-react";
+import { ArrowRight, Check, ExternalLink } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
 import { FadeIn, Stagger, StaggerItem } from "@/components/shared/motion";
 import { UserAvatar } from "@/components/ui/avatar";
@@ -175,26 +176,64 @@ export function TeamSection() {
       <div className="container-page">
         <Heading
           id="team-title"
-          title={lang === "en" ? "Our Team" : "আমাদের টিম"}
+          title={lang === "en" ? "Our Team & Technology Partner" : "আমাদের টিম ও টেকনোলজি পার্টনার"}
           text={
             lang === "en"
-              ? "The passionate team driving the platform forward."
-              : "যাদের হাত ধরে প্ল্যাটফর্মটি এগিয়ে চলছে।"
+              ? "Business Idea Zone is proudly developed and powered by Regards Tech."
+              : "বিজনেস আইডিয়া জোন প্ল্যাটফর্মটি Regards Tech এর কারিগরি পরিচালনায় পরিচালিত।"
           }
         />
-        <Stagger className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          {TEAM.map((m) => (
-            <StaggerItem key={m.name.bn}>
-              <Card className="flex items-center gap-4 p-5">
-                <UserAvatar name={m.name[lang]} className="h-14 w-14 text-lg" />
-                <div>
-                  <p className="font-semibold">{m.name[lang]}</p>
-                  <p className="text-sm text-ink-secondary">{m.role[lang]}</p>
+
+        {/* Feature Banner for Regards Tech */}
+        <div className="relative overflow-hidden rounded-2xl border-2 border-line bg-gradient-to-br from-background via-surface to-background p-6 shadow-md md:p-10">
+          <div className="flex flex-col items-center gap-8 md:flex-row md:items-center md:justify-between">
+            {/* Logo & Company Details */}
+            <div className="flex flex-col items-center gap-6 text-center md:flex-row md:text-left">
+              <div className="relative h-28 w-28 shrink-0 overflow-hidden rounded-2xl border-2 border-green/30 bg-black/95 p-2.5 shadow-xl transition-transform hover:scale-105">
+                <Image
+                  src="/images/regards-tech-logo.png"
+                  alt="Regards Tech Logo"
+                  width={112}
+                  height={112}
+                  className="h-full w-full object-contain"
+                  priority
+                />
+              </div>
+
+              <div className="space-y-2">
+                <div className="inline-flex items-center gap-2 rounded-full bg-green/10 px-3 py-1 text-xs font-mono font-bold text-green">
+                  <span>🚀 Web & Software Development Company</span>
                 </div>
-              </Card>
-            </StaggerItem>
-          ))}
-        </Stagger>
+                <h3 className="font-display text-2xl font-bold text-ink md:text-3xl">
+                  Regards Tech
+                </h3>
+                <p className="text-sm font-semibold text-green md:text-base">
+                  Regards Tech | Web & Software Development Company
+                </p>
+                <p className="max-w-xl text-sm text-ink-secondary leading-relaxed">
+                  {lang === "en"
+                    ? "Building high-performance web applications, scalable enterprise platforms, and custom digital solutions for businesses worldwide."
+                    : "উচ্চমানের ওয়েব ডেভেলপমেন্ট, সফটওয়্যার সলিউশন ও আধুনিক ডিজিটাল সিস্টেম তৈরিতে নিবেদিত টেকনোলজি কোম্পানি।"}
+                </p>
+              </div>
+            </div>
+
+            {/* Link CTA Button */}
+            <div className="shrink-0">
+              <Button asChild size="lg" className="bg-green text-white hover:bg-green/90 shadow-md">
+                <a
+                  href="https://regardstech.com/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 font-semibold"
+                >
+                  <span>{lang === "en" ? "Visit Regards Tech Website" : "Regards Tech ওয়েবসাইট দেখুন"}</span>
+                  <ExternalLink className="h-4 w-4" />
+                </a>
+              </Button>
+            </div>
+          </div>
+        </div>
       </div>
     </section>
   );

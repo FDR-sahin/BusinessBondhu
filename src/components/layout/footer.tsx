@@ -436,6 +436,7 @@ import {
   Youtube,
   Instagram,
   Linkedin,
+  ExternalLink,
 } from "lucide-react";
 import Link from "next/link";
 
@@ -618,9 +619,23 @@ export function Footer() {
 
         {/* Copyright & Language */}
         <div className="mt-10 flex flex-col items-center justify-between gap-4 border-t border-surface/15 pt-6 sm:flex-row">
-          <p className="text-center text-xs text-surface/60 sm:text-left">
-            © {localizedYear} {brandName}. {t("rights")}
-          </p>
+          <div className="flex flex-col items-center gap-1 sm:items-start text-xs text-surface/60">
+            <p>
+              © {localizedYear} {brandName}. {t("rights")}
+            </p>
+            <p className="flex items-center gap-1.5 font-mono text-[11px] text-surface/80">
+              <span>{lang === "bn" ? "কারিগরি পরিচালনায়:" : "Developed & Powered by"}</span>
+              <a
+                href="https://regardstech.com/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1 font-bold text-green hover:underline"
+              >
+                <span>Regards Tech | Web & Software Development Company</span>
+                <ExternalLink className="h-3 w-3 opacity-80" />
+              </a>
+            </p>
+          </div>
 
           <LanguageToggle />
         </div>
