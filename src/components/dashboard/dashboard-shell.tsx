@@ -163,7 +163,7 @@ export function DashboardShell({ children }: { children: ReactNode }) {
         </div>
         <nav className="flex-1 overflow-y-auto p-4" aria-label="ড্যাশবোর্ড নেভিগেশন"><NavList onNavigate={() => setMoreOpen(false)} /></nav>
         <div className="space-y-1 border-t border-border p-4">
-          <Link href="/" className="flex h-10 items-center rounded-lg px-3 text-sm text-ink-secondary hover:bg-muted">সাইটে ফিরে যান</Link>
+          <Link href="/" className="flex h-10 items-center rounded-lg px-3 text-sm text-ink-secondary hover:bg-green/10 hover:text-green">{isEn ? "Back to Site" : "সাইটে ফিরে যান"}</Link>
           <button onClick={() => void logout()} className="flex h-10 w-full items-center gap-3 rounded-lg px-3 text-sm text-danger hover:bg-danger-soft"><LogOut className="h-4 w-4" aria-hidden />লগআউট</button>
         </div>
       </Drawer>
