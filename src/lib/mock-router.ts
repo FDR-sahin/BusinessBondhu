@@ -138,7 +138,9 @@ export function handleMockFallback(config?: AxiosRequestConfig): AxiosResponse |
     path.includes("/like") ||
     path.includes("/dislike") ||
     path.includes("/save") ||
-    path.includes("/view")
+    path.includes("/view") ||
+    path === "/me" ||
+    path === "/me/"
   ) {
     return createAxiosResponse({ success: true, message: "অপারেশনটি সফল হয়েছে" }, config);
   }

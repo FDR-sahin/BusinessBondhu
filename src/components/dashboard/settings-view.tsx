@@ -261,7 +261,9 @@ function DangerSection() {
   const qc = useQueryClient();
   const [open, setOpen] = useState(false);
   const [typed, setTyped] = useState("");
-  const matches = !!user && typed.trim().toLowerCase() === user.email.toLowerCase();
+
+  const targetEmail = user?.email || "";
+  const matches = typed.trim().length > 0 && (!targetEmail || typed.trim().toLowerCase() === targetEmail.toLowerCase());
 
   const { mutate, isPending, error } = useMutation({
     mutationFn: () => api.delete("/me", { data: { confirmEmail: typed.trim() } }),
@@ -294,7 +296,7 @@ function DangerSection() {
               {isEn
                 ? "This action cannot be undone. Please type your email address to confirm: "
                 : "এই কাজটি আর ফেরানো যাবে না। নিশ্চিত করতে নিচে আপনার ইমেইল ঠিকানা লিখুন: "}{" "}
-              <strong className="break-all text-foreground">{user?.email}</strong>
+              {targetEmail ? <strong className="break-all text-foreground">{targetEmail}</strong> : null}
             </DialogDescription>
           </DialogHeader>
           <FormAlert message={error ? getErrorMessage(error) : null} />
