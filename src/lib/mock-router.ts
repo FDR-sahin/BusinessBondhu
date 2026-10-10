@@ -132,6 +132,29 @@ export function handleMockFallback(config?: AxiosRequestConfig): AxiosResponse |
     return createAxiosResponse(getMockAdvisorSuggestions(body.budget || 20000, body.category), config);
   }
 
+  // Profile & Settings mock endpoints
+  if (path.includes("/me/profile") || path.includes("/me/settings")) {
+    let body: any = {};
+    try {
+      body = typeof config.data === "string" ? JSON.parse(config.data || "{}") : config.data || {};
+    } catch {
+      body = {};
+    }
+    const updatedUser = {
+      id: "u-1",
+      name: body.name || "উদ্যোক্তা",
+      email: body.email || "user@example.com",
+      bio: body.bio || "",
+      division: body.division || "",
+      district: body.district || "",
+      area: body.area || "",
+      avatar: body.avatar || "",
+      role: "user",
+      createdAt: new Date().toISOString(),
+    };
+    return createAxiosResponse({ user: updatedUser }, config);
+  }
+
   // POST /advisor/saved, /posts/:id/like, /posts/:id/dislike, /posts/:id/save, /posts/:id/view
   if (
     path.includes("/advisor/saved") ||

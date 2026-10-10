@@ -32,8 +32,13 @@ const defaultUser: User = {
   createdAt: new Date().toISOString(),
 };
 
-const toValues = (u: User): ProfileValues => ({
-  name: u.name, bio: u.bio ?? "", division: u.division ?? "", district: u.district ?? "", area: u.area ?? "", avatar: u.avatar,
+const toValues = (u?: User | null): ProfileValues => ({
+  name: u?.name ?? "উদ্যোক্তা",
+  bio: u?.bio ?? "",
+  division: u?.division ?? "",
+  district: u?.district ?? "",
+  area: u?.area ?? "",
+  avatar: u?.avatar ?? "",
 });
 
 export function ProfileView() {
@@ -56,11 +61,28 @@ export function ProfileView() {
   const districts = getDistricts(v.division ?? "");
 
   const { mutate, isPending, error } = useMutation({
-    mutationFn: async (body: ProfileValues) => (await api.put<{ user: User }>("/me/profile", body)).data.user,
+    mutationFn: async (body: ProfileValues) => {
+      const res = await api.put<{ user?: User; message?: string }>("/me/profile", body);
+      const updatedUser: User = res.data?.user || {
+        id: user.id || "u-1",
+        name: body.name || user.name || "উদ্যোক্তা",
+        email: user.email || "user@example.com",
+        bio: body.bio,
+        division: body.division,
+        district: body.district,
+        area: body.area,
+        avatar: body.avatar,
+        role: user.role || "user",
+        createdAt: user.createdAt || new Date().toISOString(),
+      };
+      return updatedUser;
+    },
     onSuccess: (updated) => {
-      setUser(updated);
-      reset(toValues(updated));
-      toast.success(isEn ? "Profile updated successfully" : "প্রোফাইল আপডেট হয়েছে");
+      if (updated) {
+        setUser(updated);
+        reset(toValues(updated));
+        toast.success(isEn ? "Profile updated successfully" : "প্রোফাইল আপডেট হয়েছে");
+      }
     },
     onError: (e) => {
       const fields = getFieldErrors(e);
