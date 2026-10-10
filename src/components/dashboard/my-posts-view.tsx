@@ -123,20 +123,26 @@ function GridCard({ post, onDelete }: { post: MyPost; onDelete: (p: MyPost) => v
 
       {/* Price Slip Ledger Numbers (Wholesale Range, Retail Range, Profit) */}
       <div className="mt-4 grid grid-cols-3 gap-1.5 rounded-md border border-line bg-surface p-2.5 text-xs shadow-inner">
-        <div>
-          <span className="block micro-label text-muted">{lang === "bn" ? "পাইকারি রেঞ্জ" : "Wholesale Range"}</span>
+        <div className="min-w-0">
+          <span className="block text-[10px] font-mono font-semibold uppercase tracking-wider text-muted truncate" title={lang === "bn" ? "পাইকারি রেঞ্জ" : "Wholesale Range"}>
+            {lang === "bn" ? "পাইকারি রেঞ্জ" : "Wholesale"}
+          </span>
           <span className="font-mono text-xs font-semibold tabular-nums text-ink block truncate" title={formatPriceRange(post.wholesalePrice, post.wholesalePriceMax, post.wholesalePriceText, lang)}>
             {formatPriceRange(post.wholesalePrice, post.wholesalePriceMax, post.wholesalePriceText, lang)}
           </span>
         </div>
-        <div>
-          <span className="block micro-label text-muted">{lang === "bn" ? "খুচরা রেঞ্জ" : "Retail Range"}</span>
+        <div className="min-w-0">
+          <span className="block text-[10px] font-mono font-semibold uppercase tracking-wider text-muted truncate" title={lang === "bn" ? "খুচরা রেঞ্জ" : "Retail Range"}>
+            {lang === "bn" ? "খুচরা রেঞ্জ" : "Retail"}
+          </span>
           <span className="font-mono text-xs font-semibold tabular-nums text-ink block truncate" title={formatPriceRange(post.retailPrice, post.retailPriceMax, post.retailPriceText, lang)}>
             {formatPriceRange(post.retailPrice, post.retailPriceMax, post.retailPriceText, lang)}
           </span>
         </div>
-        <div>
-          <span className="block micro-label text-green">{lang === "bn" ? "প্রফিট মার্জিন" : "Margin"}</span>
+        <div className="min-w-0">
+          <span className="block text-[10px] font-mono font-semibold uppercase tracking-wider text-green truncate" title={lang === "bn" ? "প্রফিট মার্জিন" : "Margin"}>
+            {lang === "bn" ? "মার্জিন" : "Margin"}
+          </span>
           <span className="font-mono text-xs font-bold tabular-nums text-green block truncate">
             {formatBDT(profit, lang)}
           </span>
