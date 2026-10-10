@@ -17,14 +17,85 @@ export async function handleBlogList(request: Request) {
   const backendUrl = process.env.NEXT_PUBLIC_API_URL || "https://uddok-admin.vercel.app";
 
   const userBlogs = getUserBlogs();
-  const unapprovedIds = new Set(
-    userBlogs
-      .filter((b) => b.status !== "approved")
-      .map((b) => String(b.id || b._id))
-  );
+  const unapprovedIds = new Set<string>();
+  const unapprovedTitles = new Set<string>();
+
+  userBlogs.forEach((b) => {
+    if (b.status !== "approved") {
+      if (b.id) unapprovedIds.add(String(b.id));
+      if (b._id) unapprovedIds.add(String(b._id));
+      if (b.adminIdeaId) unapprovedIds.add(String(b.adminIdeaId));
+      if (b.title) unapprovedTitles.add(b.title.trim().toLowerCase());
+    }
+  });
+
+  let adminIdeas: any[] = [];
+  try {
+    const ideasRes = await fetch(`${backendUrl.replace(/\/$/, "")}/api/ideas?status=all`, {
+      cache: "no-store",
+      headers: { "Content-Type": "application/json" },
+    });
+    if (ideasRes.ok) {
+      const ideasData = await ideasRes.json();
+      if (ideasData.success && Array.isArray(ideasData.data)) {
+        adminIdeas = ideasData.data;
+      }
+    }
+  } catch (err) {
+    console.error("Failed to fetch ideas status from admin backend:", err);
+  }
+
+  // Track pending and approved blogs from admin ideas queue
+  const newlyApprovedBlogs: any[] = [];
+  adminIdeas.forEach((item: any) => {
+    const isBlogItem = item.isBlog === true || (item.title && item.title.startsWith("[ব্লগ]"));
+    if (isBlogItem) {
+      const cleanTitle = (item.blogData?.title || item.title.replace(/^\[ব্লগ\]\s*/, "")).trim();
+      const itemId = String(item._id || item.id);
+
+      if (item.status === "approved") {
+        unapprovedIds.delete(itemId);
+        unapprovedTitles.delete(cleanTitle.toLowerCase());
+
+        // Update local blog store if matching
+        const local = userBlogs.find(
+          (b) => b.adminIdeaId === itemId || b.id === itemId || b.title.trim().toLowerCase() === cleanTitle.toLowerCase()
+        );
+        if (local && local.status !== "approved") {
+          saveUserBlog({ ...local, status: "approved" });
+        }
+
+        const bData = item.blogData || {};
+        newlyApprovedBlogs.push({
+          id: itemId,
+          _id: itemId,
+          slug: bData.slug || cleanTitle.toLowerCase().replace(/[^a-zA-Z0-9\u0980-\u09FF]+/g, "-"),
+          title: cleanTitle,
+          category: bData.category || item.category || "উদ্যোক্তা ব্লগ",
+          excerpt: bData.excerpt || item.description?.slice(0, 160) || "",
+          content: bData.content || item.description || "",
+          coverImage: bData.coverImage || "/images/blog/default.jpg",
+          publishedAt: item.createdAt || new Date().toISOString(),
+          readingTime: bData.readingTime || 5,
+          readTime: bData.readTime || "৫ মিনিট",
+          author: {
+            name: bData.authorName || item.postedBy?.name || "লেখক",
+            role: bData.authorTitle || item.postedBy?.role || "উদ্যোক্তা ও লেখক",
+            avatar: "/images/avatars/default.jpg",
+          },
+          likesCount: 0,
+          commentsCount: 0,
+          status: "approved",
+        });
+      } else {
+        // Still pending
+        unapprovedIds.add(itemId);
+        unapprovedTitles.add(cleanTitle.toLowerCase());
+      }
+    }
+  });
 
   let adminItems: any[] = [];
-
   try {
     const res = await fetch(`${backendUrl.replace(/\/$/, "")}/api/blogs`, {
       cache: "no-store",
@@ -35,10 +106,12 @@ export async function handleBlogList(request: Request) {
       const result = await res.json();
       if (result.success && Array.isArray(result.data)) {
         adminItems = result.data
-          // Only show approved blogs on the public site
+          // Only show approved blogs on the public site; exclude any pending or unapproved blog
           .filter((post: any) => {
             const id = String(post.id || post._id);
+            const titleLower = (post.title || "").trim().toLowerCase();
             if (unapprovedIds.has(id)) return false;
+            if (unapprovedTitles.has(titleLower)) return false;
             return !post.status || post.status === "approved";
           })
           .map((post: any) => ({
@@ -70,6 +143,8 @@ export async function handleBlogList(request: Request) {
 
   // Merge with fallback DETAILED_BLOG_POSTS
   const existingIds = new Set(adminItems.map((b) => String(b.id)));
+  newlyApprovedBlogs.forEach((b) => existingIds.add(String(b.id)));
+
   const fallbackItems = DETAILED_BLOG_POSTS.filter((b) => !existingIds.has(String(b.id))).map((post) => ({
     id: String(post.id),
     _id: String(post.id),
@@ -94,7 +169,7 @@ export async function handleBlogList(request: Request) {
 
   // Merge with approved locally stored user blogs
   const userApproved = getUserBlogs()
-    .filter((b) => b.status === "approved")
+    .filter((b) => b.status === "approved" && !unapprovedIds.has(String(b.id)) && !unapprovedTitles.has(b.title.trim().toLowerCase()))
     .map((b) => ({
       id: String(b.id),
       _id: String(b._id || b.id),
@@ -117,7 +192,17 @@ export async function handleBlogList(request: Request) {
       status: "approved",
     }));
 
-  let items = [...userApproved, ...adminItems, ...fallbackItems];
+  const existingTitles = new Set<string>();
+  const deduplicatedItems: any[] = [];
+  [...newlyApprovedBlogs, ...userApproved, ...adminItems, ...fallbackItems].forEach((item) => {
+    const tKey = item.title.trim().toLowerCase();
+    if (!existingTitles.has(tKey)) {
+      existingTitles.add(tKey);
+      deduplicatedItems.push(item);
+    }
+  });
+
+  let items = deduplicatedItems;
 
   if (category && category !== "all") {
     items = items.filter((b) => b.category === category);
@@ -198,36 +283,56 @@ export async function handleBlogCreate(request: Request) {
       createdAt: new Date().toISOString(),
     };
 
-    // Forward to uddok-admin backend /api/blogs if status is pending (needs admin approval)
+    // Forward to uddok-admin backend /api/ideas as pending request for the admin approval queue
     if (blogRecord.status === "pending") {
       try {
-        const backendRes = await fetch(`${backendUrl.replace(/\/$/, "")}/api/blogs`, {
+        const backendRes = await fetch(`${backendUrl.replace(/\/$/, "")}/api/ideas`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
-            title: blogRecord.title,
-            category: blogRecord.category,
-            excerpt: blogRecord.excerpt,
-            content: blogRecord.content,
-            author: authorName,
-            authorTitle: blogRecord.authorTitle,
-            readTime: blogRecord.readTime,
+            title: `[ব্লগ] ${blogRecord.title}`,
+            category: blogRecord.category || "উদ্যোক্তা ব্লগ",
+            district: "অনলাইন / ব্লগ",
+            exactLocation: "উদ্যোক্তা ব্লগ সেকশন",
+            wholesalePrice: 0,
+            retailPrice: 0,
+            description: `[সারসংক্ষেপ]: ${blogRecord.excerpt}\n\n[মূল লেখা]:\n${blogRecord.content}`,
             status: "pending",
-            userId: blogRecord.userId,
+            isBlog: true,
+            blogData: {
+              title: blogRecord.title,
+              category: blogRecord.category,
+              excerpt: blogRecord.excerpt,
+              content: blogRecord.content,
+              authorName,
+              authorTitle: blogRecord.authorTitle,
+              readTime: blogRecord.readTime,
+              coverImage: blogRecord.coverImage,
+              slug: cleanSlug,
+              userId: blogRecord.userId,
+              authorEmail: blogRecord.authorEmail,
+            },
+            postedBy: {
+              name: authorName,
+              role: blogRecord.authorTitle || "লেখক",
+              email: blogRecord.authorEmail || "",
+            },
             authorEmail: blogRecord.authorEmail,
-            image: blogRecord.coverImage,
+            userId: blogRecord.userId,
           }),
         });
 
         if (backendRes.ok) {
           const backendData = await backendRes.json();
           if (backendData.data?._id || backendData.data?.id) {
-            blogRecord.id = String(backendData.data._id || backendData.data.id);
-            blogRecord._id = String(backendData.data._id || backendData.data.id);
+            const ideaId = String(backendData.data._id || backendData.data.id);
+            blogRecord.adminIdeaId = ideaId;
+            blogRecord.id = ideaId;
+            blogRecord._id = ideaId;
           }
         }
       } catch (err) {
-        console.warn("Could not forward blog to admin backend, saved locally:", err);
+        console.warn("Could not forward blog to admin backend approval queue, saved locally:", err);
       }
     }
 
@@ -239,7 +344,7 @@ export async function handleBlogCreate(request: Request) {
         success: true,
         message:
           blogRecord.status === "pending"
-            ? "ব্লগটি সফলভাবে জমা দেওয়া হয়েছে! অ্যাডমিন অনুমোদনের পর তা পাবলিক ব্লগে প্রকাশিত হবে।"
+            ? "ব্লগটি সফলভাবে অ্যাডমিন অনুমোদনের জন্য জমা দেওয়া হয়েছে! অ্যাডমিন অ্যাপ্রুভ করার পর তা মূল সাইটে লাইভ হবে।"
             : "ব্লগের খসড়া সফলভাবে সংরক্ষণ করা হয়েছে।",
         blog: blogRecord,
         id: blogRecord.id,
@@ -261,12 +366,77 @@ export async function handleBlogFeatured() {
 
 export async function handleBlogSlug(slug: string) {
   const decodedSlug = decodeURIComponent(slug);
+  const backendUrl = process.env.NEXT_PUBLIC_API_URL || "https://uddok-admin.vercel.app";
+
+  // Check admin ideas to see if this blog has been approved or is still pending
+  let isApprovedInAdmin = false;
+  let isPendingInAdmin = false;
+  let adminBlogMatch: any = null;
+
+  try {
+    const ideasRes = await fetch(`${backendUrl.replace(/\/$/, "")}/api/ideas?status=all`, { cache: "no-store" });
+    if (ideasRes.ok) {
+      const ideasData = await ideasRes.json();
+      if (ideasData.success && Array.isArray(ideasData.data)) {
+        const match = ideasData.data.find((item: any) => {
+          const isBlog = item.isBlog === true || (item.title && item.title.startsWith("[ব্লগ]"));
+          if (!isBlog) return false;
+          const cleanTitle = (item.blogData?.title || item.title.replace(/^\[ব্লগ\]\s*/, "")).trim();
+          const cleanSlug = item.blogData?.slug || cleanTitle.toLowerCase().replace(/[^a-zA-Z0-9\u0980-\u09FF]+/g, "-");
+          const itemId = String(item._id || item.id);
+          return itemId === slug || itemId === decodedSlug || cleanSlug === slug || cleanSlug === decodedSlug;
+        });
+
+        if (match) {
+          if (match.status === "approved") {
+            isApprovedInAdmin = true;
+            adminBlogMatch = match;
+          } else {
+            isPendingInAdmin = true;
+          }
+        }
+      }
+    }
+  } catch (err) {
+    console.error("Error checking ideas queue in handleBlogSlug:", err);
+  }
+
+  // If known to be pending, reject public access
+  if (isPendingInAdmin) {
+    return NextResponse.json({ message: "এই ব্লগটি এখনও অ্যাডমিন অনুমোদনের অপেক্ষায় রয়েছে।" }, { status: 403 });
+  }
 
   // 1. Check local user blogs
   const localBlog = findUserBlog(slug) || findUserBlog(decodedSlug);
   if (localBlog) {
+    if (localBlog.status === "approved" || isApprovedInAdmin) {
+      return NextResponse.json({
+        ...localBlog,
+        commentsEnabled: true,
+      });
+    }
+    return NextResponse.json({ message: "এই ব্লগটি এখনও অনুমোদিত হয়নি।" }, { status: 403 });
+  }
+
+  if (isApprovedInAdmin && adminBlogMatch) {
+    const bData = adminBlogMatch.blogData || {};
+    const cleanTitle = (bData.title || adminBlogMatch.title.replace(/^\[ব্লগ\]\s*/, "")).trim();
     return NextResponse.json({
-      ...localBlog,
+      id: String(adminBlogMatch._id || adminBlogMatch.id),
+      title: cleanTitle,
+      slug: bData.slug || cleanTitle.toLowerCase().replace(/[^a-zA-Z0-9\u0980-\u09FF]+/g, "-"),
+      category: bData.category || adminBlogMatch.category || "উদ্যোক্তা ব্লগ",
+      excerpt: bData.excerpt || adminBlogMatch.description?.slice(0, 160) || "",
+      content: bData.content || adminBlogMatch.description || "",
+      coverImage: bData.coverImage || "/images/blog/default.jpg",
+      publishedAt: adminBlogMatch.createdAt || new Date().toISOString(),
+      readingTime: bData.readingTime || 5,
+      readTime: bData.readTime || "৫ মিনিট",
+      author: {
+        name: bData.authorName || adminBlogMatch.postedBy?.name || "লেখক",
+        role: bData.authorTitle || adminBlogMatch.postedBy?.role || "উদ্যোক্তা ও লেখক",
+        avatar: "/images/avatars/default.jpg",
+      },
       commentsEnabled: true,
     });
   }
@@ -284,8 +454,7 @@ export async function handleBlogSlug(slug: string) {
     });
   }
 
-  // 3. Check admin backend
-  const backendUrl = process.env.NEXT_PUBLIC_API_URL || "https://uddok-admin.vercel.app";
+  // 3. Check admin backend official blogs
   try {
     const res = await fetch(`${backendUrl.replace(/\/$/, "")}/api/blogs`, { cache: "no-store" });
     if (res.ok) {
@@ -300,7 +469,7 @@ export async function handleBlogSlug(slug: string) {
             b.slug === slug ||
             b.slug === decodedSlug
         );
-        if (found) {
+        if (found && (!found.status || found.status === "approved")) {
           return NextResponse.json({
             id: String(found._id || found.id),
             title: found.title,

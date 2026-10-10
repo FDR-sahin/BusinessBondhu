@@ -40,20 +40,21 @@ export function BlogSection() {
         setLoading(true);
         setError(false);
 
-        const baseUrl =
-          process.env.NEXT_PUBLIC_API_URL ||
-          "https://uddok-admin.vercel.app";
-
-        const response = await fetch(
-          `${baseUrl.replace(/\/$/, "")}/api/blogs`,
-          {
-            signal: controller.signal,
-            cache: "no-store",
-          }
-        );
+        const response = await fetch("/api/blogs", {
+          signal: controller.signal,
+          cache: "no-store",
+        });
 
         if (!response.ok) {
-          throw new Error("Unable to fetch blogs");
+          const baseUrl = process.env.NEXT_PUBLIC_API_URL || "https://uddok-admin.vercel.app";
+          const fallbackRes = await fetch(`${baseUrl.replace(/\/$/, "")}/api/blogs`, {
+            signal: controller.signal,
+            cache: "no-store",
+          });
+          if (!fallbackRes.ok) throw new Error("Unable to fetch blogs");
+          const fallbackData: BlogApiResponse = await fallbackRes.json();
+          setBlogs(fallbackData.data || []);
+          return;
         }
 
         const result: BlogApiResponse = await response.json();

@@ -50,9 +50,9 @@ const getArticle = cache(async (slug: string): Promise<{ post: BlogPostDetail | 
     };
   }
 
-  // 1.5. Search in user-created blogs store
+  // 1.5. Search in user-created blogs store (only if approved)
   const userBlog = findUserBlog(slug) || findUserBlog(decodedSlug);
-  if (userBlog) {
+  if (userBlog && userBlog.status === "approved") {
     return {
       post: {
         id: String(userBlog.id),

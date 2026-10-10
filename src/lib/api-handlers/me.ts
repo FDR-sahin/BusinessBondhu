@@ -469,6 +469,55 @@ export async function handleMeBlogs(request: Request) {
     console.error("Failed to fetch user blogs from backend in me/blogs:", err);
   }
 
+  // Also check admin ideas approval queue for user-submitted blogs
+  let queueBlogs: any[] = [];
+  try {
+    const ideasRes = await fetch(`${backendUrl.replace(/\/$/, "")}/api/ideas?status=all`, {
+      cache: "no-store",
+      headers: { "Content-Type": "application/json" },
+    });
+    if (ideasRes.ok) {
+      const ideasData = await ideasRes.json();
+      if (ideasData.success && Array.isArray(ideasData.data)) {
+        queueBlogs = ideasData.data
+          .filter((item: any) => {
+            const isBlogItem = item.isBlog === true || (item.title && item.title.startsWith("[ব্লগ]"));
+            if (!isBlogItem) return false;
+            const matchesId = userId && (item.userId === userId || item.author?.id === userId);
+            const itemEmail = (item.authorEmail || item.postedBy?.email || "").toLowerCase().trim();
+            const matchesEmail = userEmail && itemEmail === userEmail;
+            return Boolean(matchesId || matchesEmail);
+          })
+          .map((item: any) => {
+            const cleanTitle = (item.blogData?.title || item.title.replace(/^\[ব্লগ\]\s*/, "")).trim();
+            const bData = item.blogData || {};
+            return {
+              id: String(item._id || item.id),
+              _id: String(item._id || item.id),
+              title: cleanTitle,
+              slug: bData.slug || cleanTitle.toLowerCase().replace(/[^a-zA-Z0-9\u0980-\u09FF]+/g, "-"),
+              category: bData.category || item.category || "উদ্যোক্তা ব্লগ",
+              excerpt: bData.excerpt || item.description?.slice(0, 160) || "",
+              content: bData.content || item.description || "",
+              coverImage: bData.coverImage || "/images/blog/default.jpg",
+              readTime: bData.readTime || "৫ মিনিট",
+              readingTime: bData.readingTime || 5,
+              status: item.status || "pending",
+              author: {
+                name: bData.authorName || item.postedBy?.name || "ব্যবহারকারী",
+                avatar: "/images/avatars/default.jpg",
+              },
+              likesCount: 0,
+              commentsCount: 0,
+              createdAt: item.createdAt || new Date().toISOString(),
+            };
+          });
+      }
+    }
+  } catch (err) {
+    console.error("Failed to fetch pending blogs from ideas queue:", err);
+  }
+
   const localItems = getUserBlogs().filter((b) => {
     const matchesId = userId && (b.userId === userId || b.author?.id === userId);
     const postEmail = (b.authorEmail || "").toLowerCase().trim();
@@ -476,10 +525,21 @@ export async function handleMeBlogs(request: Request) {
     return Boolean(matchesId || matchesEmail);
   });
 
-  const existingTitles = new Set(adminBlogs.map((i) => i.title.trim().toLowerCase()));
-  const existingIds = new Set(adminBlogs.map((i) => i.id));
-  const filteredLocal = localItems.filter((l) => !existingTitles.has(l.title.trim().toLowerCase()) && !existingIds.has(l.id));
-  let items = [...adminBlogs, ...filteredLocal];
+  const existingTitles = new Set<string>();
+  const existingIds = new Set<string>();
+
+  const mergedList: any[] = [];
+  [...queueBlogs, ...adminBlogs, ...localItems].forEach((item) => {
+    const idKey = String(item.id || item._id);
+    const tKey = item.title.trim().toLowerCase();
+    if (!existingIds.has(idKey) && !existingTitles.has(tKey)) {
+      existingIds.add(idKey);
+      existingTitles.add(tKey);
+      mergedList.push(item);
+    }
+  });
+
+  let items = mergedList;
 
   if (status && status !== "all") {
     items = items.filter((b) => b.status === status);

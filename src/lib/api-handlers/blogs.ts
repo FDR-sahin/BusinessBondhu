@@ -6,11 +6,39 @@ import { handleBlogCreate } from "./blog";
 export async function handleBlogsGet() {
   const backendUrl = process.env.NEXT_PUBLIC_API_URL || "https://uddok-admin.vercel.app";
   const userBlogs = getUserBlogs();
-  const unapprovedIds = new Set(
-    userBlogs
-      .filter((b) => b.status !== "approved")
-      .map((b) => String(b.id || b._id))
-  );
+  const unapprovedIds = new Set<string>();
+  const unapprovedTitles = new Set<string>();
+
+  userBlogs.forEach((b) => {
+    if (b.status !== "approved") {
+      if (b.id) unapprovedIds.add(String(b.id));
+      if (b._id) unapprovedIds.add(String(b._id));
+      if (b.adminIdeaId) unapprovedIds.add(String(b.adminIdeaId));
+      if (b.title) unapprovedTitles.add(b.title.trim().toLowerCase());
+    }
+  });
+
+  try {
+    const ideasRes = await fetch(`${backendUrl.replace(/\/$/, "")}/api/ideas?status=all`, {
+      cache: "no-store",
+      headers: { "Content-Type": "application/json" },
+    });
+    if (ideasRes.ok) {
+      const ideasData = await ideasRes.json();
+      if (ideasData.success && Array.isArray(ideasData.data)) {
+        ideasData.data.forEach((item: any) => {
+          const isBlog = item.isBlog === true || (item.title && item.title.startsWith("[ব্লগ]"));
+          if (isBlog && item.status !== "approved") {
+            const clean = (item.blogData?.title || item.title.replace(/^\[ব্লগ\]\s*/, "")).trim().toLowerCase();
+            unapprovedTitles.add(clean);
+            unapprovedIds.add(String(item._id || item.id));
+          }
+        });
+      }
+    }
+  } catch (err) {
+    console.error("Failed to fetch ideas status in blogs.ts:", err);
+  }
 
   let adminBlogs: any[] = [];
 
@@ -27,7 +55,9 @@ export async function handleBlogsGet() {
           // Only show approved blogs on the public site
           .filter((post: any) => {
             const id = String(post.id || post._id);
+            const titleLower = (post.title || "").trim().toLowerCase();
             if (unapprovedIds.has(id)) return false;
+            if (unapprovedTitles.has(titleLower)) return false;
             return !post.status || post.status === "approved";
           })
           .map((post: any) => ({

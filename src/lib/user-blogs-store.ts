@@ -21,6 +21,7 @@ export interface UserStoredBlog {
   authorTitle?: string;
   userId?: string;
   authorEmail?: string;
+  adminIdeaId?: string;
   status: "draft" | "pending" | "approved" | "rejected";
   rejectionReason?: string;
   likesCount?: number;
@@ -34,7 +35,9 @@ declare global {
   var __GLOBAL_USER_BLOGS__: UserStoredBlog[] | undefined;
 }
 
-const STORAGE_FILE = path.join(process.cwd(), ".next", "user_blogs_cache.json");
+const STORAGE_FILE = process.env.VERCEL
+  ? path.join("/tmp", "user_blogs_cache.json")
+  : path.join(process.cwd(), ".next", "user_blogs_cache.json");
 
 function loadFromDisk(): UserStoredBlog[] {
   try {
