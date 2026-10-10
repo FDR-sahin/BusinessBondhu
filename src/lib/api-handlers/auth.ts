@@ -5,6 +5,8 @@ import {
   saveUserProfile,
   verifyPassword,
   sanitizeUser,
+  fetchUserFromBackend,
+  persistUserToBackend,
 } from "@/lib/user-profile-store";
 import { generateOtp, verifyOtp, clearOtp } from "@/lib/otp-store";
 
@@ -28,8 +30,11 @@ export async function handleAuthSignup(request: Request) {
       return NextResponse.json({ message: "পাসওয়ার্ড দুটি মিলছে না।" }, { status: 400 });
     }
 
-    // Check if account already exists with this email
-    const existingUser = getUserProfile(email);
+    // Check if account already exists with this email (locally or in MongoDB backend)
+    let existingUser = getUserProfile(email);
+    if (!existingUser) {
+      existingUser = await fetchUserFromBackend(email);
+    }
     if (existingUser && existingUser.email && existingUser.email.toLowerCase() === email) {
       return NextResponse.json(
         {
@@ -52,6 +57,9 @@ export async function handleAuthSignup(request: Request) {
       area: body.area || "",
       role: "user",
     });
+
+    // Centralize persistence to MongoDB backend
+    await persistUserToBackend(savedUser);
 
     const res = NextResponse.json({
       user: sanitizeUser(savedUser),
@@ -98,8 +106,11 @@ export async function handleAuthLogin(request: Request) {
       );
     }
 
-    // Look up existing profile by email first
-    const existingUser = getUserProfile(email);
+    // Look up existing profile by email first (local cache + MongoDB backend)
+    let existingUser = getUserProfile(email);
+    if (!existingUser) {
+      existingUser = await fetchUserFromBackend(email);
+    }
     if (!existingUser) {
       return NextResponse.json(
         { message: "এই ইমেইলে কোনো অ্যাকাউন্ট পাওয়া যায়নি।" },
@@ -415,7 +426,10 @@ export async function handleAuthForgotPassword(request?: Request) {
       return NextResponse.json({ message: "ইমেইল ঠিকানা দিন।" }, { status: 400 });
     }
 
-    const user = getUserProfile(email);
+    let user = getUserProfile(email);
+    if (!user) {
+      user = await fetchUserFromBackend(email);
+    }
     if (!user || !user.email || user.email.toLowerCase() !== email) {
       return NextResponse.json(
         { message: "এই ইমেইলে কোনো অ্যাকাউন্ট পাওয়া যায়নি। অনুগ্রহ করে সঠিক ইমেইল দিন বা সাইন-আপ করুন।" },
@@ -492,7 +506,10 @@ export async function handleAuthResetPassword(request?: Request) {
       return NextResponse.json({ message: "পাসওয়ার্ড দুটি মিলছে না।" }, { status: 400 });
     }
 
-    const user = getUserProfile(email);
+    let user = getUserProfile(email);
+    if (!user) {
+      user = await fetchUserFromBackend(email);
+    }
     if (!user || !user.email || user.email.toLowerCase() !== email) {
       return NextResponse.json({ message: "ব্যবহারকারী অ্যাকাউন্ট পাওয়া যায়নি।" }, { status: 404 });
     }
@@ -502,11 +519,12 @@ export async function handleAuthResetPassword(request?: Request) {
       return NextResponse.json({ message: verification.reason || "ভুল বা মেয়াদোত্তীর্ণ ওটিপি।" }, { status: 400 });
     }
 
-    // Update password
-    saveUserProfile({
+    // Update password locally and in MongoDB backend
+    const updatedUser = saveUserProfile({
       ...user,
       password,
     });
+    await persistUserToBackend(updatedUser);
 
     // Clear used OTP
     clearOtp(email);

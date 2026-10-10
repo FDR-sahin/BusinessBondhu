@@ -40,6 +40,43 @@ export function SignupForm() {
 
   const { mutate, isPending, error } = useMutation({
     mutationFn: async (v: SignupValues) => {
+      // Immediate client check for existing account on this device
+      if (typeof window !== "undefined") {
+        try {
+          const raw = localStorage.getItem("bhbd_user_profile");
+          const credsRaw = localStorage.getItem("bhbd_user_credentials");
+          const creds = credsRaw ? JSON.parse(credsRaw) : {};
+          const vEmail = (v.email || "").toLowerCase().trim();
+          if (raw) {
+            const parsed = JSON.parse(raw);
+            if (parsed?.email && parsed.email.toLowerCase().trim() === vEmail) {
+              const err: any = new Error("এই ইমেইল দিয়ে আগেই অ্যাকাউন্ট খোলা হয়েছে। লগইন করুন।");
+              err.response = {
+                status: 409,
+                data: {
+                  message: "এই ইমেইল দিয়ে আগেই অ্যাকাউন্ট খোলা হয়েছে। লগইন করুন।",
+                  errors: { email: ["এই ইমেইল দিয়ে আগেই অ্যাকাউন্ট খোলা হয়েছে। লগইন করুন।"] },
+                },
+              };
+              throw err;
+            }
+          }
+          if (creds[vEmail]) {
+            const err: any = new Error("এই ইমেইল দিয়ে আগেই অ্যাকাউন্ট খোলা হয়েছে। লগইন করুন।");
+            err.response = {
+              status: 409,
+              data: {
+                message: "এই ইমেইল দিয়ে আগেই অ্যাকাউন্ট খোলা হয়েছে। লগইন করুন।",
+                errors: { email: ["এই ইমেইল দিয়ে আগেই অ্যাকাউন্ট খোলা হয়েছে। লগইন করুন।"] },
+              },
+            };
+            throw err;
+          }
+        } catch (e: any) {
+          if (e?.response?.status === 409) throw e;
+        }
+      }
+
       const { confirmPassword: _omit, ...body } = v;
       return (await api.post<AuthResponse>("/auth/signup", body)).data;
     },

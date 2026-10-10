@@ -15,7 +15,15 @@ export async function handleIdeasGet() {
     if (res.ok) {
       const result = await res.json();
       if (result.success && Array.isArray(result.data)) {
-        adminItems = result.data.map((item: any) => {
+        adminItems = result.data
+          .filter(
+            (item: any) =>
+              !item.isBlog &&
+              !item.isUserAccount &&
+              item.status !== "user_account" &&
+              !(typeof item.title === "string" && item.title.startsWith("[ইউজার]"))
+          )
+          .map((item: any) => {
           const districtName = getDistrictLabel(item.district) || item.district || "ঢাকা";
           const exactLoc =
             item.exactLocation ||

@@ -200,3 +200,128 @@ export function saveUserProfile(
   saveToDisk(global.__GLOBAL_USER_PROFILES__);
   return updated;
 }
+
+export async function fetchUserFromBackend(identifier: string): Promise<StoredUserProfile | null> {
+  const backendUrl = process.env.NEXT_PUBLIC_API_URL || "https://uddok-admin.vercel.app";
+  const idLower = identifier.toLowerCase().trim();
+  try {
+    const res = await fetch(`${backendUrl.replace(/\/$/, "")}/api/ideas?status=all`, {
+      cache: "no-store",
+      headers: { "Content-Type": "application/json" },
+    });
+    if (!res.ok) return null;
+    const json = await res.json();
+    if (!json.success || !Array.isArray(json.data)) return null;
+
+    const match = json.data.find((item: any) => {
+      const isAccount = item.isUserAccount === true || item.status === "user_account" || (typeof item.title === "string" && item.title.startsWith("[ইউজার]"));
+      if (!isAccount) return false;
+      const uData = item.userData || {};
+      const uEmail = (uData.email || item.authorEmail || item.postedBy?.email || "").toLowerCase().trim();
+      const uId = uData.id || String(item._id || item.id);
+      return uEmail === idLower || uId === identifier;
+    });
+
+    if (match) {
+      const uData = match.userData || {};
+      const user: StoredUserProfile = {
+        id: uData.id || String(match._id || match.id),
+        name: uData.name || match.author || "ব্যবহারকারী",
+        email: uData.email || idLower,
+        password: uData.password,
+        passwordHash: uData.passwordHash,
+        avatar: uData.avatar || "",
+        bio: uData.bio || "",
+        division: uData.division || "",
+        district: uData.district || "",
+        area: uData.area || "",
+        role: uData.role || "user",
+        createdAt: uData.createdAt || match.createdAt,
+        updatedAt: uData.updatedAt || match.createdAt,
+      };
+
+      if (!global.__GLOBAL_USER_PROFILES__) {
+        global.__GLOBAL_USER_PROFILES__ = {};
+      }
+      global.__GLOBAL_USER_PROFILES__[user.email.toLowerCase()] = user;
+      if (user.id) global.__GLOBAL_USER_PROFILES__[user.id] = user;
+      saveToDisk(global.__GLOBAL_USER_PROFILES__);
+      return user;
+    }
+  } catch (err) {
+    console.error("Error fetching user from backend MongoDB:", err);
+  }
+  return null;
+}
+
+export async function persistUserToBackend(user: StoredUserProfile): Promise<void> {
+  const backendUrl = process.env.NEXT_PUBLIC_API_URL || "https://uddok-admin.vercel.app";
+  const email = (user.email || "").toLowerCase().trim();
+  if (!email || email === "user@example.com") return;
+
+  try {
+    const res = await fetch(`${backendUrl.replace(/\/$/, "")}/api/ideas?status=all`, {
+      cache: "no-store",
+      headers: { "Content-Type": "application/json" },
+    });
+    let existingMongoId: string | null = null;
+    if (res.ok) {
+      const json = await res.json();
+      if (json.success && Array.isArray(json.data)) {
+        const match = json.data.find((item: any) => {
+          const isAccount = item.isUserAccount === true || item.status === "user_account" || (typeof item.title === "string" && item.title.startsWith("[ইউজার]"));
+          if (!isAccount) return false;
+          const uData = item.userData || {};
+          const uEmail = (uData.email || item.authorEmail || item.postedBy?.email || "").toLowerCase().trim();
+          return uEmail === email;
+        });
+        if (match) {
+          existingMongoId = String(match._id || match.id);
+        }
+      }
+    }
+
+    const payload = {
+      title: `[ইউজার] ${email}`,
+      category: "ইউজার অ্যাকাউন্ট",
+      district: user.district || "ঢাকা",
+      exactLocation: "সিস্টেম",
+      wholesalePrice: 0,
+      retailPrice: 0,
+      description: "System User Account",
+      status: "user_account",
+      isUserAccount: true,
+      userData: {
+        id: user.id,
+        email,
+        name: user.name,
+        password: user.password,
+        passwordHash: user.passwordHash,
+        avatar: user.avatar,
+        bio: user.bio,
+        division: user.division,
+        district: user.district,
+        area: user.area,
+        role: user.role,
+        createdAt: user.createdAt,
+        updatedAt: user.updatedAt,
+      },
+    };
+
+    if (existingMongoId) {
+      await fetch(`${backendUrl.replace(/\/$/, "")}/api/ideas?id=${existingMongoId}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+    } else {
+      await fetch(`${backendUrl.replace(/\/$/, "")}/api/ideas`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+    }
+  } catch (err) {
+    console.error("Error persisting user to backend MongoDB:", err);
+  }
+}
