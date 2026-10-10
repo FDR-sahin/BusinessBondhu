@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { getMockComments } from "@/lib/mock-data";
+import { getUserProfile } from "@/lib/user-profile-store";
 
 export const dynamic = "force-dynamic";
 
@@ -30,7 +31,7 @@ export async function GET(request: Request, { params }: { params: { id: string }
             postId: id,
             author: {
               id: "u-commenter",
-              name: c.authorName || "ব্যবহারকারী",
+              name: c.authorName && c.authorName !== "উদ্যোক্তা" ? c.authorName : "ব্যবহারকারী",
             },
             content: c.comment || c.content,
             createdAt: c.createdAt || new Date().toISOString(),
@@ -39,7 +40,10 @@ export async function GET(request: Request, { params }: { params: { id: string }
               id: String(r.id || r._id),
               postId: id,
               parentId: String(c.id || c._id),
-              author: { id: "u-reply", name: r.authorName || "টিম" },
+              author: {
+                id: "u-reply",
+                name: r.authorName && r.authorName !== "উদ্যোক্তা" ? r.authorName : "টিম",
+              },
               content: r.comment || r.content,
               createdAt: r.createdAt || new Date().toISOString(),
               likesCount: r.likes || 0,
@@ -64,7 +68,7 @@ export async function GET(request: Request, { params }: { params: { id: string }
             postId: id,
             author: {
               id: "u-commenter",
-              name: c.authorName || "ব্যবহারকারী",
+              name: c.authorName && c.authorName !== "উদ্যোক্তা" ? c.authorName : "ব্যবহারকারী",
             },
             content: c.comment || c.content,
             createdAt: c.createdAt || new Date().toISOString(),
@@ -88,12 +92,16 @@ export async function POST(request: Request, { params }: { params: { id: string 
     const body = await request.json();
     const backendUrl = process.env.NEXT_PUBLIC_API_URL || "https://uddok-admin.vercel.app";
 
-    const authorName =
-      body.authorName ||
-      body.author?.name ||
-      request.headers.get("x-user-name") ||
-      "ব্যবহারকারী";
+    const headerName = request.headers.get("x-user-name")
+      ? decodeURIComponent(request.headers.get("x-user-name")!)
+      : "";
+    const email = request.headers.get("x-user-email");
+    const profileName = email ? getUserProfile(email)?.name : "";
+
+    const rawName = body.authorName || body.author?.name || headerName || profileName || "";
+    const authorName = rawName && rawName !== "উদ্যোক্তা" ? rawName.trim() : "ব্যবহারকারী";
     const commentContent = body.content || body.comment || "";
+    const nowIso = new Date().toISOString();
 
     if (!commentContent.trim()) {
       return NextResponse.json({ message: "Content cannot be empty" }, { status: 400 });
@@ -106,6 +114,7 @@ export async function POST(request: Request, { params }: { params: { id: string 
       body: JSON.stringify({
         authorName,
         comment: commentContent,
+        createdAt: nowIso,
       }),
     });
 
@@ -117,6 +126,7 @@ export async function POST(request: Request, { params }: { params: { id: string 
         body: JSON.stringify({
           authorName,
           comment: commentContent,
+          createdAt: nowIso,
         }),
       });
     }
@@ -128,7 +138,7 @@ export async function POST(request: Request, { params }: { params: { id: string 
         postId: id,
         author: { id: "me", name: authorName },
         content: commentContent,
-        createdAt: new Date().toISOString(),
+        createdAt: nowIso,
         likesCount: 0,
       });
     }

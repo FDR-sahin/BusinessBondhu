@@ -35,12 +35,15 @@ export function useComments(id: string, scope: CommentScope = "posts") {
   });
 }
 
-/** POST /{posts|blog}/:id/comments { content, parentId? } */
+/** POST /{posts|blog}/:id/comments { content, parentId?, authorName? } */
 export function useAddComment(id: string, scope: CommentScope = "posts") {
   const qc = useQueryClient();
+  const user = useAuthStore((s) => s.user);
   return useMutation({
-    mutationFn: (input: { content: string; parentId?: string }) =>
-      api.post<Comment>(`/${scope}/${id}/comments`, input).then((r) => r.data),
+    mutationFn: (input: { content: string; parentId?: string; authorName?: string }) => {
+      const authorName = input.authorName || (user?.name && user.name !== "উদ্যোক্তা" ? user.name : "ব্যবহারকারী");
+      return api.post<Comment>(`/${scope}/${id}/comments`, { ...input, authorName }).then((r) => r.data);
+    },
     onSuccess: () => {
       void qc.invalidateQueries({ queryKey: commentsKey(scope, id) });
       void qc.invalidateQueries({ queryKey: parentKey(scope, id), exact: true });

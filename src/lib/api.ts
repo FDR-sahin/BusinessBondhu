@@ -21,6 +21,7 @@ api.interceptors.request.use((config) => {
   if (accessToken) config.headers.set("Authorization", `Bearer ${accessToken}`);
   if (user?.email) config.headers.set("X-User-Email", user.email);
   if (user?.id) config.headers.set("X-User-Id", user.id);
+  if (user?.name) config.headers.set("X-User-Name", encodeURIComponent(user.name));
   return config;
 });
 

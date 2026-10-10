@@ -35,7 +35,11 @@ export function CommentForm({
   const { register, handleSubmit, reset, formState: { errors } } = useForm<FormValues>({ resolver: zodResolver(schema) });
 
   const onSubmit = handleSubmit((values) =>
-    mutate({ content: values.content, parentId }, {
+    mutate({
+      content: values.content,
+      parentId,
+      authorName: user?.name && user.name !== "উদ্যোক্তা" ? user.name : "ব্যবহারকারী",
+    }, {
       onSuccess: () => {
         reset();
         toast.success(parentId ? "উত্তর যোগ হয়েছে" : "মন্তব্য যোগ হয়েছে");
