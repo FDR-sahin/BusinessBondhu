@@ -1,9 +1,10 @@
 "use client";
 
 import { Facebook } from "lucide-react";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
-import { POST_LOGIN_KEY } from "@/lib/auth";
 import { useT } from "@/lib/i18n";
+import { useLangStore } from "@/store/lang-store";
 
 function GoogleIcon() {
   return (
@@ -18,14 +19,15 @@ function GoogleIcon() {
 
 export function SocialButtons({ redirectTo }: { redirectTo: string }) {
   const t = useT();
+  const lang = useLangStore((s) => s.lang);
 
   function start(provider: "google" | "facebook") {
-    try {
-      sessionStorage.setItem(POST_LOGIN_KEY, redirectTo);
-    } catch {
-      /* storage blocked */
-    }
-    window.location.assign(`${process.env.NEXT_PUBLIC_API_URL}/auth/${provider}`);
+    const name = provider === "google" ? "Google" : "Facebook";
+    toast.info(
+      lang === "bn"
+        ? `${name} সাইন-ইন সুবিধা খুব শীঘ্রই উন্মুক্ত হচ্ছে। দয়া করে ইমেইল ও পাসওয়ার্ড ব্যবহার করে লগইন করুন।`
+        : `${name} sign-in is coming soon. Please log in using email and password.`
+    );
   }
 
   return (
