@@ -1560,7 +1560,7 @@ export function getMockPaginatedPosts(params: any = {}): Paginated<Post> {
 }
 
 export function getMockPostDetail(id: string): PostDetail | null {
-  const base = MOCK_POSTS.find((p) => String(p.id) === id || String(p._id) === id);
+  const base = MOCK_POSTS.find((p) => String(p.id) === id || String((p as any)._id) === id);
   if (!base) return null;
   return {
     ...base,
