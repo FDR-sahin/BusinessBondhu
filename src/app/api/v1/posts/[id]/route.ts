@@ -46,7 +46,9 @@ export async function GET(request: Request, { params }: { params: { id: string }
             item.exactLocation ||
             (item.upazilaOrArea ? `${item.upazilaOrArea}, ${districtName}` : `${districtName}, Bangladesh`);
           const wholesalePrice = Number(item.wholesalePrice || 0);
+          const wholesalePriceMax = item.wholesalePriceMax ? Number(item.wholesalePriceMax) : undefined;
           const retailPrice = Number(item.retailPrice || item.retailSellPrice || 0);
+          const retailPriceMax = item.retailPriceMax ? Number(item.retailPriceMax) : undefined;
 
           return NextResponse.json({
             id: String(item.id || item._id),
@@ -59,7 +61,11 @@ export async function GET(request: Request, { params }: { params: { id: string }
             area: item.upazilaOrArea || item.area || districtName,
             exactLocation: exactLoc,
             wholesalePrice,
+            wholesalePriceMax,
+            wholesalePriceText: item.wholesalePriceText,
             retailPrice,
+            retailPriceMax,
+            retailPriceText: item.retailPriceText,
             retailSellPrice: retailPrice,
             profitPotential: item.profitPotential || (retailPrice - wholesalePrice > 100 ? "high" : "medium"),
             description: item.description || "পাইকারি সোর্সিং ও পয়েন্ট সংক্রান্ত বিস্তারিত বিবরণ।",

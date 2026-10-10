@@ -26,7 +26,9 @@ export async function GET(request: Request) {
             item.exactLocation ||
             (item.upazilaOrArea ? `${item.upazilaOrArea}, ${districtName}` : `${districtName}, Bangladesh`);
           const wholesalePrice = Number(item.wholesalePrice || 0);
+          const wholesalePriceMax = item.wholesalePriceMax ? Number(item.wholesalePriceMax) : undefined;
           const retailPrice = Number(item.retailPrice || item.retailSellPrice || 0);
+          const retailPriceMax = item.retailPriceMax ? Number(item.retailPriceMax) : undefined;
 
           return {
             id: String(item.id || item._id),
@@ -39,7 +41,11 @@ export async function GET(request: Request) {
             area: item.upazilaOrArea || item.area || districtName,
             exactLocation: exactLoc,
             wholesalePrice,
+            wholesalePriceMax,
+            wholesalePriceText: item.wholesalePriceText,
             retailPrice,
+            retailPriceMax,
+            retailPriceText: item.retailPriceText,
             retailSellPrice: retailPrice,
             profitPotential: item.profitPotential || (retailPrice - wholesalePrice > 100 ? "high" : "medium"),
             description: item.description || "",
@@ -83,7 +89,11 @@ export async function GET(request: Request) {
       area: post.area,
       exactLocation: exactLoc,
       wholesalePrice,
+      wholesalePriceMax: post.wholesalePriceMax,
+      wholesalePriceText: post.wholesalePriceText,
       retailPrice,
+      retailPriceMax: post.retailPriceMax,
+      retailPriceText: post.retailPriceText,
       retailSellPrice: retailPrice,
       profitPotential: post.profitPotential,
       description: post.description,

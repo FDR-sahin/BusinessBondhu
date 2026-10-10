@@ -23,7 +23,9 @@ export async function GET() {
             item.exactLocation ||
             (item.upazilaOrArea ? `${item.upazilaOrArea}, ${districtName}` : `${districtName}, Bangladesh`);
           const wholesalePrice = Number(item.wholesalePrice || 0);
+          const wholesalePriceMax = item.wholesalePriceMax ? Number(item.wholesalePriceMax) : undefined;
           const retailPrice = Number(item.retailPrice || item.retailSellPrice || 0);
+          const retailPriceMax = item.retailPriceMax ? Number(item.retailPriceMax) : undefined;
           const profit = Math.max(0, retailPrice - wholesalePrice);
 
           return {
@@ -36,7 +38,11 @@ export async function GET() {
             area: item.upazilaOrArea || item.area || districtName,
             exactLocation: exactLoc,
             wholesalePrice,
+            wholesalePriceMax,
+            wholesalePriceText: item.wholesalePriceText,
             retailPrice,
+            retailPriceMax,
+            retailPriceText: item.retailPriceText,
             retailSellPrice: retailPrice,
             profit,
             profitPotential: item.profitPotential || (profit > 100 ? "high" : profit > 30 ? "medium" : "low"),
@@ -72,7 +78,11 @@ export async function GET() {
       area: post.area,
       exactLocation: exactLoc,
       wholesalePrice: post.wholesalePrice,
+      wholesalePriceMax: post.wholesalePriceMax,
+      wholesalePriceText: post.wholesalePriceText,
       retailPrice: post.retailPrice,
+      retailPriceMax: post.retailPriceMax,
+      retailPriceText: post.retailPriceText,
       retailSellPrice: post.retailSellPrice ?? post.retailPrice,
       profit,
       profitPotential: post.profitPotential,
