@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, Sparkles } from "lucide-react";
 import { Slider } from "@/components/ui/slider";
 import { Skeleton } from "@/components/ui/skeleton";
 import { getDistrictLabel } from "@/lib/bd-data";
@@ -38,7 +38,13 @@ export function BudgetCard() {
   const matchingPosts = postsData?.items ?? [];
 
   return (
-    <div className="rounded-2xl border border-line bg-surface p-5 shadow-sm sticky top-20">
+    <div className="rounded-2xl border border-line bg-surface p-5 shadow-sm sticky top-24">
+      {/* Top Widget Header Badge */}
+      <div className="mb-3 flex items-center gap-1.5 text-[11px] font-mono font-semibold uppercase tracking-wider text-green">
+        <Sparkles className="h-3.5 w-3.5 shrink-0" aria-hidden />
+        <span>{lang === "bn" ? "ইনস্ট্যান্ট বাজেট ফিল্টার" : "Instant Budget Calculator"}</span>
+      </div>
+
       {/* Top Section: Budget Console Filter */}
       <div className="flex items-center justify-between gap-3">
         <span className="text-xs sm:text-sm font-mono uppercase tracking-wider font-semibold text-muted">

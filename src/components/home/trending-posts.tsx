@@ -17,28 +17,30 @@ export function TrendingPosts() {
   return (
     <section id="explore" className="section pt-4 pb-12" aria-labelledby="trending-title">
       <div className="container-page max-w-[1200px]">
-        {/* Two-column layout matching user MS Word mockup */}
+        {/* Full-width Section Header at Top */}
+        <SectionHeader
+          title={t("trendingTitle")}
+          description={t("trendingDesc")}
+          href="/explore?sort=popular"
+          className="mb-8"
+        />
+        <span id="trending-title" className="sr-only">
+          {t("trendingTitle")}
+        </span>
+
+        {/* Organized Two-Column Layout: Left = Interactive Budget Finder, Right = 2x2 Cards Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-          {/* Left Column (4 cols): Budget Card with slider & matching items */}
+          {/* Left Column (4 cols): Budget Card Finder */}
           <div className="lg:col-span-4">
             <BudgetCard />
           </div>
 
-          {/* Right Column (8 cols): Trending Ideas Section Header & Grid */}
+          {/* Right Column (8 cols): Trending Business Ideas Grid */}
           <div className="lg:col-span-8">
-            <SectionHeader
-              title={t("trendingTitle")}
-              description={t("trendingDesc")}
-              href="/explore?sort=popular"
-            />
-            <span id="trending-title" className="sr-only">
-              {t("trendingTitle")}
-            </span>
-
             {isError ? (
               <QueryError onRetry={() => void refetch()} />
             ) : isPending ? (
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4" role="status" aria-label={t("loading")}>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-5" role="status" aria-label={t("loading")}>
                 {Array.from({ length: 4 }, (_, i) => (
                   <PostCardSkeleton key={i} />
                 ))}
@@ -46,9 +48,9 @@ export function TrendingPosts() {
             ) : !data?.items || data.items.length === 0 ? (
               <EmptyState title={t("noPostsYet")} description={t("shareFirstIdea")} />
             ) : (
-              <Stagger className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <Stagger className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                 {data.items.map((post) => (
-                  <StaggerItem key={post.id}>
+                  <StaggerItem key={post.id} className="h-full">
                     <PostCard post={post} />
                   </StaggerItem>
                 ))}
