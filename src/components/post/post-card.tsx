@@ -5,7 +5,7 @@ import { Heart, MapPin, ArrowRight } from "lucide-react";
 import Link from "next/link";
 import { getDistrictLabel } from "@/lib/bd-data";
 import { getCategory } from "@/lib/constants";
-import { formatBDT, toFormattedNumber } from "@/lib/utils";
+import { formatBDT, formatPriceRange, toFormattedNumber } from "@/lib/utils";
 import { useLangStore } from "@/store/lang-store";
 import type { Post } from "@/types";
 
@@ -62,23 +62,23 @@ export function PostCard({ post }: { post: Post }) {
           <span className="truncate font-medium">{exactLoc}</span>
         </div>
 
-        {/* Price Slip Ledger Numbers (Wholesale, Retail, Profit) */}
+        {/* Price Slip Ledger Numbers (Wholesale Range, Retail Range, Profit) */}
         <div className="mt-4 grid grid-cols-3 gap-1.5 rounded-md border border-line bg-surface p-2.5 text-xs shadow-inner">
           <div>
-            <span className="block micro-label text-muted">{lang === "bn" ? "পাইকারি" : "Wholesale"}</span>
-            <span className="font-mono text-xs font-semibold tabular-nums text-ink">
-              {formatBDT(post.wholesalePrice, lang)}
+            <span className="block micro-label text-muted">{lang === "bn" ? "পাইকারি রেঞ্জ" : "Wholesale Range"}</span>
+            <span className="font-mono text-xs font-semibold tabular-nums text-ink block truncate" title={formatPriceRange(post.wholesalePrice, post.wholesalePriceMax, post.wholesalePriceText, lang)}>
+              {formatPriceRange(post.wholesalePrice, post.wholesalePriceMax, post.wholesalePriceText, lang)}
             </span>
           </div>
           <div>
-            <span className="block micro-label text-muted">{lang === "bn" ? "খুচরা" : "Retail"}</span>
-            <span className="font-mono text-xs font-semibold tabular-nums text-ink">
-              {formatBDT(post.retailSellPrice ?? post.retailPrice, lang)}
+            <span className="block micro-label text-muted">{lang === "bn" ? "খুচরা রেঞ্জ" : "Retail Range"}</span>
+            <span className="font-mono text-xs font-semibold tabular-nums text-ink block truncate" title={formatPriceRange(post.retailPrice, post.retailPriceMax, post.retailPriceText, lang)}>
+              {formatPriceRange(post.retailPrice, post.retailPriceMax, post.retailPriceText, lang)}
             </span>
           </div>
           <div>
-            <span className="block micro-label text-green">{lang === "bn" ? "লাভ" : "Profit"}</span>
-            <span className="font-mono text-xs font-bold tabular-nums text-green">
+            <span className="block micro-label text-green">{lang === "bn" ? "প্রফিট মার্জিন" : "Margin"}</span>
+            <span className="font-mono text-xs font-bold tabular-nums text-green block truncate">
               {formatBDT(profit, lang)}
             </span>
           </div>

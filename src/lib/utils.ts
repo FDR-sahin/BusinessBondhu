@@ -33,6 +33,35 @@ export function formatBDT(value: number, lang: "bn" | "en" = "bn"): string {
   return `৳ ${toFormattedNumber(value, lang)}`;
 }
 
+/** Format price or price range in BDT */
+export function formatPriceRange(
+  minPrice?: number | string,
+  maxPrice?: number | string,
+  customText?: string,
+  lang: "bn" | "en" = "bn"
+): string {
+  if (customText && customText.trim()) {
+    return customText;
+  }
+
+  const min = typeof minPrice === "string" ? parseFloat(minPrice) : minPrice;
+  const max = typeof maxPrice === "string" ? parseFloat(maxPrice) : maxPrice;
+
+  const hasMin = min !== undefined && !Number.isNaN(min) && min > 0;
+  const hasMax = max !== undefined && !Number.isNaN(max) && max > 0;
+
+  if (hasMin && hasMax && max > min) {
+    return `৳ ${toFormattedNumber(min, lang)} - ৳ ${toFormattedNumber(max, lang)}`;
+  }
+  if (hasMin) {
+    return `৳ ${toFormattedNumber(min, lang)}`;
+  }
+  if (hasMax) {
+    return `৳ ${toFormattedNumber(max, lang)}`;
+  }
+  return lang === "bn" ? "দাম উল্লেখ নেই" : "N/A";
+}
+
 /** Absolute URL helper for metadata / share links. */
 export function absoluteUrl(path = "/") {
   const base = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";

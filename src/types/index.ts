@@ -61,7 +61,11 @@ export interface Post {
   area?: string;
   exactLocation?: string;
   wholesalePrice: number;
+  wholesalePriceMax?: number;
+  wholesalePriceText?: string;
   retailPrice: number;
+  retailPriceMax?: number;
+  retailPriceText?: string;
   retailSellPrice?: number;
   profitPotential: ProfitPotential;
   author: PostAuthor;
