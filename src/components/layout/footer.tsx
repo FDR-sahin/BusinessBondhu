@@ -43,7 +43,7 @@ export function Footer() {
   const socialLinks = [
     {
       name: "Facebook",
-      href: "https://www.facebook.com/",
+      href: CONTACT.facebook,
       Icon: Facebook,
     },
     {

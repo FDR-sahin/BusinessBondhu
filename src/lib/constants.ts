@@ -40,6 +40,7 @@ export const CONTACT = {
   phoneBn: "+880 1943-907743",
   address: "Dhaka, Bangladesh",
   addressBn: "ঢাকা, বাংলাদেশ",
+  facebook: "https://www.facebook.com/businessideazone",
 };
 
 export function getCategory(slug: string) {
