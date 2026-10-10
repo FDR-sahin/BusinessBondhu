@@ -14,7 +14,7 @@ import type {
   PostDetail,
   AppNotification,
 } from "@/types";
-import { DETAILED_BLOG_POSTS } from "./blog-data";
+import { DETAILED_BLOG_POSTS } from "@/lib/blog-data";
 
 export const MOCK_POSTS: Post[] = [
   {
