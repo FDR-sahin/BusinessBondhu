@@ -17,8 +17,10 @@ export const api = axios.create({
 /* Request: attach JWT                                                 */
 /* ------------------------------------------------------------------ */
 api.interceptors.request.use((config) => {
-  const token = useAuthStore.getState().accessToken;
-  if (token) config.headers.set("Authorization", `Bearer ${token}`);
+  const { accessToken, user } = useAuthStore.getState();
+  if (accessToken) config.headers.set("Authorization", `Bearer ${accessToken}`);
+  if (user?.email) config.headers.set("X-User-Email", user.email);
+  if (user?.id) config.headers.set("X-User-Id", user.id);
   return config;
 });
 

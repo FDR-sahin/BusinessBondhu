@@ -64,7 +64,12 @@ export function PostForm({ mode, postId, initial }: PostFormProps) {
 
   const { mutate, isPending, variables } = useMutation({
     mutationFn: ({ values, status }: { values: PostFormValues; status: "draft" | "pending" }) => {
-      const body = toPostRequest(values, status);
+      const body = {
+        ...toPostRequest(values, status),
+        userId: user?.id,
+        authorEmail: user?.email,
+        authorName: user?.name,
+      };
       return mode === "create" ? api.post("/posts", body) : api.put(`/posts/${postId}`, body);
     },
     onSuccess: (_r, { status }) => {

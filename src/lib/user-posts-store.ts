@@ -24,6 +24,7 @@ export interface UserStoredPost {
   tags?: string[];
   status: "draft" | "pending" | "approved" | "rejected";
   userId?: string;
+  authorEmail?: string;
   author?: {
     id?: string;
     name: string;
