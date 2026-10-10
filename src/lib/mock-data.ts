@@ -14,6 +14,7 @@ import type {
   PostDetail,
   AppNotification,
 } from "@/types";
+import { DETAILED_BLOG_POSTS } from "./blog-data";
 
 export const MOCK_POSTS: Post[] = [
   {
@@ -1432,8 +1433,6 @@ export const MOCK_TOP_DISTRICTS: DistrictStat[] = [
   { district: "Mymensingh", division: "Mymensingh", count: 41 },
   { district: "Pabna", division: "Rajshahi", count: 39 },
 ];
-
-import { DETAILED_BLOG_POSTS } from "./blog-data";
 
 export const MOCK_BLOG_POSTS: BlogPost[] = DETAILED_BLOG_POSTS;
 
