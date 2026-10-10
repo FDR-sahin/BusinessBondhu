@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { MOCK_POSTS } from "@/lib/mock-data";
 import { getDistrictLabel } from "@/lib/bd-data";
+import { deleteUserPost, findUserPost, getUserPosts, saveUserPost } from "@/lib/user-posts-store";
 
 export const dynamic = "force-dynamic";
 
@@ -8,7 +9,29 @@ export async function GET(request: Request, { params }: { params: { id: string }
   const id = decodeURIComponent(params.id);
   const backendUrl = process.env.NEXT_PUBLIC_API_URL || "https://uddok-admin.vercel.app";
 
-  // 1. Search in local MOCK_POSTS first
+  // 0. Search in locally submitted user posts first
+  const userPost = findUserPost(id);
+  if (userPost) {
+    const districtName = (userPost.district ? getDistrictLabel(userPost.district) : undefined) || userPost.district || "ঢাকা";
+    const exactLoc = userPost.exactLocation || (userPost.area ? `${userPost.area}, ${districtName}` : `${districtName}, Bangladesh`);
+
+    return NextResponse.json({
+      ...userPost,
+      id: String(userPost.id),
+      _id: String(userPost.id),
+      district: districtName,
+      exactLocation: exactLoc,
+      description: userPost.description || "সোর্সিং ও পয়েন্ট সংক্রান্ত বিস্তারিত বিবরণ।",
+      tags: userPost.tags || ["ব্যবসা", "উদ্যোক্তা", "পাইকারি_দাম", "বাংলাদেশ"],
+      author: {
+        id: userPost.author?.id || "u-me",
+        name: userPost.author?.name || "উদ্যোক্তা ব্যবহারকারী",
+        avatar: userPost.author?.avatar || "/images/avatars/default.jpg",
+      },
+    });
+  }
+
+  // 1. Search in local MOCK_POSTS next
   const mockFound = MOCK_POSTS.find((p) => String(p.id) === id || String((p as any)._id) === id);
   if (mockFound) {
     const districtName = getDistrictLabel(mockFound.district) || mockFound.district;
@@ -92,4 +115,50 @@ export async function GET(request: Request, { params }: { params: { id: string }
   }
 
   return NextResponse.json({ message: "Post not found" }, { status: 404 });
+}
+
+export async function PUT(request: Request, { params }: { params: { id: string } }) {
+  try {
+    const id = decodeURIComponent(params.id);
+    const body = await request.json();
+    const existing = findUserPost(id);
+    if (!existing) {
+      return NextResponse.json({ message: "Post not found" }, { status: 404 });
+    }
+
+    const wMin = Number(body.wholesalePrice || 0);
+    const wMax = body.wholesalePriceMax !== undefined && body.wholesalePriceMax !== null && String(body.wholesalePriceMax).trim() !== ""
+      ? Number(body.wholesalePriceMax)
+      : undefined;
+    const rMin = Number(body.retailPrice || body.retailSellPrice || 0);
+    const rMax = body.retailPriceMax !== undefined && body.retailPriceMax !== null && String(body.retailPriceMax).trim() !== ""
+      ? Number(body.retailPriceMax)
+      : undefined;
+
+    const wholesalePriceText = (wMax && wMax > wMin) ? `${wMin}-${wMax}` : String(wMin);
+    const retailPriceText = (rMax && rMax > rMin) ? `${rMin}-${rMax}` : String(rMin);
+
+    const updated = saveUserPost({
+      ...existing,
+      ...body,
+      wholesalePrice: wMin,
+      wholesalePriceMax: wMax,
+      wholesalePriceText,
+      retailPrice: rMin,
+      retailPriceMax: rMax,
+      retailPriceText,
+      retailSellPrice: rMin,
+      updatedAt: new Date().toISOString(),
+    });
+
+    return NextResponse.json({ success: true, post: updated });
+  } catch (error: any) {
+    return NextResponse.json({ success: false, message: error?.message || "Failed to update" }, { status: 500 });
+  }
+}
+
+export async function DELETE(request: Request, { params }: { params: { id: string } }) {
+  const id = decodeURIComponent(params.id);
+  deleteUserPost(id);
+  return NextResponse.json({ success: true, message: "Deleted" });
 }

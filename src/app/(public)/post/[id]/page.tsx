@@ -31,6 +31,12 @@ const getPost = cache(async (id: string): Promise<{ post: PostDetail | null; mis
         _id: String(localFound.id),
         district: districtName,
         exactLocation: exactLoc,
+        wholesalePrice: localFound.wholesalePrice,
+        wholesalePriceMax: localFound.wholesalePriceMax,
+        wholesalePriceText: localFound.wholesalePriceText,
+        retailPrice: localFound.retailSellPrice ?? localFound.retailPrice,
+        retailPriceMax: localFound.retailPriceMax,
+        retailPriceText: localFound.retailPriceText,
         description: localFound.description || "উৎপাদন ও সোর্সিং সংক্রান্ত বিস্তারিত তথ্য।",
         tags: localFound.tags || ["ব্যবসা", "উদ্যোক্তা", "পাইকারি_দাম"],
         author: {
@@ -56,7 +62,11 @@ const getPost = cache(async (id: string): Promise<{ post: PostDetail | null; mis
             item.exactLocation ||
             (item.upazilaOrArea ? `${item.upazilaOrArea}, ${districtName}` : `${districtName}, Bangladesh`);
           const wholesalePrice = Number(item.wholesalePrice || 0);
+          const wholesalePriceMax = item.wholesalePriceMax ? Number(item.wholesalePriceMax) : undefined;
+          const wholesalePriceText = item.wholesalePriceText || (wholesalePriceMax ? `${wholesalePrice}-${wholesalePriceMax}` : undefined);
           const retailPrice = Number(item.retailPrice || item.retailSellPrice || 0);
+          const retailPriceMax = item.retailPriceMax ? Number(item.retailPriceMax) : undefined;
+          const retailPriceText = item.retailPriceText || (retailPriceMax ? `${retailPrice}-${retailPriceMax}` : undefined);
 
           return {
             post: {
@@ -69,7 +79,11 @@ const getPost = cache(async (id: string): Promise<{ post: PostDetail | null; mis
               area: item.upazilaOrArea || item.area || districtName,
               exactLocation: exactLoc,
               wholesalePrice,
+              wholesalePriceMax,
+              wholesalePriceText,
               retailPrice,
+              retailPriceMax,
+              retailPriceText,
               retailSellPrice: retailPrice,
               profitPotential: item.profitPotential || (retailPrice - wholesalePrice > 100 ? "high" : "medium"),
               description: item.description || "উৎপাদন ও সোর্সিং সংক্রান্ত বিস্তারিত তথ্য।",

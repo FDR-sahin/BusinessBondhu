@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { getMockPaginatedPosts, MOCK_POSTS } from "@/lib/mock-data";
 import { getDistrictLabel } from "@/lib/bd-data";
+import { getUserPosts, saveUserPost, type UserStoredPost } from "@/lib/user-posts-store";
 
 export const dynamic = "force-dynamic";
 
@@ -113,7 +114,44 @@ export async function GET(request: Request) {
     };
   });
 
-  let items = [...adminItems, ...fallbackItems];
+  // Merge with locally stored user approved/pending posts if any
+  const userStored = getUserPosts()
+    .filter((p) => p.status !== "draft")
+    .map((p) => ({
+      id: String(p.id),
+      _id: String(p.id),
+      title: p.title,
+      slug: (p.title || "").toLowerCase().replace(/\s+/g, "-"),
+      category: p.category || "general",
+      division: p.division || "Dhaka",
+      district: (p.district ? getDistrictLabel(p.district) : undefined) || p.district || "ঢাকা",
+      area: p.area || "",
+      exactLocation: p.exactLocation || `${p.district || "ঢাকা"}, Bangladesh`,
+      wholesalePrice: Number(p.wholesalePrice || 0),
+      wholesalePriceMax: p.wholesalePriceMax ? Number(p.wholesalePriceMax) : undefined,
+      wholesalePriceText: p.wholesalePriceText,
+      retailPrice: Number(p.retailPrice || 0),
+      retailPriceMax: p.retailPriceMax ? Number(p.retailPriceMax) : undefined,
+      retailPriceText: p.retailPriceText,
+      retailSellPrice: Number(p.retailSellPrice || p.retailPrice || 0),
+      profitPotential: p.profitPotential || "medium",
+      description: p.description || "",
+      image: p.image || "/images/ideas/default.jpg",
+      tags: p.tags || [],
+      author: {
+        name: p.author?.name || "ব্যবহারকারী",
+        avatar: p.author?.avatar || "/images/avatars/default.jpg",
+      },
+      likesCount: p.likesCount || 0,
+      dislikesCount: p.dislikesCount || 0,
+      viewsCount: p.viewsCount || 1,
+      commentsCount: p.commentsCount || 0,
+      createdAt: p.createdAt,
+      status: p.status,
+      isVerified: p.isVerified ?? false,
+    }));
+
+  let items = [...userStored, ...adminItems, ...fallbackItems];
 
   // Search & Category Filtering
   if (params.q) {
@@ -146,4 +184,87 @@ export async function GET(request: Request) {
     limit,
     totalPages,
   });
+}
+
+export async function POST(request: Request) {
+  try {
+    const body = await request.json();
+    const backendUrl = process.env.NEXT_PUBLIC_API_URL || "https://uddok-admin.vercel.app";
+
+    const wMin = Number(body.wholesalePrice || 0);
+    const wMax = body.wholesalePriceMax !== undefined && body.wholesalePriceMax !== null && String(body.wholesalePriceMax).trim() !== ""
+      ? Number(body.wholesalePriceMax)
+      : undefined;
+    const rMin = Number(body.retailPrice || body.retailSellPrice || 0);
+    const rMax = body.retailPriceMax !== undefined && body.retailPriceMax !== null && String(body.retailPriceMax).trim() !== ""
+      ? Number(body.retailPriceMax)
+      : undefined;
+
+    const wholesalePriceText = (wMax && wMax > wMin) ? `${wMin}-${wMax}` : String(wMin);
+    const retailPriceText = (rMax && rMax > rMin) ? `${rMin}-${rMax}` : String(rMin);
+
+    const postRecord: UserStoredPost = {
+      id: `post-${Date.now()}`,
+      title: body.title || "শিরোনামহীন খসড়া",
+      category: body.category || "general",
+      division: body.division || "Dhaka",
+      district: body.district || "ঢাকা",
+      area: body.area || "",
+      exactLocation: body.exactLocation || `${body.district || "ঢাকা"}, Bangladesh`,
+      wholesalePrice: wMin,
+      wholesalePriceMax: wMax,
+      wholesalePriceText,
+      retailPrice: rMin,
+      retailPriceMax: rMax,
+      retailPriceText,
+      retailSellPrice: rMin,
+      profitPotential: body.profitPotential || "medium",
+      description: body.description || "",
+      image: body.image || "/images/ideas/default.jpg",
+      tags: body.tags || [],
+      status: body.status === "draft" ? "draft" : "pending",
+      author: {
+        name: "উদ্যোক্তা ব্যবহারকারী",
+        avatar: "/images/avatars/default.jpg",
+      },
+      likesCount: 0,
+      dislikesCount: 0,
+      viewsCount: 1,
+      commentsCount: 0,
+      createdAt: new Date().toISOString(),
+      isVerified: false,
+    };
+
+    // Forward to uddok-admin backend /api/ideas if it's a published/pending post
+    try {
+      await fetch(`${backendUrl.replace(/\/$/, "")}/api/ideas`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          title: postRecord.title,
+          category: postRecord.category,
+          district: postRecord.district,
+          exactLocation: postRecord.exactLocation,
+          wholesalePrice: wMin,
+          wholesalePriceMax: wMax,
+          wholesalePriceText,
+          retailPrice: rMin,
+          retailPriceMax: rMax,
+          retailPriceText,
+          description: postRecord.description,
+          isVerified: false,
+        }),
+      });
+    } catch (err) {
+      console.warn("Could not forward to backend API, saved locally:", err);
+    }
+
+    // Always persist in local user posts store (drafts + pending posts)
+    saveUserPost(postRecord);
+
+    return NextResponse.json({ success: true, post: postRecord, id: postRecord.id }, { status: 201 });
+  } catch (error: any) {
+    console.error("Failed to create post:", error);
+    return NextResponse.json({ success: false, message: error?.message || "পোস্ট তৈরি করতে সমস্যা হয়েছে" }, { status: 500 });
+  }
 }

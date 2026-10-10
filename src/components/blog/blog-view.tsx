@@ -95,7 +95,7 @@ export function BlogView() {
             className={`border-2 border-line px-3.5 py-1.5 font-bold transition-all ${
               activeCategory === ALL
                 ? "bg-ink text-background shadow-[2px_2px_0px_0px_rgba(23,19,15,0.75)]"
-                : "bg-surface text-ink hover:bg-gold/20"
+                : "bg-surface text-ink hover:bg-indigo-50 dark:hover:bg-indigo-950/40 hover:text-indigo-600 dark:hover:text-indigo-400"
             }`}
           >
             {t("allOutcomes")}
@@ -110,7 +110,7 @@ export function BlogView() {
                 className={`border-2 border-line px-3.5 py-1.5 font-semibold transition-all ${
                   isActive
                     ? "bg-ink text-background shadow-[2px_2px_0px_0px_rgba(23,19,15,0.75)]"
-                    : "bg-surface text-ink hover:bg-gold/20"
+                    : "bg-surface text-ink hover:bg-indigo-50 dark:hover:bg-indigo-950/40 hover:text-indigo-600 dark:hover:text-indigo-400"
                 }`}
               >
                 {label}

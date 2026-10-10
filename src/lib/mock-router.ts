@@ -155,6 +155,67 @@ export function handleMockFallback(config?: AxiosRequestConfig): AxiosResponse |
     return createAxiosResponse({ user: updatedUser }, config);
   }
 
+  // POST /posts (Create post or save draft fallback)
+  if (config.method?.toLowerCase() === "post" && path === "/posts") {
+    let body: any = {};
+    try {
+      body = typeof config.data === "string" ? JSON.parse(config.data || "{}") : config.data || {};
+    } catch {
+      body = {};
+    }
+    const newPost = {
+      id: `post-${Date.now()}`,
+      title: body.title || "নতুন খসড়া",
+      status: body.status || "pending",
+      category: body.category || "general",
+      division: body.division || "Dhaka",
+      district: body.district || "ঢাকা",
+      area: body.area || "",
+      exactLocation: body.exactLocation || "",
+      wholesalePrice: Number(body.wholesalePrice || 0),
+      wholesalePriceMax: body.wholesalePriceMax ? Number(body.wholesalePriceMax) : undefined,
+      wholesalePriceText: body.wholesalePriceText,
+      retailPrice: Number(body.retailPrice || 0),
+      retailPriceMax: body.retailPriceMax ? Number(body.retailPriceMax) : undefined,
+      retailPriceText: body.retailPriceText,
+      retailSellPrice: Number(body.retailSellPrice || body.retailPrice || 0),
+      profitPotential: body.profitPotential || "medium",
+      description: body.description || "",
+      image: body.image || "/images/ideas/default.jpg",
+      tags: body.tags || [],
+      createdAt: new Date().toISOString(),
+      viewsCount: 1,
+      likesCount: 0,
+      dislikesCount: 0,
+      commentsCount: 0,
+    };
+    if (typeof window !== "undefined") {
+      try {
+        const stored = JSON.parse(localStorage.getItem("user_local_posts") || "[]");
+        stored.unshift(newPost);
+        localStorage.setItem("user_local_posts", JSON.stringify(stored));
+      } catch (e) {
+        console.error(e);
+      }
+    }
+    return createAxiosResponse({ success: true, post: newPost, id: newPost.id }, config);
+  }
+
+  // DELETE /posts/:id
+  if (config.method?.toLowerCase() === "delete" && path.startsWith("/posts/")) {
+    const id = path.split("/").pop();
+    if (typeof window !== "undefined") {
+      try {
+        const stored = JSON.parse(localStorage.getItem("user_local_posts") || "[]");
+        const filtered = stored.filter((p: any) => p.id !== id);
+        localStorage.setItem("user_local_posts", JSON.stringify(filtered));
+      } catch (e) {
+        console.error(e);
+      }
+    }
+    return createAxiosResponse({ success: true, message: "পোস্ট মুছে ফেলা হয়েছে" }, config);
+  }
+
   // POST /advisor/saved, /posts/:id/like, /posts/:id/dislike, /posts/:id/save, /posts/:id/view
   if (
     path.includes("/advisor/saved") ||
@@ -185,8 +246,31 @@ export function handleMockFallback(config?: AxiosRequestConfig): AxiosResponse |
       config,
     );
   }
+  if (path.includes("/me/posts")) {
+    let items: any[] = [];
+    if (typeof window !== "undefined") {
+      try {
+        items = JSON.parse(localStorage.getItem("user_local_posts") || "[]");
+      } catch (e) {
+        console.error(e);
+      }
+    }
+    const status = params.status;
+    if (status && status !== "all") {
+      items = items.filter((p: any) => p.status === status);
+    }
+    return createAxiosResponse(
+      {
+        items,
+        total: items.length,
+        page: 1,
+        limit: 10,
+        totalPages: Math.ceil(items.length / 10),
+      },
+      config,
+    );
+  }
   if (
-    path.includes("/me/posts") ||
     path.includes("/me/collections") ||
     path.includes("/me/likes") ||
     path.includes("/me/dislikes") ||

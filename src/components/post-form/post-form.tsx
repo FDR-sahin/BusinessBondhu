@@ -84,10 +84,14 @@ export function PostForm({ mode, postId, initial }: PostFormProps) {
 
   const submitting = (s: "draft" | "pending") => isPending && variables?.status === s;
 
-  /** Draft = only a title is mandatory, so people can save half-finished work. */
+  /** Draft = save whatever has been typed so far (sets fallback title if empty). */
   async function saveDraft() {
-    if (!(await trigger("title"))) return;
-    mutate({ values: getValues(), status: "draft" });
+    let vals = getValues();
+    if (!vals.title || !vals.title.trim()) {
+      setValue("title", "অপ্রকাশিত খসড়া");
+      vals = { ...vals, title: "অপ্রকাশিত খসড়া" };
+    }
+    mutate({ values: vals, status: "draft" });
   }
 
   // Live preview: a throwaway Post built from what's typed so far.

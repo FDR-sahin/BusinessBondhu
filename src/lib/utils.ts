@@ -40,15 +40,12 @@ export function formatPriceRange(
   customText?: string,
   lang: "bn" | "en" = "bn"
 ): string {
-  if (customText && customText.trim()) {
-    return customText;
-  }
+  let min = typeof minPrice === "string" ? parseFloat(minPrice.replace(/[^\d.]/g, "")) : minPrice;
+  let max = typeof maxPrice === "string" ? parseFloat(maxPrice.replace(/[^\d.]/g, "")) : maxPrice;
 
-  let min = typeof minPrice === "string" ? parseFloat(minPrice) : minPrice;
-  let max = typeof maxPrice === "string" ? parseFloat(maxPrice) : maxPrice;
-
-  if (typeof minPrice === "string" && minPrice.includes("-") && (max === undefined || Number.isNaN(max))) {
-    const parts = minPrice.split("-").map((p) => p.replace(/[^\d.]/g, "").trim());
+  // If minPrice string contains a hyphenated range (e.g. "105-160")
+  if (typeof minPrice === "string" && (minPrice.includes("-") || minPrice.includes("–"))) {
+    const parts = minPrice.split(/[-–]/).map((p) => p.replace(/[^\d.]/g, "").trim());
     if (parts.length >= 2) {
       const parsedMin = parseFloat(parts[0]);
       const parsedMax = parseFloat(parts[1]);
@@ -57,30 +54,27 @@ export function formatPriceRange(
     }
   }
 
-  // Auto-fallback range calculation for legacy posts where max is missing:
-  if (min !== undefined && !Number.isNaN(min) && min > 0 && (max === undefined || Number.isNaN(max) || max <= min)) {
-    if (min === 65) {
-      max = 80;
-    } else if (min === 100) {
-      max = 120;
-    } else if (min === 120) {
-      max = 170;
-    } else if (min === 170) {
-      max = 220;
-    } else if (min === 500) {
-      max = 650;
-    } else if (min === 1000) {
-      max = 1200;
-    } else {
-      // General 20-25% market margin range fallback
-      const factor = min < 100 ? 1.23 : min < 1000 ? 1.25 : 1.2;
-      max = Math.round(min * factor);
+  // If customText contains a range (e.g. "105-160" or "105 - 160")
+  if (customText && (customText.includes("-") || customText.includes("–"))) {
+    const parts = customText.split(/[-–]/).map((p) => p.replace(/[^\d.]/g, "").trim());
+    if (parts.length >= 2) {
+      const parsedMin = parseFloat(parts[0]);
+      const parsedMax = parseFloat(parts[1]);
+      if (!Number.isNaN(parsedMin)) min = parsedMin;
+      if (!Number.isNaN(parsedMax)) max = parsedMax;
     }
   }
 
+  // If both min and max are valid and max > min, ALWAYS format the full range:
   if (min !== undefined && max !== undefined && !Number.isNaN(min) && !Number.isNaN(max) && min > 0 && max > 0 && max > min) {
     return `৳ ${toFormattedNumber(min, lang)} - ${toFormattedNumber(max, lang)}`;
   }
+
+  // If customText is a custom string (not just a single number), return it
+  if (customText && customText.trim() && isNaN(Number(customText))) {
+    return customText;
+  }
+
   if (min !== undefined && !Number.isNaN(min) && min > 0) {
     return `৳ ${toFormattedNumber(min, lang)}`;
   }
