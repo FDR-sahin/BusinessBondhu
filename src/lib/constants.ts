@@ -37,7 +37,7 @@ export const CATEGORIES: { slug: string; nameBn: string; nameEn: string; icon: L
 export const CONTACT = {
   email: "regardstech.team@gmail.com",
   phone: "+880 1943-907743",
-  phoneBn: "+৮৮০ ১৯৪৩-৯০৭৭৪৩",
+  phoneBn: "+880 1943-907743",
   address: "Dhaka, Bangladesh",
   addressBn: "ঢাকা, বাংলাদেশ",
 };
