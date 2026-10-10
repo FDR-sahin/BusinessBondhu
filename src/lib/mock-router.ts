@@ -143,8 +143,13 @@ export function handleMockFallback(config?: AxiosRequestConfig): AxiosResponse |
     return createAxiosResponse({ success: true, message: "অপারেশনটি সফল হয়েছে" }, config);
   }
 
+  // Notifications unread count
+  if (path.includes("/notifications/unread-count")) {
+    return createAxiosResponse({ count: 0 }, config);
+  }
+
   // Dashboard APIs
-  if (path.includes("/me/dashboard")) {
+  if (path.includes("/me/dashboard") || path.includes("/me/overview")) {
     return createAxiosResponse(MOCK_DASHBOARD_OVERVIEW, config);
   }
   if (path.includes("/me/posts")) {

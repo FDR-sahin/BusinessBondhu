@@ -24,10 +24,12 @@ export function OverviewView() {
 
   const view = useMemo(
     () =>
-      data && {
-        likes: data.weeklyLikes.map((d) => ({ name: weekday(d.date), likes: d.likes })),
-        cats: data.postsByCategory.map((c) => ({ name: getCategory(c.category)?.nameBn ?? c.category, count: c.count })),
-      },
+      data && Array.isArray(data.weeklyLikes) && Array.isArray(data.postsByCategory)
+        ? {
+            likes: data.weeklyLikes.map((d) => ({ name: weekday(d.date), likes: d.likes })),
+            cats: data.postsByCategory.map((c) => ({ name: getCategory(c.category)?.nameBn ?? c.category, count: c.count })),
+          }
+        : null,
     [data],
   );
 
@@ -54,10 +56,10 @@ export function OverviewView() {
       ) : (
         <>
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-            <StatCard label="আমার পোস্ট" value={data.totals.posts} icon={FileText} />
-            <StatCard label="মোট লাইক" value={data.totals.likes} icon={Heart} />
-            <StatCard label="মোট ভিউ" value={data.totals.views} icon={Eye} />
-            <StatCard label="মোট মন্তব্য" value={data.totals.comments} icon={MessageSquare} />
+            <StatCard label="আমার পোস্ট" value={data.totals?.posts ?? 0} icon={FileText} />
+            <StatCard label="মোট লাইক" value={data.totals?.likes ?? 0} icon={Heart} />
+            <StatCard label="মোট ভিউ" value={data.totals?.views ?? 0} icon={Eye} />
+            <StatCard label="মোট মন্তব্য" value={data.totals?.comments ?? 0} icon={MessageSquare} />
           </div>
 
           <div className="grid gap-6 lg:grid-cols-2">
@@ -71,7 +73,7 @@ export function OverviewView() {
             </ChartCard>
           </div>
 
-          <ActivityFeed events={data.activity} />
+          <ActivityFeed events={data.activity || []} />
         </>
       )}
     </div>
