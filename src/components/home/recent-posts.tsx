@@ -13,7 +13,7 @@ import { useT } from "@/lib/i18n";
 
 export function RecentPosts() {
   const t = useT();
-  const { data, isPending, isError, refetch } = usePosts({ sort: "newest", limit: 6 });
+  const { data, isPending, isError, refetch } = usePosts({ sort: "newest", limit: 8 });
 
   return (
     <section className="section" aria-label={t("recentPostsTitle")}>
@@ -23,12 +23,12 @@ export function RecentPosts() {
         {isError ? (
           <QueryError onRetry={() => void refetch()} />
         ) : isPending ? (
-          <PostGridSkeleton count={6} />
+          <PostGridSkeleton count={8} />
         ) : data.items.length === 0 ? (
           <EmptyState title={t("noPostsYet")} description={t("shareFirstIdea")} />
         ) : (
           <>
-            <Stagger className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            <Stagger className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
               {data.items.map((post) => (
                 <StaggerItem key={post.id} className="h-full">
                   <PostCard post={post} />
