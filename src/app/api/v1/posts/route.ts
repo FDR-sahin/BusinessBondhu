@@ -2,6 +2,8 @@ import { NextResponse } from "next/server";
 import { getMockPaginatedPosts, MOCK_POSTS } from "@/lib/mock-data";
 import { getDistrictLabel } from "@/lib/bd-data";
 
+export const dynamic = "force-dynamic";
+
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const params = Object.fromEntries(searchParams.entries());
