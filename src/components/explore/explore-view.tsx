@@ -86,7 +86,7 @@ export function ExploreView() {
                 action={<Button onClick={resetFilters} className="bg-green text-white hover:bg-green/90">{t("resetFilters")}</Button>}
               />
             ) : (
-              <Stagger key={resultKey} className="grid gap-6 sm:grid-cols-2 2xl:grid-cols-3">
+              <Stagger key={resultKey} className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
                 {data.items.map((post) => (
                   <StaggerItem key={post.id} className="h-full"><PostCard post={post} /></StaggerItem>
                 ))}

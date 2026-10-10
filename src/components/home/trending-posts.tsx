@@ -29,18 +29,18 @@ export function TrendingPosts() {
         </span>
 
         {/* Device Optimized Two-Column Layout */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-          {/* Left Column: Budget Calculator (4 cols on lg, 3 cols on xl desktop) */}
-          <div className="lg:col-span-4 xl:col-span-3">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 xl:gap-8 items-start">
+          {/* Left Column: Budget Calculator — narrow on desktop */}
+          <div className="lg:col-span-3">
             <BudgetCard />
           </div>
 
-          {/* Right Column: Cards Grid (8 cols on lg, 9 cols on xl desktop) */}
-          <div className="lg:col-span-8 xl:col-span-9">
+          {/* Right Column: Cards Grid — gets more space now */}
+          <div className="lg:col-span-9">
             {isError ? (
               <QueryError onRetry={() => void refetch()} />
             ) : isPending ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6" role="status" aria-label={t("loading")}>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5" role="status" aria-label={t("loading")}>
                 {Array.from({ length: 6 }, (_, i) => (
                   <PostCardSkeleton key={i} />
                 ))}
@@ -48,8 +48,8 @@ export function TrendingPosts() {
             ) : !data?.items || data.items.length === 0 ? (
               <EmptyState title={t("noPostsYet")} description={t("shareFirstIdea")} />
             ) : (
-              /* Breakpoints: 1 card on mobile, 2 cards on tablet & laptop, 3 cards on 24-inch desktop monitors */
-              <Stagger className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+              /* Breakpoints: 1 card mobile, 2 on tablet, 3 from lg desktop onwards */
+              <Stagger className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
                 {data.items.map((post) => (
                   <StaggerItem key={post.id} className="h-full">
                     <PostCard post={post} />
