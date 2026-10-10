@@ -46,16 +46,6 @@ function Section({ title, description, children }: { title: string; description?
   );
 }
 
-function PriceField({ id, label, required, error, children }: { id: string; label: string; required?: boolean; error?: string; children: ReactNode }) {
-  return (
-    <FormField label={label} htmlFor={id} required={required} error={error}>
-      <div className="relative">
-        <span aria-hidden className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 font-medium text-ink-secondary">৳</span>
-        {children}
-      </div>
-    </FormField>
-  );
-}
 
 export function PostForm({ mode, postId, initial }: PostFormProps) {
   const router = useRouter();
@@ -101,24 +91,32 @@ export function PostForm({ mode, postId, initial }: PostFormProps) {
   }
 
   // Live preview: a throwaway Post built from what's typed so far.
-  const preview = useMemo<Post>(() => ({
-    id: "preview",
-    title: v.title.trim() || "আপনার পোস্টের শিরোনাম",
-    image: v.image,
-    category: v.category,
-    division: v.division,
-    district: v.district,
-    area: v.area.trim() || undefined,
-    exactLocation: v.exactLocation?.trim() || undefined,
-    wholesalePrice: Number.isFinite(parseAmount(v.wholesalePrice)) ? parseAmount(v.wholesalePrice) : 0,
-    retailPrice: Number.isFinite(parseAmount(v.retailPrice)) ? parseAmount(v.retailPrice) : 0,
-    profitPotential: v.profitPotential,
-    author: { id: user?.id ?? "me", name: user?.name ?? "আপনি", avatar: user?.avatar },
-    likesCount: 0, dislikesCount: 0, commentsCount: 0, viewsCount: 0,
-    createdAt: new Date().toISOString(),
-  }), [v.title, v.image, v.category, v.division, v.district, v.area, v.exactLocation, v.wholesalePrice, v.retailPrice, v.profitPotential, user]);
+  const preview = useMemo<Post>(() => {
+    const wsMin = Number.isFinite(parseAmount(v.wholesalePrice)) ? parseAmount(v.wholesalePrice) : 0;
+    const wsMax = Number.isFinite(parseAmount(v.wholesalePriceMax)) ? parseAmount(v.wholesalePriceMax) : undefined;
+    const retMin = Number.isFinite(parseAmount(v.retailPrice)) ? parseAmount(v.retailPrice) : 0;
+    const retMax = Number.isFinite(parseAmount(v.retailPriceMax)) ? parseAmount(v.retailPriceMax) : undefined;
+    return {
+      id: "preview",
+      title: (v.title || "").trim() || "আপনার পোস্টের শিরোনাম",
+      image: v.image,
+      category: v.category,
+      division: v.division,
+      district: v.district,
+      area: v.area?.trim() || undefined,
+      exactLocation: v.exactLocation?.trim() || undefined,
+      wholesalePrice: wsMin,
+      wholesalePriceMax: wsMax,
+      retailPrice: retMin,
+      retailPriceMax: retMax,
+      profitPotential: v.profitPotential,
+      author: { id: user?.id ?? "me", name: user?.name ?? "আপনি", avatar: user?.avatar },
+      likesCount: 0, dislikesCount: 0, commentsCount: 0, viewsCount: 0,
+      createdAt: new Date().toISOString(),
+    };
+  }, [v.title, v.image, v.category, v.division, v.district, v.area, v.exactLocation, v.wholesalePrice, v.wholesalePriceMax, v.retailPrice, v.retailPriceMax, v.profitPotential, user]);
 
-  const descLen = Array.from(v.description.trim()).length;
+  const descLen = Array.from((v.description || "").trim()).length;
 
   return (
     <form onSubmit={handleSubmit((values) => mutate({ values, status: "pending" }))} noValidate className="grid items-start gap-8 lg:grid-cols-[minmax(0,1fr)_21rem]">
@@ -129,7 +127,7 @@ export function PostForm({ mode, postId, initial }: PostFormProps) {
           <FormField label="শিরোনাম" htmlFor="p-title" required error={errors.title?.message}>
             <Input id="p-title" maxLength={120} placeholder="যেমন: মিরপুরে ফ্রোজেন ফুডের ছোট দোকান" invalid={!!errors.title} {...register("title")} />
           </FormField>
-          <FormField label="ব্যবসার ক্যাটাগরি" htmlFor="p-category" required error={errors.category?.message}>
+          <FormField label="ব্যবসার ক্যাটাগরি" htmlFor="p-category" error={errors.category?.message}>
             <Controller control={control} name="category" render={({ field }) => (
               <Select value={field.value} onValueChange={field.onChange}>
                 <SelectTrigger id="p-category" invalid={!!errors.category}><SelectValue placeholder="ক্যাটাগরি বেছে নিন" /></SelectTrigger>
@@ -141,7 +139,7 @@ export function PostForm({ mode, postId, initial }: PostFormProps) {
 
         <Section title="এলাকা ও সোর্সিং ঠিকানা" description="যে এলাকার ও বাজারের তথ্য শেয়ার করছেন">
           <div className="grid gap-5 sm:grid-cols-2">
-            <FormField label="বিভাগ" htmlFor="p-division" required error={errors.division?.message}>
+            <FormField label="বিভাগ" htmlFor="p-division" error={errors.division?.message}>
               <Controller control={control} name="division" render={({ field }) => (
                 <Select value={field.value} onValueChange={(val) => { field.onChange(val); setValue("district", ""); }}>
                   <SelectTrigger id="p-division" invalid={!!errors.division}><SelectValue placeholder="বিভাগ বেছে নিন" /></SelectTrigger>
@@ -149,7 +147,7 @@ export function PostForm({ mode, postId, initial }: PostFormProps) {
                 </Select>
               )} />
             </FormField>
-            <FormField label="জেলা" htmlFor="p-district" required error={errors.district?.message}>
+            <FormField label="জেলা" htmlFor="p-district" error={errors.district?.message}>
               <Controller control={control} name="district" render={({ field }) => (
                 <Select value={field.value} onValueChange={field.onChange} disabled={!v.division}>
                   <SelectTrigger id="p-district" invalid={!!errors.district}><SelectValue placeholder="জেলা বেছে নিন" /></SelectTrigger>
@@ -167,17 +165,93 @@ export function PostForm({ mode, postId, initial }: PostFormProps) {
           </FormField>
         </Section>
 
-        <Section title="দাম ও লাভ">
-          <div className="grid gap-5 sm:grid-cols-3">
-            <PriceField id="p-wholesale" label="পাইকারি দাম" required error={errors.wholesalePrice?.message}>
-              <Input id="p-wholesale" inputMode="numeric" autoComplete="off" className="pl-8" invalid={!!errors.wholesalePrice} {...register("wholesalePrice")} />
-            </PriceField>
-            <PriceField id="p-retail" label="খুচরা দাম" required error={errors.retailPrice?.message}>
-              <Input id="p-retail" inputMode="numeric" autoComplete="off" className="pl-8" invalid={!!errors.retailPrice} {...register("retailPrice")} />
-            </PriceField>
-            <PriceField id="p-sell" label="রিটেইল সেল দাম" error={errors.retailSellPrice?.message}>
-              <Input id="p-sell" inputMode="numeric" autoComplete="off" className="pl-8" invalid={!!errors.retailSellPrice} {...register("retailSellPrice")} />
-            </PriceField>
+        <Section title="দাম ও লাভ" description="পাইকারি ও খুচরা দামের রেঞ্জ উল্লেখ করুন (যেমন: ৫০ থেকে ৫২ এবং ১০০ থেকে ১২০)">
+          <div className="grid gap-5 sm:grid-cols-2">
+            {/* Box 1: পাইকারি দাম (Wholesale Price Range) */}
+            <div className="rounded-xl border border-line bg-surface p-4 sm:p-5 shadow-2xs space-y-3">
+              <div className="flex items-center justify-between border-b border-line/60 pb-2.5">
+                <span className="font-semibold text-sm text-ink flex items-center gap-2">
+                  <span className="h-2.5 w-2.5 rounded-full bg-green" />
+                  পাইকারি দাম (Wholesale)
+                </span>
+                <span className="text-[11px] font-mono text-muted uppercase tracking-wider">রেঞ্জ</span>
+              </div>
+
+              <div className="grid grid-cols-2 gap-3 items-start">
+                <FormField label="শুরু / থেকে" htmlFor="p-wholesale" error={errors.wholesalePrice?.message}>
+                  <div className="relative">
+                    <span aria-hidden className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 font-medium text-ink-secondary">৳</span>
+                    <Input
+                      id="p-wholesale"
+                      inputMode="numeric"
+                      autoComplete="off"
+                      className="pl-8 text-sm font-mono"
+                      placeholder="যেমন: ৫০"
+                      invalid={!!errors.wholesalePrice}
+                      {...register("wholesalePrice")}
+                    />
+                  </div>
+                </FormField>
+
+                <FormField label="পর্যন্ত (সর্বোচ্চ)" htmlFor="p-wholesale-max" error={errors.wholesalePriceMax?.message}>
+                  <div className="relative">
+                    <span aria-hidden className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 font-medium text-ink-secondary">৳</span>
+                    <Input
+                      id="p-wholesale-max"
+                      inputMode="numeric"
+                      autoComplete="off"
+                      className="pl-8 text-sm font-mono"
+                      placeholder="যেমন: ৫২"
+                      invalid={!!errors.wholesalePriceMax}
+                      {...register("wholesalePriceMax")}
+                    />
+                  </div>
+                </FormField>
+              </div>
+            </div>
+
+            {/* Box 2: খুচরা দাম (Retail Price Range) */}
+            <div className="rounded-xl border border-line bg-surface p-4 sm:p-5 shadow-2xs space-y-3">
+              <div className="flex items-center justify-between border-b border-line/60 pb-2.5">
+                <span className="font-semibold text-sm text-ink flex items-center gap-2">
+                  <span className="h-2.5 w-2.5 rounded-full bg-gold" />
+                  খুচরা দাম (Retail)
+                </span>
+                <span className="text-[11px] font-mono text-muted uppercase tracking-wider">রেঞ্জ</span>
+              </div>
+
+              <div className="grid grid-cols-2 gap-3 items-start">
+                <FormField label="শুরু / থেকে" htmlFor="p-retail" error={errors.retailPrice?.message}>
+                  <div className="relative">
+                    <span aria-hidden className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 font-medium text-ink-secondary">৳</span>
+                    <Input
+                      id="p-retail"
+                      inputMode="numeric"
+                      autoComplete="off"
+                      className="pl-8 text-sm font-mono"
+                      placeholder="যেমন: ১০০"
+                      invalid={!!errors.retailPrice}
+                      {...register("retailPrice")}
+                    />
+                  </div>
+                </FormField>
+
+                <FormField label="পর্যন্ত (সর্বোচ্চ)" htmlFor="p-retail-max" error={errors.retailPriceMax?.message}>
+                  <div className="relative">
+                    <span aria-hidden className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 font-medium text-ink-secondary">৳</span>
+                    <Input
+                      id="p-retail-max"
+                      inputMode="numeric"
+                      autoComplete="off"
+                      className="pl-8 text-sm font-mono"
+                      placeholder="যেমন: ১২০"
+                      invalid={!!errors.retailPriceMax}
+                      {...register("retailPriceMax")}
+                    />
+                  </div>
+                </FormField>
+              </div>
+            </div>
           </div>
 
           <fieldset>
@@ -197,11 +271,13 @@ export function PostForm({ mode, postId, initial }: PostFormProps) {
         </Section>
 
         <Section title="বিবরণ ও ছবি">
-          <FormField label="বিবরণ" htmlFor="p-desc" required error={errors.description?.message}>
+          <FormField label="বিবরণ" htmlFor="p-desc" error={errors.description?.message}>
             <Textarea id="p-desc" className="min-h-[180px]" maxLength={5000} placeholder="ব্যবসাটি কী, কোথা থেকে মাল কেনা যায়, কত পুঁজি লাগে, কী কী সতর্কতা দরকার — বিস্তারিত লিখুন।" invalid={!!errors.description} {...register("description")} />
-            <p className={`text-right text-sm ${descLen < 50 ? "text-ink-secondary" : "text-success-soft-foreground"}`} aria-live="polite">
-              {toBanglaNumber(descLen)} / ন্যূনতম {toBanglaNumber(50)} অক্ষর
-            </p>
+            {descLen > 0 && (
+              <p className="text-right text-xs text-ink-secondary" aria-live="polite">
+                {toBanglaNumber(descLen)} অক্ষর
+              </p>
+            )}
           </FormField>
 
           <FormField label="ট্যাগ" htmlFor="p-tags" hint="সর্বোচ্চ ৮টি। Enter বা কমা দিয়ে যোগ করুন।" error={errors.tags?.message}>
