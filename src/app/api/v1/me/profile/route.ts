@@ -1,34 +1,45 @@
 import { NextResponse } from "next/server";
+import { getUserProfile, saveUserProfile } from "@/lib/user-profile-store";
 
-export async function GET() {
-  return NextResponse.json({
-    user: {
-      id: `u-${Date.now()}`,
-      name: "উদ্যোক্তা",
-      email: "user@example.com",
-      role: "user",
-      createdAt: new Date().toISOString(),
-    },
-  });
+export const dynamic = "force-dynamic";
+
+export async function GET(request: Request) {
+  const email = request.headers.get("x-user-email") || undefined;
+  const id = request.headers.get("x-user-id") || undefined;
+
+  const existing = getUserProfile(email) || getUserProfile(id) || getUserProfile();
+
+  if (existing) {
+    return NextResponse.json({ user: existing });
+  }
+
+  const defaultUser = {
+    id: id || `u-${Date.now()}`,
+    name: email ? email.split("@")[0] : "উদ্যোক্তা",
+    email: email || "user@example.com",
+    role: "user" as const,
+    createdAt: new Date().toISOString(),
+  };
+
+  return NextResponse.json({ user: defaultUser });
 }
 
 export async function PUT(request: Request) {
   try {
     const body = await request.json();
-    const user = {
-      id: `u-${Date.now()}`,
-      name: body.name || "উদ্যোক্তা",
-      email: body.email || "user@example.com",
-      bio: body.bio || "",
-      division: body.division || "",
-      district: body.district || "",
-      area: body.area || "",
-      avatar: body.avatar || "",
-      role: "user" as const,
-      createdAt: new Date().toISOString(),
-    };
+    const emailHeader = request.headers.get("x-user-email");
+    const idHeader = request.headers.get("x-user-id");
 
-    return NextResponse.json({ user });
+    const email = body.email || emailHeader || "user@example.com";
+    const id = body.id || idHeader;
+
+    const saved = saveUserProfile({
+      ...body,
+      id,
+      email,
+    });
+
+    return NextResponse.json({ user: saved });
   } catch (err: any) {
     return NextResponse.json({ message: err.message || "প্রোফাইল আপডেট করতে সমস্যা হয়েছে।" }, { status: 400 });
   }

@@ -24,7 +24,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     api
       .get<{ user: User }>("/auth/me")
       .then(({ data }) => {
-        if (!cancelled) setUser(data.user);
+        if (!cancelled && data?.user?.id && data.user.name) {
+          setUser(data.user);
+        }
       })
       .catch(() => undefined);
 

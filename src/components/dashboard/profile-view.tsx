@@ -3,7 +3,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
 import { MapPin, Save } from "lucide-react";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { UserAvatar } from "@/components/ui/avatar";
@@ -43,17 +43,34 @@ const toValues = (u?: User | null): ProfileValues => ({
 
 export function ProfileView() {
   const storeUser = useAuthStore((s) => s.user);
-  const user = storeUser || defaultUser;
   const setUser = useAuthStore((s) => s.setUser);
+  const [localProfile, setLocalProfile] = useState<User | null>(null);
   const lang = useLangStore((s) => s.lang);
   const isEn = lang === "en";
   const [uploading, setUploading] = useState(false);
+
+  // Read local profile fallback on client mount
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      try {
+        const raw = localStorage.getItem("bhbd_user_profile");
+        if (raw) {
+          const parsed = JSON.parse(raw);
+          if (parsed?.name) setLocalProfile(parsed);
+        }
+      } catch (e) {
+        console.error(e);
+      }
+    }
+  }, []);
+
+  const user = storeUser || localProfile || defaultUser;
 
   const values = useMemo(() => toValues(user), [user]);
   const { register, control, handleSubmit, setValue, setError, watch, reset, formState: { errors, isDirty } } = useForm<ProfileValues>({
     resolver: zodResolver(profileSchema),
     defaultValues: values,
-    values, // fills the form when /auth/me finishes loading
+    values, // fills the form when /auth/me or storeUser finishes loading
     resetOptions: { keepDirtyValues: true }, // …without wiping what the user already typed
   });
 
@@ -80,6 +97,14 @@ export function ProfileView() {
     onSuccess: (updated) => {
       if (updated) {
         setUser(updated);
+        setLocalProfile(updated);
+        if (typeof window !== "undefined") {
+          try {
+            localStorage.setItem("bhbd_user_profile", JSON.stringify(updated));
+          } catch (e) {
+            console.error(e);
+          }
+        }
         reset(toValues(updated));
         toast.success(isEn ? "Profile updated successfully" : "প্রোফাইল আপডেট হয়েছে");
       }

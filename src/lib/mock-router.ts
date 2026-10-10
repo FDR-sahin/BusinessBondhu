@@ -139,27 +139,64 @@ export function handleMockFallback(config?: AxiosRequestConfig): AxiosResponse |
     return createAxiosResponse(getMockAdvisorSuggestions(body.budget || 20000, body.category), config);
   }
 
-  // Profile & Settings mock endpoints
-  if (path.includes("/me/profile") || path.includes("/me/settings")) {
+  // Auth /me & Profile & Settings mock endpoints
+  if (path.includes("/auth/me") || path.includes("/me/profile") || path.includes("/me/settings")) {
+    let storedUser: any = null;
+    if (typeof window !== "undefined") {
+      try {
+        const raw = localStorage.getItem("bhbd_user_profile");
+        if (raw) storedUser = JSON.parse(raw);
+        if (!storedUser) {
+          const authRaw = localStorage.getItem("bhbd-auth");
+          if (authRaw) {
+            const parsed = JSON.parse(authRaw);
+            if (parsed?.state?.user) storedUser = parsed.state.user;
+          }
+        }
+      } catch (e) {
+        console.error(e);
+      }
+    }
+
     let body: any = {};
     try {
       body = typeof config.data === "string" ? JSON.parse(config.data || "{}") : config.data || {};
     } catch {
       body = {};
     }
-    const updatedUser = {
-      id: "u-1",
-      name: body.name || "উদ্যোক্তা",
-      email: body.email || "user@example.com",
-      bio: body.bio || "",
-      division: body.division || "",
-      district: body.district || "",
-      area: body.area || "",
-      avatar: body.avatar || "",
-      role: "user",
-      createdAt: new Date().toISOString(),
+
+    const isPut = config.method?.toLowerCase() === "put" || Object.keys(body).length > 0;
+
+    const user = {
+      id: storedUser?.id || "u-1",
+      name: (isPut ? body.name : undefined) || storedUser?.name || "উদ্যোক্তা",
+      email: (isPut ? body.email : undefined) || storedUser?.email || "user@example.com",
+      bio: (isPut && body.bio !== undefined ? body.bio : storedUser?.bio) || "",
+      division: (isPut && body.division !== undefined ? body.division : storedUser?.division) || "",
+      district: (isPut && body.district !== undefined ? body.district : storedUser?.district) || "",
+      area: (isPut && body.area !== undefined ? body.area : storedUser?.area) || "",
+      avatar: (isPut && body.avatar !== undefined ? body.avatar : storedUser?.avatar) || "",
+      role: storedUser?.role || "user",
+      createdAt: storedUser?.createdAt || new Date().toISOString(),
     };
-    return createAxiosResponse({ user: updatedUser }, config);
+
+    if (isPut && typeof window !== "undefined") {
+      try {
+        localStorage.setItem("bhbd_user_profile", JSON.stringify(user));
+        const authRaw = localStorage.getItem("bhbd-auth");
+        if (authRaw) {
+          const parsed = JSON.parse(authRaw);
+          if (parsed?.state) {
+            parsed.state.user = user;
+            localStorage.setItem("bhbd-auth", JSON.stringify(parsed));
+          }
+        }
+      } catch (e) {
+        console.error(e);
+      }
+    }
+
+    return createAxiosResponse({ user }, config);
   }
 
   // POST /posts (Create post or save draft fallback)
