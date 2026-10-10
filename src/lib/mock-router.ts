@@ -74,7 +74,14 @@ export function handleMockFallback(config?: AxiosRequestConfig): AxiosResponse |
 
   // GET /posts/:id/me
   if (path.match(/\/posts\/[^\/]+\/me/)) {
-    return createAxiosResponse({ reaction: null, saved: false }, config);
+    const postId = path.split("/")[2] || "post-1";
+    let reaction: string | null = null;
+    let saved = false;
+    if (typeof window !== "undefined") {
+      reaction = localStorage.getItem(`reaction_${postId}`);
+      saved = localStorage.getItem(`saved_${postId}`) === "true";
+    }
+    return createAxiosResponse({ reaction, saved }, config);
   }
 
   // GET /posts/:id
@@ -216,11 +223,25 @@ export function handleMockFallback(config?: AxiosRequestConfig): AxiosResponse |
     return createAxiosResponse({ success: true, message: "পোস্ট মুছে ফেলা হয়েছে" }, config);
   }
 
-  // POST /advisor/saved, /posts/:id/like, /posts/:id/dislike, /posts/:id/save, /posts/:id/view
+  // POST /posts/:id/like, /posts/:id/dislike (Facebook-like toggle in local storage)
+  if (path.match(/\/posts\/[^\/]+\/(like|dislike)/)) {
+    const parts = path.split("/");
+    const postId = parts[2];
+    const action = parts[3]; // 'like' or 'dislike'
+    if (typeof window !== "undefined") {
+      const current = localStorage.getItem(`reaction_${postId}`);
+      if (current === action) {
+        localStorage.removeItem(`reaction_${postId}`);
+      } else {
+        localStorage.setItem(`reaction_${postId}`, action);
+      }
+    }
+    return createAxiosResponse({ success: true, message: "অপারেশনটি সফল হয়েছে" }, config);
+  }
+
+  // POST /advisor/saved, /posts/:id/save, /posts/:id/view
   if (
     path.includes("/advisor/saved") ||
-    path.includes("/like") ||
-    path.includes("/dislike") ||
     path.includes("/save") ||
     path.includes("/view") ||
     path === "/me" ||

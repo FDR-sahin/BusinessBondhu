@@ -89,7 +89,10 @@ export function useReaction(id: string) {
       toast.error(getErrorMessage(error));
     },
 
-    onSettled: () => void qc.invalidateQueries({ queryKey: postKey(id) }),
+    onSettled: () => {
+      void qc.invalidateQueries({ queryKey: postKey(id) });
+      void qc.invalidateQueries({ queryKey: viewerKey(id) });
+    },
   });
 }
 

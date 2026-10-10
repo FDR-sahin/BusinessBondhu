@@ -18,38 +18,9 @@ export const dynamic = "force-dynamic";
  */
 const getPost = cache(async (id: string): Promise<{ post: PostDetail | null; missing: boolean }> => {
   const decodedId = decodeURIComponent(id);
-  const localFound = MOCK_POSTS.find((p) => String(p.id) === decodedId || String((p as any)._id) === decodedId);
-
-  if (localFound) {
-    const districtName = getDistrictLabel(localFound.district) || localFound.district;
-    const exactLoc = localFound.exactLocation || (localFound.area ? `${localFound.area}, ${districtName}` : `${districtName}, Bangladesh`);
-
-    return {
-      post: {
-        ...localFound,
-        id: String(localFound.id),
-        _id: String(localFound.id),
-        district: districtName,
-        exactLocation: exactLoc,
-        wholesalePrice: localFound.wholesalePrice,
-        wholesalePriceMax: localFound.wholesalePriceMax,
-        wholesalePriceText: localFound.wholesalePriceText,
-        retailPrice: localFound.retailSellPrice ?? localFound.retailPrice,
-        retailPriceMax: localFound.retailPriceMax,
-        retailPriceText: localFound.retailPriceText,
-        description: localFound.description || "উৎপাদন ও সোর্সিং সংক্রান্ত বিস্তারিত তথ্য।",
-        tags: localFound.tags || ["ব্যবসা", "উদ্যোক্তা", "পাইকারি_দাম"],
-        author: {
-          id: localFound.author?.id || "u-admin",
-          name: typeof localFound.author === "string" ? localFound.author : localFound.author?.name || "সোর্সিং প্রতিনিধি",
-          avatar: "/images/avatars/default.jpg",
-        },
-      } as PostDetail,
-      missing: false,
-    };
-  }
-
   const base = process.env.NEXT_PUBLIC_API_URL || "https://uddok-admin.vercel.app";
+
+  // 1. Fetch from backend API first to get real-time likes, dislikes, and comments
   try {
     const res = await fetch(`${base.replace(/\/$/, "")}/api/ideas`, { cache: "no-store" });
     if (res.ok) {
@@ -107,6 +78,37 @@ const getPost = cache(async (id: string): Promise<{ post: PostDetail | null; mis
     }
   } catch (err) {
     console.error("Failed to fetch post detail:", err);
+  }
+
+  // 2. Fallback to local MOCK_POSTS if backend doesn't have it
+  const localFound = MOCK_POSTS.find((p) => String(p.id) === decodedId || String((p as any)._id) === decodedId);
+  if (localFound) {
+    const districtName = getDistrictLabel(localFound.district) || localFound.district;
+    const exactLoc = localFound.exactLocation || (localFound.area ? `${localFound.area}, ${districtName}` : `${districtName}, Bangladesh`);
+
+    return {
+      post: {
+        ...localFound,
+        id: String(localFound.id),
+        _id: String(localFound.id),
+        district: districtName,
+        exactLocation: exactLoc,
+        wholesalePrice: localFound.wholesalePrice,
+        wholesalePriceMax: localFound.wholesalePriceMax,
+        wholesalePriceText: localFound.wholesalePriceText,
+        retailPrice: localFound.retailSellPrice ?? localFound.retailPrice,
+        retailPriceMax: localFound.retailPriceMax,
+        retailPriceText: localFound.retailPriceText,
+        description: localFound.description || "উৎপাদন ও সোর্সিং সংক্রান্ত বিস্তারিত তথ্য।",
+        tags: localFound.tags || ["ব্যবসা", "উদ্যোক্তা", "পাইকারি_দাম"],
+        author: {
+          id: localFound.author?.id || "u-admin",
+          name: typeof localFound.author === "string" ? localFound.author : localFound.author?.name || "সোর্সিং প্রতিনিধি",
+          avatar: "/images/avatars/default.jpg",
+        },
+      } as PostDetail,
+      missing: false,
+    };
   }
 
   return { post: null, missing: true };
