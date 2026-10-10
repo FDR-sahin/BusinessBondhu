@@ -9,7 +9,7 @@ export async function GET(request: Request, { params }: { params: { id: string }
   const backendUrl = process.env.NEXT_PUBLIC_API_URL || "https://uddok-admin.vercel.app";
 
   // 1. Search in local MOCK_POSTS first
-  const mockFound = MOCK_POSTS.find((p) => String(p.id) === id || String(p._id) === id);
+  const mockFound = MOCK_POSTS.find((p) => String(p.id) === id || String((p as any)._id) === id);
   if (mockFound) {
     const districtName = getDistrictLabel(mockFound.district) || mockFound.district;
     const exactLoc = mockFound.exactLocation || (mockFound.area ? `${mockFound.area}, ${districtName}` : `${districtName}, Bangladesh`);

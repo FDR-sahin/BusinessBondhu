@@ -18,7 +18,7 @@ export const dynamic = "force-dynamic";
  */
 const getPost = cache(async (id: string): Promise<{ post: PostDetail | null; missing: boolean }> => {
   const decodedId = decodeURIComponent(id);
-  const localFound = MOCK_POSTS.find((p) => String(p.id) === decodedId || String(p._id) === decodedId);
+  const localFound = MOCK_POSTS.find((p) => String(p.id) === decodedId || String((p as any)._id) === decodedId);
 
   if (localFound) {
     const districtName = getDistrictLabel(localFound.district) || localFound.district;
