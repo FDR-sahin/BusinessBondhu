@@ -42,7 +42,7 @@ export async function GET(request: Request, { params }: { params: { id: string }
             tags: item.tags || [],
             status: item.status || "approved",
             author: {
-              name: item.postedBy?.name || "উদ্যোক্তা ব্যবহারকারী",
+              name: item.postedBy?.name || "ব্যবহারকারী",
               avatar: "/images/avatars/default.jpg",
             },
             viewsCount: item.viewsCount || 1,

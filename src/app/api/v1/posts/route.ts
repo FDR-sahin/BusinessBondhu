@@ -55,7 +55,7 @@ export async function GET(request: Request) {
             image: item.image || "/images/ideas/default.jpg",
             tags: item.tags || [`#${districtName}`, `#${item.category}`],
             author: {
-              name: typeof item.author === "string" ? item.author : item.author?.name || item.postedBy?.name || "উদ্যোক্তা অ্যাডমিন",
+              name: typeof item.author === "string" ? item.author : item.author?.name || item.postedBy?.name || "ব্যবসা বন্ধু",
               avatar: "/images/avatars/default.jpg",
             },
             likesCount: item.likesCount ?? item.likes ?? 0,
@@ -229,7 +229,7 @@ export async function POST(request: Request) {
       authorEmail: body.authorEmail || undefined,
       author: {
         id: body.userId || undefined,
-        name: body.authorName || "উদ্যোক্তা ব্যবহারকারী",
+        name: body.authorName || "ব্যবহারকারী",
         avatar: "/images/avatars/default.jpg",
       },
       likesCount: 0,
@@ -263,7 +263,7 @@ export async function POST(request: Request) {
             authorEmail: body.authorEmail || "",
             isVerified: false,
             postedBy: {
-              name: body.authorName || "উদ্যোক্তা ব্যবহারকারী",
+              name: body.authorName || "ব্যবহারকারী",
               role: "ব্যবহারকারী",
               email: body.authorEmail || "",
               isVerifiedUser: false,

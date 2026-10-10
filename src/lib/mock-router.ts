@@ -28,18 +28,40 @@ export function handleMockFallback(config?: AxiosRequestConfig): AxiosResponse |
     } catch {
       body = {};
     }
-    const name = body.name || (body.email ? body.email.split("@")[0] : "উদ্যোক্তা");
+    let storedUser: any = null;
+    if (typeof window !== "undefined") {
+      try {
+        const raw = localStorage.getItem("bhbd_user_profile");
+        if (raw) storedUser = JSON.parse(raw);
+      } catch (e) {
+        console.error(e);
+      }
+    }
+    const name = (body.name && body.name.trim() !== "উদ্যোক্তা" ? body.name.trim() : "") ||
+      (storedUser?.name && storedUser.name !== "উদ্যোক্তা" ? storedUser.name : "") ||
+      (body.email ? body.email.split("@")[0] : "ব্যবহারকারী");
+
+    const user = {
+      id: storedUser?.id || `u-${Date.now()}`,
+      name,
+      email: body.email || storedUser?.email || "user@example.com",
+      division: body.division || storedUser?.division || "",
+      district: body.district || storedUser?.district || "",
+      role: "user",
+      createdAt: storedUser?.createdAt || new Date().toISOString(),
+    };
+
+    if (typeof window !== "undefined") {
+      try {
+        localStorage.setItem("bhbd_user_profile", JSON.stringify(user));
+      } catch (e) {
+        console.error(e);
+      }
+    }
+
     return createAxiosResponse(
       {
-        user: {
-          id: `u-${Date.now()}`,
-          name,
-          email: body.email || "user@example.com",
-          division: body.division || "",
-          district: body.district || "",
-          role: "user",
-          createdAt: new Date().toISOString(),
-        },
+        user,
         accessToken: `token-${Date.now()}`,
         refreshToken: `rtoken-${Date.now()}`,
       },
@@ -167,9 +189,17 @@ export function handleMockFallback(config?: AxiosRequestConfig): AxiosResponse |
 
     const isPut = config.method?.toLowerCase() === "put" || Object.keys(body).length > 0;
 
+    const fallbackName = (body.email || storedUser?.email)
+      ? (body.email || storedUser?.email).split("@")[0]
+      : "ব্যবহারকারী";
+
+    const resolvedName = (isPut && body.name && body.name !== "উদ্যোক্তা" ? body.name : "") ||
+      (storedUser?.name && storedUser.name !== "উদ্যোক্তা" ? storedUser.name : "") ||
+      fallbackName;
+
     const user = {
       id: storedUser?.id || "u-1",
-      name: (isPut ? body.name : undefined) || storedUser?.name || "উদ্যোক্তা",
+      name: resolvedName,
       email: (isPut ? body.email : undefined) || storedUser?.email || "user@example.com",
       bio: (isPut && body.bio !== undefined ? body.bio : storedUser?.bio) || "",
       division: (isPut && body.division !== undefined ? body.division : storedUser?.division) || "",

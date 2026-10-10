@@ -26,14 +26,14 @@ import { AvatarUploader } from "./avatar-uploader";
 
 const defaultUser: User = {
   id: "u-1",
-  name: "উদ্যোক্তা",
+  name: "ব্যবহারকারী",
   email: "user@example.com",
   role: "user",
   createdAt: new Date().toISOString(),
 };
 
 const toValues = (u?: User | null): ProfileValues => ({
-  name: u?.name ?? "উদ্যোক্তা",
+  name: (u?.name && u.name !== "উদ্যোক্তা" ? u.name : (u?.email ? u.email.split("@")[0] : "ব্যবহারকারী")),
   bio: u?.bio ?? "",
   division: u?.division ?? "",
   district: u?.district ?? "",
@@ -82,7 +82,7 @@ export function ProfileView() {
       const res = await api.put<{ user?: User; message?: string }>("/me/profile", body);
       const updatedUser: User = res.data?.user || {
         id: user.id || "u-1",
-        name: body.name || user.name || "উদ্যোক্তা",
+        name: body.name || (user.name && user.name !== "উদ্যোক্তা" ? user.name : (user.email ? user.email.split("@")[0] : "ব্যবহারকারী")),
         email: user.email || "user@example.com",
         bio: body.bio,
         division: body.division,

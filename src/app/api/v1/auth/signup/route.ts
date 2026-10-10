@@ -1,23 +1,26 @@
 import { NextResponse } from "next/server";
+import { saveUserProfile } from "@/lib/user-profile-store";
+
+export const dynamic = "force-dynamic";
 
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const name = body.name || (body.email ? body.email.split("@")[0] : "উদ্যোক্তা");
-    const email = body.email || "";
+    const rawName = (body.name || "").trim();
+    const email = (body.email || "").trim().toLowerCase();
+    const name = rawName || (email ? email.split("@")[0] : "ব্যবহারকারী");
 
-    const user = {
-      id: `u-${Date.now()}`,
+    const savedUser = saveUserProfile({
       name,
       email,
       division: body.division || "",
       district: body.district || "",
-      role: "user" as const,
-      createdAt: new Date().toISOString(),
-    };
+      area: body.area || "",
+      role: "user",
+    });
 
     return NextResponse.json({
-      user,
+      user: savedUser,
       accessToken: `token-${Date.now()}`,
       refreshToken: `rtoken-${Date.now()}`,
     });

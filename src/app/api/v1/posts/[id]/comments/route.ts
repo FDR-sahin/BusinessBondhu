@@ -30,7 +30,7 @@ export async function GET(request: Request, { params }: { params: { id: string }
             postId: id,
             author: {
               id: "u-commenter",
-              name: c.authorName || "উদ্যোক্তা",
+              name: c.authorName || "ব্যবহারকারী",
             },
             content: c.comment || c.content,
             createdAt: c.createdAt || new Date().toISOString(),
@@ -64,7 +64,7 @@ export async function GET(request: Request, { params }: { params: { id: string }
             postId: id,
             author: {
               id: "u-commenter",
-              name: c.authorName || "উদ্যোক্তা",
+              name: c.authorName || "ব্যবহারকারী",
             },
             content: c.comment || c.content,
             createdAt: c.createdAt || new Date().toISOString(),
@@ -92,7 +92,7 @@ export async function POST(request: Request, { params }: { params: { id: string 
       body.authorName ||
       body.author?.name ||
       request.headers.get("x-user-name") ||
-      "উদ্যোক্তা";
+      "ব্যবহারকারী";
     const commentContent = body.content || body.comment || "";
 
     if (!commentContent.trim()) {
@@ -139,7 +139,7 @@ export async function POST(request: Request, { params }: { params: { id: string 
   return NextResponse.json({
     id: `c-${Date.now()}`,
     postId: params.id,
-    author: { id: "me", name: "উদ্যোক্তা" },
+    author: { id: "me", name: "ব্যবহারকারী" },
     content: "মন্তব্য যোগ করা হয়েছে",
     createdAt: new Date().toISOString(),
     likesCount: 0,

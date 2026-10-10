@@ -45,6 +45,13 @@ export function SignupForm() {
     },
     onSuccess: (data) => {
       login({ ...data, remember: true });
+      if (typeof window !== "undefined") {
+        try {
+          localStorage.setItem("bhbd_user_profile", JSON.stringify(data.user));
+        } catch (e) {
+          console.error(e);
+        }
+      }
       toast.success(lang === "bn" ? `অ্যাকাউন্ট তৈরি হয়েছে। স্বাগতম, ${data.user.name}!` : `Account created. Welcome, ${data.user.name}!`);
       go();
     },

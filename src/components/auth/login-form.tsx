@@ -38,6 +38,13 @@ export function LoginForm() {
     mutationFn: async (v: LoginValues) => (await api.post<AuthResponse>("/auth/login", v)).data,
     onSuccess: (data, v) => {
       login({ ...data, remember: v.remember });
+      if (typeof window !== "undefined") {
+        try {
+          localStorage.setItem("bhbd_user_profile", JSON.stringify(data.user));
+        } catch (e) {
+          console.error(e);
+        }
+      }
       toast.success(lang === "bn" ? `স্বাগতম, ${data.user.name}` : `Welcome back, ${data.user.name}`);
       go();
     },

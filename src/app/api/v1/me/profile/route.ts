@@ -15,7 +15,7 @@ export async function GET(request: Request) {
 
   const defaultUser = {
     id: id || `u-${Date.now()}`,
-    name: email ? email.split("@")[0] : "উদ্যোক্তা",
+    name: email ? email.split("@")[0] : "ব্যবহারকারী",
     email: email || "user@example.com",
     role: "user" as const,
     createdAt: new Date().toISOString(),
