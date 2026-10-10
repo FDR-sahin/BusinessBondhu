@@ -28,7 +28,7 @@ export function RecentPosts() {
           <EmptyState title={t("noPostsYet")} description={t("shareFirstIdea")} />
         ) : (
           <>
-            <Stagger className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+            <Stagger className="grid gap-6 grid-cols-1 sm:grid-cols-2 xl:grid-cols-3">
               {data.items.map((post) => (
                 <StaggerItem key={post.id} className="h-full">
                   <PostCard post={post} />

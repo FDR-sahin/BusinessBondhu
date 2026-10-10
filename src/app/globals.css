@@ -58,13 +58,14 @@
     scroll-behavior: smooth;
     -webkit-text-size-adjust: 100%;
     scrollbar-gutter: stable;
+    overflow-x: hidden;
   }
 
   body {
     background-color: rgb(var(--bg));
     color: rgb(var(--ink));
     font-family: var(--font-inter), var(--font-hind), system-ui, sans-serif;
-    font-size: clamp(1rem, 1vw + 0.5rem, 1.125rem);
+    font-size: clamp(0.875rem, 0.85vw + 0.4rem, 1rem);
     line-height: 1.6;
     -webkit-font-smoothing: antialiased;
   }
@@ -132,7 +133,7 @@
 
 @layer components {
   .container-page {
-    @apply mx-auto w-full max-w-[1440px] px-4 md:px-6 lg:px-8 xl:px-10;
+    @apply mx-auto w-full max-w-[1440px] px-4 sm:px-5 md:px-6 lg:px-8 xl:px-10;
   }
   .section {
     @apply py-8 md:py-16;
