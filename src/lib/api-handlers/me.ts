@@ -632,7 +632,7 @@ export async function handleMeBlogDetail(id: string) {
   return NextResponse.json({ message: "Blog not found" }, { status: 404 });
 }
 
-export async function handleMeBlogDelete(id: string) {
-  return handleBlogDelete(id);
+export async function handleMeBlogDelete(id: string, request?: Request) {
+  return handleBlogDelete(id, request);
 }
 

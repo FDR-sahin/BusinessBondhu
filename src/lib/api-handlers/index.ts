@@ -137,7 +137,7 @@ export async function dispatchApiRequest(request: Request, pathSegments: string[
       if (meSub[0] === "blogs") {
         if (meSub.length === 1 && method === "GET") return handleMeBlogs(request);
         if (meSub.length === 2 && method === "GET") return handleMeBlogDetail(meSub[1]);
-        if (meSub.length === 2 && method === "DELETE") return handleMeBlogDelete(meSub[1]);
+        if (meSub.length === 2 && method === "DELETE") return handleMeBlogDelete(meSub[1], request);
       }
     }
 
@@ -151,7 +151,7 @@ export async function dispatchApiRequest(request: Request, pathSegments: string[
       if (blogSub[0] === "featured" && method === "GET") return handleBlogFeatured();
       if (blogSub.length === 1) {
         if (method === "GET") return handleBlogSlug(blogSub[0]);
-        if (method === "DELETE") return handleBlogDelete(blogSub[0]);
+        if (method === "DELETE") return handleBlogDelete(blogSub[0], request);
       }
       if (blogSub.length === 2) {
         const slug = blogSub[0];
@@ -175,7 +175,7 @@ export async function dispatchApiRequest(request: Request, pathSegments: string[
         const id = postSub[0];
         if (method === "GET") return handlePostDetailGet(id);
         if (method === "PUT") return handlePostDetailPut(id, request);
-        if (method === "DELETE") return handlePostDetailDelete(id);
+        if (method === "DELETE") return handlePostDetailDelete(id, request);
       }
       if (postSub.length === 2) {
         const id = postSub[0];

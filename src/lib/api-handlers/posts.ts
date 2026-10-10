@@ -8,7 +8,7 @@ import {
   saveUserPost,
   type UserStoredPost,
 } from "@/lib/user-posts-store";
-import { getUserProfile } from "@/lib/user-profile-store";
+import { getUserProfile, getCookieValue } from "@/lib/user-profile-store";
 import type { PostDetail } from "@/types";
 
 export async function handlePostsGet(request: Request) {
@@ -396,6 +396,25 @@ export async function handlePostDetailPut(id: string, request: Request) {
   const body = await request.json();
   const backendUrl = process.env.NEXT_PUBLIC_API_URL || "https://uddok-admin.vercel.app";
 
+  const requesterEmail = (
+    request.headers.get("x-user-email") ||
+    getCookieValue(request, "bhbd_user_email") ||
+    ""
+  ).toLowerCase().trim();
+  const requesterId = request.headers.get("x-user-id");
+
+  const existing = findUserPost(decodedId);
+  if (existing) {
+    const isOwner =
+      (requesterId && existing.userId === requesterId) ||
+      (requesterEmail && existing.authorEmail?.toLowerCase() === requesterEmail);
+    if (!isOwner && requesterEmail !== "admin@businessbondhu.com") {
+      return NextResponse.json({ message: "অনুমতি নেই: আপনি এই পোস্টটি সম্পাদনা করতে পারবেন না।" }, { status: 403 });
+    }
+    const updated = saveUserPost({ ...existing, ...body });
+    return NextResponse.json(updated);
+  }
+
   try {
     await fetch(`${backendUrl.replace(/\/$/, "")}/api/ideas?id=${encodeURIComponent(decodedId)}`, {
       method: "PUT",
@@ -406,18 +425,31 @@ export async function handlePostDetailPut(id: string, request: Request) {
     console.warn("Backend update error:", err);
   }
 
-  const existing = findUserPost(decodedId);
-  if (existing) {
-    const updated = saveUserPost({ ...existing, ...body });
-    return NextResponse.json(updated);
-  }
-
   return NextResponse.json({ success: true, message: "Post updated" });
 }
 
-export async function handlePostDetailDelete(id: string) {
+export async function handlePostDetailDelete(id: string, request?: Request) {
   const decodedId = decodeURIComponent(id);
   const backendUrl = process.env.NEXT_PUBLIC_API_URL || "https://uddok-admin.vercel.app";
+
+  if (request) {
+    const requesterEmail = (
+      request.headers.get("x-user-email") ||
+      getCookieValue(request, "bhbd_user_email") ||
+      ""
+    ).toLowerCase().trim();
+    const requesterId = request.headers.get("x-user-id");
+
+    const existing = findUserPost(decodedId);
+    if (existing) {
+      const isOwner =
+        (requesterId && existing.userId === requesterId) ||
+        (requesterEmail && existing.authorEmail?.toLowerCase() === requesterEmail);
+      if (!isOwner && requesterEmail !== "admin@businessbondhu.com") {
+        return NextResponse.json({ message: "অনুমতি নেই: আপনি এই পোস্টটি ডিলিট করতে পারবেন না।" }, { status: 403 });
+      }
+    }
+  }
 
   try {
     await fetch(`${backendUrl.replace(/\/$/, "")}/api/ideas?id=${encodeURIComponent(decodedId)}`, {

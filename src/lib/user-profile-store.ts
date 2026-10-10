@@ -165,11 +165,6 @@ export function saveUserProfile(
 
   const now = new Date().toISOString();
 
-  // Preserve existing password if not provided in this update
-  const password = userData.password !== undefined
-    ? userData.password
-    : existing?.password;
-
   const passwordHash = userData.password !== undefined
     ? hashPassword(userData.password)
     : userData.passwordHash !== undefined
@@ -188,7 +183,6 @@ export function saveUserProfile(
     role: (userData.role || existing?.role || "user") as "user" | "admin",
     createdAt: existing?.createdAt || now,
     updatedAt: now,
-    password,
     passwordHash,
   };
 
@@ -295,7 +289,6 @@ export async function persistUserToBackend(user: StoredUserProfile): Promise<voi
         id: user.id,
         email,
         name: user.name,
-        password: user.password,
         passwordHash: user.passwordHash,
         avatar: user.avatar,
         bio: user.bio,

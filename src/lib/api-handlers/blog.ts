@@ -7,7 +7,7 @@ import {
   findUserBlog,
   type UserStoredBlog,
 } from "@/lib/user-blogs-store";
-import { getUserProfile } from "@/lib/user-profile-store";
+import { getUserProfile, getCookieValue } from "@/lib/user-profile-store";
 
 export async function handleBlogList(request: Request) {
   const { searchParams } = new URL(request.url);
@@ -496,9 +496,28 @@ export async function handleBlogSlug(slug: string) {
   return NextResponse.json({ message: "Blog post not found" }, { status: 404 });
 }
 
-export async function handleBlogDelete(id: string) {
+export async function handleBlogDelete(id: string, request?: Request) {
   const decodedId = decodeURIComponent(id);
   const backendUrl = process.env.NEXT_PUBLIC_API_URL || "https://uddok-admin.vercel.app";
+
+  if (request) {
+    const requesterEmail = (
+      request.headers.get("x-user-email") ||
+      getCookieValue(request, "bhbd_user_email") ||
+      ""
+    ).toLowerCase().trim();
+    const requesterId = request.headers.get("x-user-id");
+
+    const local = findUserBlog(decodedId);
+    if (local) {
+      const isOwner =
+        (requesterEmail && local.authorEmail?.toLowerCase() === requesterEmail) ||
+        (requesterId && local.userId === requesterId);
+      if (!isOwner && requesterEmail !== "admin@businessbondhu.com") {
+        return NextResponse.json({ message: "অনুমতি নেই: আপনি এই ব্লগটি ডিলিট করতে পারবেন না।" }, { status: 403 });
+      }
+    }
+  }
 
   try {
     await fetch(`${backendUrl.replace(/\/$/, "")}/api/blogs?id=${encodeURIComponent(decodedId)}`, {
