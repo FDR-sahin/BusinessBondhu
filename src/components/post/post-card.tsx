@@ -63,28 +63,28 @@ export function PostCard({ post }: { post: Post }) {
         </div>
 
         {/* Price Slip Ledger Numbers (Wholesale Range, Retail Range, Profit) */}
-        <div className="mt-4 grid grid-cols-3 gap-2 rounded-lg border border-line bg-background/70 p-3 sm:p-3.5 shadow-xs">
+        <div className="mt-4 grid grid-cols-[1.2fr_1.2fr_0.8fr] gap-2 rounded-lg border border-line bg-background/70 p-3 sm:p-3.5 shadow-xs">
           <div className="min-w-0">
-            <span className="block text-[11px] sm:text-xs font-mono font-semibold uppercase tracking-wider text-muted truncate" title={lang === "bn" ? "পাইকারি রেঞ্জ" : "Wholesale Range"}>
+            <span className="block text-[10px] sm:text-[11px] font-mono font-semibold uppercase tracking-wider text-muted truncate" title={lang === "bn" ? "পাইকারি রেঞ্জ" : "Wholesale Range"}>
               {lang === "bn" ? "পাইকারি রেঞ্জ" : "Wholesale"}
             </span>
-            <span className="font-mono text-sm sm:text-base font-bold tabular-nums text-ink block truncate mt-0.5" title={formatPriceRange(post.wholesalePrice, post.wholesalePriceMax, post.wholesalePriceText, lang)}>
+            <span className="font-mono text-xs sm:text-[13px] md:text-sm font-bold tabular-nums text-ink block tracking-tight leading-snug mt-0.5" title={formatPriceRange(post.wholesalePrice, post.wholesalePriceMax, post.wholesalePriceText, lang)}>
               {formatPriceRange(post.wholesalePrice, post.wholesalePriceMax, post.wholesalePriceText, lang)}
             </span>
           </div>
           <div className="min-w-0">
-            <span className="block text-[11px] sm:text-xs font-mono font-semibold uppercase tracking-wider text-muted truncate" title={lang === "bn" ? "খুচরা রেঞ্জ" : "Retail Range"}>
+            <span className="block text-[10px] sm:text-[11px] font-mono font-semibold uppercase tracking-wider text-muted truncate" title={lang === "bn" ? "খুচরা রেঞ্জ" : "Retail Range"}>
               {lang === "bn" ? "খুচরা রেঞ্জ" : "Retail"}
             </span>
-            <span className="font-mono text-sm sm:text-base font-bold tabular-nums text-ink block truncate mt-0.5" title={formatPriceRange(post.retailPrice, post.retailPriceMax, post.retailPriceText, lang)}>
+            <span className="font-mono text-xs sm:text-[13px] md:text-sm font-bold tabular-nums text-ink block tracking-tight leading-snug mt-0.5" title={formatPriceRange(post.retailPrice, post.retailPriceMax, post.retailPriceText, lang)}>
               {formatPriceRange(post.retailPrice, post.retailPriceMax, post.retailPriceText, lang)}
             </span>
           </div>
           <div className="min-w-0">
-            <span className="block text-[11px] sm:text-xs font-mono font-semibold uppercase tracking-wider text-green truncate" title={lang === "bn" ? "প্রফিট মার্জিন" : "Margin"}>
+            <span className="block text-[10px] sm:text-[11px] font-mono font-semibold uppercase tracking-wider text-green truncate" title={lang === "bn" ? "প্রফিট মার্জিন" : "Margin"}>
               {lang === "bn" ? "মার্জিন" : "Margin"}
             </span>
-            <span className="font-mono text-sm sm:text-base font-bold tabular-nums text-green block truncate mt-0.5">
+            <span className="font-mono text-xs sm:text-[13px] md:text-sm font-bold tabular-nums text-green block tracking-tight leading-snug mt-0.5">
               {formatBDT(profit, lang)}
             </span>
           </div>

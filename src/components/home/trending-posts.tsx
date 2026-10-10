@@ -40,7 +40,7 @@ export function TrendingPosts() {
             {isError ? (
               <QueryError onRetry={() => void refetch()} />
             ) : isPending ? (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5" role="status" aria-label={t("loading")}>
+              <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6" role="status" aria-label={t("loading")}>
                 {Array.from({ length: 6 }, (_, i) => (
                   <PostCardSkeleton key={i} />
                 ))}
@@ -48,8 +48,8 @@ export function TrendingPosts() {
             ) : !data?.items || data.items.length === 0 ? (
               <EmptyState title={t("noPostsYet")} description={t("shareFirstIdea")} />
             ) : (
-              /* Breakpoints: 1 card mobile, 2 on tablet, 3 from lg desktop onwards */
-              <Stagger className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+              /* Breakpoints: 1 card mobile, 2 on tablet/laptop, 3 from xl desktop onwards */
+              <Stagger className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
                 {data.items.map((post) => (
                   <StaggerItem key={post.id} className="h-full">
                     <PostCard post={post} />
