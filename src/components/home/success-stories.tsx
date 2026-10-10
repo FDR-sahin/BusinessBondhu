@@ -128,7 +128,6 @@ import { Autoplay, Navigation } from "swiper/modules";
 import { Swiper, SwiperSlide } from "swiper/react";
 import type { Swiper as SwiperType } from "swiper";
 
-import { UserAvatar } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { useT } from "@/lib/i18n";
@@ -300,11 +299,7 @@ export function SuccessStories() {
                     </blockquote>
 
                     {/* Profile Footer */}
-                    <figcaption className="flex items-center gap-3 border-t border-border/60 pt-4">
-                      <div className="relative">
-                        <UserAvatar name={name} className="h-10 w-10 border border-green/20" />
-                        <span className="absolute -bottom-0.5 -right-0.5 h-3 w-3 rounded-full border-2 border-surface bg-green" />
-                      </div>
+                    <figcaption className="border-t border-border/60 pt-4">
                       <div className="leading-tight">
                         <p className="font-semibold text-ink text-sm">{name}</p>
                         <p className="text-xs text-muted font-normal mt-0.5">{location}</p>
