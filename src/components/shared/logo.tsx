@@ -18,12 +18,12 @@ export function Logo({ className, showText = true }: { className?: string; showT
         className
       )}
     >
-      <div className="relative flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-surface p-1 shadow-sm border border-line/60 dark:border-line group-hover:border-green/40 transition-colors">
+      <div className="relative flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-surface p-1 shadow-sm border border-line/60 dark:border-line group-hover:border-green/40 transition-colors">
         <Image
           src="/images/biz-logo.png"
           alt="Business Idea Zone Logo"
-          width={36}
-          height={36}
+          width={44}
+          height={44}
           className="h-full w-full object-contain transition-transform duration-200 group-hover:scale-105"
           priority
         />
@@ -32,14 +32,14 @@ export function Logo({ className, showText = true }: { className?: string; showT
       {showText && (
         <div className="flex flex-col leading-none select-none">
           <div className="flex items-center gap-1.5">
-            <span className="font-display text-base font-black tracking-tight text-ink dark:text-surface">
+            <span className="font-display text-lg font-black tracking-tight text-ink dark:text-surface">
               {lang === "bn" ? "বিজনেস" : "BUSINESS"}
             </span>
-            <span className="rounded-full bg-red-600/10 border border-red-600/20 px-1.5 py-0.5 font-mono text-[9px] font-extrabold tracking-widest text-red-600 dark:bg-red-500/20 dark:text-red-400 dark:border-red-500/30 shadow-2xs">
+            <span className="rounded-full bg-red-600/10 border border-red-600/20 px-1.5 py-0.5 font-mono text-[9.5px] font-extrabold tracking-widest text-red-600 dark:bg-red-500/20 dark:text-red-400 dark:border-red-500/30 shadow-2xs">
               BD
             </span>
           </div>
-          <span className="text-[10px] font-mono font-bold tracking-[0.22em] text-green uppercase pt-0.5">
+          <span className="text-[11px] font-mono font-bold tracking-[0.24em] text-green uppercase pt-0.5">
             {lang === "bn" ? "আইডিয়া জোন" : "IDEA ZONE"}
           </span>
         </div>
