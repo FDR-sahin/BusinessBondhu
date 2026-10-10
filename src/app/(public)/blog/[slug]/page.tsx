@@ -20,6 +20,24 @@ interface PageProps {
 
 export const dynamic = "force-dynamic";
 
+/** Converts plain text multi-paragraph content from admin into rich HTML paragraphs if not already HTML */
+function formatBlogHtml(content?: string, excerpt?: string): string {
+  const text = content && content.trim() ? content : excerpt || "";
+  if (!text) return "";
+
+  // If already contains HTML tags like <p>, <h2>, <ul>, return as is
+  if (/^\s*<[a-z][\s\S]*>/i.test(text.trim())) {
+    return text;
+  }
+
+  // Convert double newlines into <p> tags and single newlines into <br />
+  return text
+    .trim()
+    .split(/\n\s*\n/)
+    .map((p) => `<p class="mb-4 text-base md:text-lg leading-relaxed text-ink">${p.trim().replace(/\n/g, "<br />")}</p>`)
+    .join("");
+}
+
 /**
  * Direct zero-latency resolution from DETAILED_BLOG_POSTS with decoding and external API fallback.
  */
@@ -29,10 +47,10 @@ const getArticle = cache(async (slug: string): Promise<{ post: BlogPostDetail | 
   // 1. Search in local DETAILED_BLOG_POSTS
   const localPost = DETAILED_BLOG_POSTS.find(
     (b) =>
+      String(b.id) === slug ||
+      String(b.id) === decodedSlug ||
       b.slug === slug ||
       b.slug === decodedSlug ||
-      b.id === slug ||
-      b.id === decodedSlug ||
       (b.title && b.title.toLowerCase().replace(/\s+/g, "-") === slug) ||
       (b.title && b.title.toLowerCase().replace(/\s+/g, "-") === decodedSlug)
   );
@@ -41,14 +59,14 @@ const getArticle = cache(async (slug: string): Promise<{ post: BlogPostDetail | 
     return {
       post: {
         ...localPost,
-        content: localPost.content || `<p>${localPost.excerpt}</p>`,
+        content: formatBlogHtml(localPost.content, localPost.excerpt),
         commentsEnabled: true,
       },
       missing: false,
     };
   }
 
-  // 2. Try fetching from backend API /api/blogs
+  // 2. Fetch from backend API /api/blogs
   const base = process.env.NEXT_PUBLIC_API_URL || "https://uddok-admin.vercel.app";
   try {
     const res = await fetch(`${base.replace(/\/$/, "")}/api/blogs`, { cache: "no-store" });
@@ -61,18 +79,22 @@ const getArticle = cache(async (slug: string): Promise<{ post: BlogPostDetail | 
             String(b.id) === slug ||
             String(b._id) === decodedSlug ||
             String(b.id) === decodedSlug ||
+            b.slug === slug ||
+            b.slug === decodedSlug ||
+            (b.title && b.title.trim().toLowerCase() === decodedSlug.trim().toLowerCase()) ||
             (b.title && b.title.toLowerCase().replace(/\s+/g, "-") === slug) ||
             (b.title && b.title.toLowerCase().replace(/\s+/g, "-") === decodedSlug)
         );
         if (fetched) {
+          const rawContent = fetched.content || fetched.excerpt || fetched.title;
           return {
             post: {
               id: String(fetched._id || fetched.id),
-              slug: (fetched.title || "").toLowerCase().replace(/\s+/g, "-"),
+              slug: fetched.slug || (fetched.title || "").toLowerCase().replace(/\s+/g, "-"),
               title: fetched.title,
               category: fetched.category || "general",
               excerpt: fetched.excerpt || "",
-              content: fetched.content || `<p>${fetched.excerpt || fetched.title}</p>`,
+              content: formatBlogHtml(rawContent, fetched.excerpt),
               publishedAt: fetched.createdAt || fetched.date || new Date().toISOString(),
               readingTime: 5,
               author: {
@@ -89,20 +111,6 @@ const getArticle = cache(async (slug: string): Promise<{ post: BlogPostDetail | 
     }
   } catch (err) {
     console.error("Failed to fetch blog article:", err);
-  }
-
-  // Fallback to first detailed blog post if missing to guarantee page render
-  if (DETAILED_BLOG_POSTS.length > 0) {
-    const fallback = DETAILED_BLOG_POSTS[0];
-    return {
-      post: {
-        ...fallback,
-        title: decodedSlug.replace(/-/g, " ") || fallback.title,
-        content: fallback.content || `<p>${fallback.excerpt}</p>`,
-        commentsEnabled: true,
-      },
-      missing: false,
-    };
   }
 
   return { post: null, missing: true };
@@ -161,8 +169,8 @@ export default async function BlogArticlePage({ params }: PageProps) {
             </div>
           )}
 
-          {/* Safe: sanitized on the server with a strict allow-list */}
-          <div className="prose-blog text-ink leading-relaxed font-['Hind_Siliguri',sans-serif]" dangerouslySetInnerHTML={{ __html: html }} />
+          {/* Safe: sanitized on the server with strict paragraph & text formatting */}
+          <div className="prose-blog text-ink leading-relaxed font-['Hind_Siliguri',sans-serif] space-y-4" dangerouslySetInnerHTML={{ __html: html }} />
 
           <div className="flex flex-wrap items-center gap-3 border-y border-border py-4">
             <span className="text-sm font-medium">লেখাটি শেয়ার করুন</span>

@@ -19,7 +19,7 @@ export function BlogCard({ post, index = 1 }: { post: BlogPost; index?: number }
   return (
     <motion.div whileHover={{ y: -3 }} transition={{ duration: 0.15 }} className="group h-full">
       <Link
-        href={`/blog/${post.slug}`}
+        href={`/blog/${post.id || post.slug}`}
         className="flex h-full flex-col overflow-hidden rounded-xl border-2 border-line bg-surface p-5 shadow-[3px_3px_0px_0px_rgba(23,19,15,0.75)] transition-all hover:border-ink hover:shadow-[5px_5px_0px_0px_rgba(23,19,15,0.9)] dark:shadow-[3px_3px_0px_0px_rgba(243,239,230,0.15)]"
       >
         {/* Top Header Bar */}
@@ -87,7 +87,7 @@ export function FeaturedBlogCard({ post }: { post: BlogPost }) {
 
   return (
     <Link
-      href={`/blog/${post.slug}`}
+      href={`/blog/${post.id || post.slug}`}
       className="group grid overflow-hidden rounded-xl border-2 border-line bg-surface p-6 shadow-[4px_4px_0px_0px_rgba(23,19,15,0.75)] transition-all hover:border-ink hover:shadow-[6px_6px_0px_0px_rgba(23,19,15,0.9)] dark:shadow-[4px_4px_0px_0px_rgba(243,239,230,0.15)] lg:grid-cols-12 lg:gap-8"
     >
       <div className="flex flex-col justify-center gap-4 lg:col-span-12">
