@@ -47,8 +47,11 @@ export const metadata: Metadata = {
   description:
     "বাংলাদেশের ব্যবসায়িক খাতা। এলাকাভিত্তিক ব্যবসার আইডিয়া, পাইকারি ও খুচরা দাম এবং লাভ হিসাব এক জায়গায়।",
   icons: {
-    icon: "/images/biz-logo.png",
-    shortcut: "/images/biz-logo.png",
+    icon: [
+      { url: "/favicon.ico" },
+      { url: "/images/biz-logo.png", type: "image/png" },
+    ],
+    shortcut: "/favicon.ico",
     apple: "/images/biz-logo.png",
   },
   openGraph: { type: "website", locale: "bn_BD", siteName: "বিজনেস আইডিয়া জোন" },
