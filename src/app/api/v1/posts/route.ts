@@ -13,7 +13,7 @@ export async function GET(request: Request) {
   let adminItems: any[] = [];
 
   try {
-    const res = await fetch(`${backendUrl.replace(/\/$/, "")}/api/ideas`, {
+    const res = await fetch(`${backendUrl.replace(/\/$/, "")}/api/ideas?status=approved`, {
       cache: "no-store",
       headers: { "Content-Type": "application/json" },
     });
@@ -21,7 +21,9 @@ export async function GET(request: Request) {
     if (res.ok) {
       const result = await res.json();
       if (result.success && Array.isArray(result.data)) {
-        adminItems = result.data.map((item: any) => {
+        adminItems = result.data
+          .filter((item: any) => !item.status || item.status === "approved")
+          .map((item: any) => {
           const districtName = getDistrictLabel(item.district) || item.district || "ঢাকা";
           const exactLoc =
             item.exactLocation ||
@@ -114,9 +116,9 @@ export async function GET(request: Request) {
     };
   });
 
-  // Merge with locally stored user approved/pending posts if any
+  // Merge with locally stored user posts if approved
   const userStored = getUserPosts()
-    .filter((p) => p.status !== "draft")
+    .filter((p) => p.status === "approved")
     .map((p) => ({
       id: String(p.id),
       _id: String(p.id),
@@ -236,27 +238,35 @@ export async function POST(request: Request) {
     };
 
     // Forward to uddok-admin backend /api/ideas if it's a published/pending post
-    try {
-      await fetch(`${backendUrl.replace(/\/$/, "")}/api/ideas`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          title: postRecord.title,
-          category: postRecord.category,
-          district: postRecord.district,
-          exactLocation: postRecord.exactLocation,
-          wholesalePrice: wMin,
-          wholesalePriceMax: wMax,
-          wholesalePriceText,
-          retailPrice: rMin,
-          retailPriceMax: rMax,
-          retailPriceText,
-          description: postRecord.description,
-          isVerified: false,
-        }),
-      });
-    } catch (err) {
-      console.warn("Could not forward to backend API, saved locally:", err);
+    if (postRecord.status === "pending") {
+      try {
+        await fetch(`${backendUrl.replace(/\/$/, "")}/api/ideas`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            title: postRecord.title,
+            category: postRecord.category,
+            district: postRecord.district,
+            exactLocation: postRecord.exactLocation,
+            wholesalePrice: wMin,
+            wholesalePriceMax: wMax,
+            wholesalePriceText,
+            retailPrice: rMin,
+            retailPriceMax: rMax,
+            retailPriceText,
+            description: postRecord.description,
+            status: "pending",
+            isVerified: false,
+            postedBy: {
+              name: "উদ্যোক্তা ব্যবহারকারী",
+              role: "ব্যবহারকারী",
+              isVerifiedUser: false,
+            },
+          }),
+        });
+      } catch (err) {
+        console.warn("Could not forward to backend API, saved locally:", err);
+      }
     }
 
     // Always persist in local user posts store (drafts + pending posts)

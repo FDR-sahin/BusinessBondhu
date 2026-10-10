@@ -3,27 +3,7 @@ import { handleMockFallback } from "@/lib/mock-router";
 import { useAuthStore } from "@/store/auth-store";
 import type { ApiErrorBody, AuthTokens } from "@/types";
 
-const getClientBaseUrl = () => {
-  if (typeof window !== "undefined") {
-    const envUrl = process.env.NEXT_PUBLIC_API_URL;
-    if (!envUrl || envUrl.startsWith("/")) {
-      return envUrl || "/api/v1";
-    }
-    try {
-      const urlHost = new URL(envUrl).host;
-      if (urlHost !== window.location.host) {
-        // Same-origin relative fallback for Vercel preview domains to prevent CORS withCredentials block
-        return "/api/v1";
-      }
-    } catch {
-      return "/api/v1";
-    }
-    return envUrl;
-  }
-  return process.env.NEXT_PUBLIC_API_URL || "/api/v1";
-};
-
-const BASE_URL = getClientBaseUrl();
+const BASE_URL = "/api/v1";
 
 /** Single axios instance used by every TanStack Query hook. */
 export const api = axios.create({
