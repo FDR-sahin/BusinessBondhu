@@ -240,7 +240,7 @@ export async function POST(request: Request) {
     // Forward to uddok-admin backend /api/ideas if it's a published/pending post
     if (postRecord.status === "pending") {
       try {
-        await fetch(`${backendUrl.replace(/\/$/, "")}/api/ideas`, {
+        const backendRes = await fetch(`${backendUrl.replace(/\/$/, "")}/api/ideas`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
@@ -264,6 +264,13 @@ export async function POST(request: Request) {
             },
           }),
         });
+        if (backendRes.ok) {
+          const backendData = await backendRes.json();
+          if (backendData.data?._id || backendData.data?.id) {
+            postRecord.id = String(backendData.data._id || backendData.data.id);
+            postRecord._id = String(backendData.data._id || backendData.data.id);
+          }
+        }
       } catch (err) {
         console.warn("Could not forward to backend API, saved locally:", err);
       }

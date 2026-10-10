@@ -1582,45 +1582,25 @@ export function getMockPostDetail(id: string): PostDetail | null {
 }
 
 export function getMockComments(postId: string): Comment[] {
-  return [
-    {
-      id: "c-1",
-      postId,
-      author: {
-        id: "u-2",
-        name: "তানভীর আহমেদ",
-      },
-      content: "খুবই দরকারী তথ্য শেয়ার করার জন্য ধন্যবাদ! কাঁচামাল সরবরাহের ঠিকানা থাকলে শেয়ার করবেন দয়া করে।",
-      createdAt: "2026-10-06T14:30:00Z",
-      likesCount: 12,
-      likedByMe: false,
-      replies: [
-        {
-          id: "c-1-1",
-          postId,
-          parentId: "c-1",
-          author: {
-            id: "u-1",
-            name: "মহসিন হোসেন (লেখক)",
-          },
-          content: "ইনবক্সে কন্টাক্ট নম্বর পাঠিয়েছি ভাই, দেখে নিন।",
-          createdAt: "2026-10-06T15:10:00Z",
-          likesCount: 5,
+  // Only provide real-looking starter comments for primary seed posts; brand new/user posts start clean
+  if (postId === "sourcing-1" || postId === "post-sheet-1" || postId === "post-1") {
+    return [
+      {
+        id: "c-1",
+        postId,
+        author: {
+          id: "u-2",
+          name: "তানভীর আহমেদ",
         },
-      ],
-    },
-    {
-      id: "c-2",
-      postId,
-      author: {
-        id: "u-3",
-        name: "নাজমুন নাহার",
+        content: "সরাসরি সোর্সিং পয়েন্টের তথ্য দেওয়ার জন্য ধন্যবাদ! কোয়ালিটি যাচাই করে নেওয়ার সুযোগ আছে কি?",
+        createdAt: "2026-10-06T14:30:00Z",
+        likesCount: 5,
+        likedByMe: false,
       },
-      content: "ঢাকার বাইরে ডেলিভারি পাওয়ার ব্যবস্থা আছে কি?",
-      createdAt: "2026-10-07T09:15:00Z",
-      likesCount: 4,
-    },
-  ];
+    ];
+  }
+  // For all other posts, user posts, and newly added posts: start totally clean with 0 dummy comments
+  return [];
 }
 
 export function getMockAdvisorSuggestions(budget: number, category?: string): AdvisorResponse {
