@@ -11,8 +11,10 @@ import {
 } from "./auth";
 import {
   handleBlogList,
+  handleBlogCreate,
   handleBlogFeatured,
   handleBlogSlug,
+  handleBlogDelete,
   handleBlogCommentsGet,
   handleBlogCommentsOptions,
   handleBlogRelated,
@@ -43,6 +45,9 @@ import {
   handleMeDislikes,
   handleMeLikes,
   handleMeNotifications,
+  handleMeBlogs,
+  handleMeBlogDetail,
+  handleMeBlogDelete,
 } from "./me";
 import { handleAdvisorSuggest } from "./advisor";
 import { handleChat } from "./chat";
@@ -60,6 +65,7 @@ export async function dispatchApiRequest(request: Request, pathSegments: string[
   // 2. Root /api/blogs
   if (pathSegments.length === 1 && pathSegments[0] === "blogs") {
     if (method === "GET") return handleBlogsGet();
+    if (method === "POST") return handleBlogCreate(request);
   }
 
   // 3. /api/v1/*
@@ -121,14 +127,25 @@ export async function dispatchApiRequest(request: Request, pathSegments: string[
       if (meSub[0] === "dislikes" && method === "GET") return handleMeDislikes();
       if (meSub[0] === "likes" && method === "GET") return handleMeLikes();
       if (meSub[0] === "notifications" && method === "GET") return handleMeNotifications();
+      if (meSub[0] === "blogs") {
+        if (meSub.length === 1 && method === "GET") return handleMeBlogs(request);
+        if (meSub.length === 2 && method === "GET") return handleMeBlogDetail(meSub[1]);
+        if (meSub.length === 2 && method === "DELETE") return handleMeBlogDelete(meSub[1]);
+      }
     }
 
     // /api/v1/blog/*
     if (rest[0] === "blog") {
       const blogSub = rest.slice(1);
-      if (blogSub.length === 0 && method === "GET") return handleBlogList(request);
+      if (blogSub.length === 0) {
+        if (method === "GET") return handleBlogList(request);
+        if (method === "POST") return handleBlogCreate(request);
+      }
       if (blogSub[0] === "featured" && method === "GET") return handleBlogFeatured();
-      if (blogSub.length === 1 && method === "GET") return handleBlogSlug(blogSub[0]);
+      if (blogSub.length === 1) {
+        if (method === "GET") return handleBlogSlug(blogSub[0]);
+        if (method === "DELETE") return handleBlogDelete(blogSub[0]);
+      }
       if (blogSub.length === 2) {
         const slug = blogSub[0];
         const subAction = blogSub[1];

@@ -1,4 +1,4 @@
-import { Bell, Bookmark, FileText, Heart, LayoutDashboard, MessageSquare, Settings, ThumbsDown, User, type LucideIcon } from "lucide-react";
+import { Bell, Bookmark, BookOpen, FileText, Heart, LayoutDashboard, MessageSquare, Settings, ThumbsDown, User, type LucideIcon } from "lucide-react";
 import type { BadgeProps } from "@/components/ui/badge";
 import type { PostStatus } from "@/types";
 
@@ -16,6 +16,7 @@ export function getDashboardNav(lang: Lang = "bn"): DashboardNavItem[] {
   return [
     { href: "/dashboard", label: isEn ? "Overview" : "ওভারভিউ", icon: LayoutDashboard, exact: true },
     { href: "/dashboard/my-posts", label: isEn ? "My Posts" : "আমার পোস্ট", icon: FileText },
+    { href: "/dashboard/my-blogs", label: isEn ? "My Blogs" : "আমার ব্লগ", icon: BookOpen },
     { href: "/dashboard/likes", label: isEn ? "Likes" : "লাইক", icon: Heart },
     { href: "/dashboard/dislikes", label: isEn ? "Dislikes" : "ডিসলাইক", icon: ThumbsDown },
     { href: "/dashboard/comments", label: isEn ? "Comments" : "মন্তব্য", icon: MessageSquare },
@@ -35,6 +36,8 @@ export const isNavActive = (item: DashboardNavItem, pathname: string) =>
 export function dashboardTitle(pathname: string, lang: Lang = "bn"): string {
   const isEn = lang === "en";
   if (pathname.endsWith("/create-post")) return isEn ? "New Post" : "নতুন পোস্ট";
+  if (pathname.endsWith("/create-blog")) return isEn ? "Write Blog" : "ব্লগ লিখুন";
+  if (pathname.endsWith("/my-blogs")) return isEn ? "My Blogs" : "আমার ব্লগ";
   if (/\/my-posts\/[^/]+\/edit$/.test(pathname)) return isEn ? "Edit Post" : "পোস্ট সম্পাদনা";
   const nav = getDashboardNav(lang);
   return nav.find((n) => isNavActive(n, pathname))?.label ?? (isEn ? "Dashboard" : "ড্যাশবোর্ড");

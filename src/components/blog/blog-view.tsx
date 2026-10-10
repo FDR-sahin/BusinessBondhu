@@ -1,6 +1,7 @@
 "use client";
 
-import { BookOpen, LayoutGrid, Search, Table as TableIcon } from "lucide-react";
+import { BookOpen, LayoutGrid, PenTool, Search, Table as TableIcon } from "lucide-react";
+import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useMemo, useState } from "react";
 import { QueryError } from "@/components/shared/query-error";
@@ -67,13 +68,23 @@ export function BlogView() {
   return (
     <div className="container-page py-8 md:py-12">
       {/* Header */}
-      <header className="max-w-3xl">
-        <h1 className="font-display text-3xl font-extrabold tracking-tight text-ink md:text-5xl">
-          {t("blogHeaderTitle")}
-        </h1>
-        <p className="mt-3 text-base text-muted md:text-lg leading-relaxed">
-          {t("blogHeaderDesc")}
-        </p>
+      <header className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <div className="max-w-2xl">
+          <h1 className="font-display text-3xl font-extrabold tracking-tight text-ink md:text-5xl">
+            {t("blogHeaderTitle")}
+          </h1>
+          <p className="mt-3 text-base text-muted md:text-lg leading-relaxed">
+            {t("blogHeaderDesc")}
+          </p>
+        </div>
+        <div className="shrink-0">
+          <Button asChild className="h-11 bg-green font-bold text-white shadow-md hover:bg-green/90">
+            <Link href="/dashboard/create-blog">
+              <PenTool className="mr-2 h-4 w-4" />
+              {lang === "bn" ? "ব্লগ লিখুন" : "Write Blog"}
+            </Link>
+          </Button>
+        </div>
       </header>
 
       {/* Featured Article Slip */}
@@ -206,6 +217,27 @@ export function BlogView() {
             />
           )}
         </main>
+
+        {/* Write Blog Callout Banner */}
+        <div className="rounded-2xl border-2 border-line bg-gradient-to-r from-green/10 via-surface to-background p-6 md:p-8 flex flex-col md:flex-row items-center justify-between gap-6 shadow-sm">
+          <div className="space-y-2 text-center md:text-left">
+            <h3 className="text-xl md:text-2xl font-bold font-display text-ink flex items-center justify-center md:justify-start gap-2">
+              <PenTool className="h-5 w-5 text-green" />
+              {lang === "bn" ? "আপনার নিজস্ব ব্যবসার অভিজ্ঞতা ও গল্প লিখুন" : "Share Your Business Insights & Stories"}
+            </h3>
+            <p className="text-sm text-muted max-w-xl leading-relaxed">
+              {lang === "bn"
+                ? "আপনি কি সফল ব্যবসা পরিচালনা করছেন বা কোনো পাইকারি বাজার সম্পর্কে ভালো জানেন? আপনার মূল্যবান অভিজ্ঞতা লিখে অন্যান্য উদ্যোক্তাদের অনুপ্রেরণা দিন।"
+                : "Are you running a business or have deep sourcing knowledge? Write an article and inspire thousands of fellow entrepreneurs."}
+            </p>
+          </div>
+          <Button asChild className="h-12 bg-green px-8 font-bold text-white shadow-md hover:bg-green/90 shrink-0">
+            <Link href="/dashboard/create-blog">
+              <PenTool className="mr-2 h-4 w-4" />
+              {lang === "bn" ? "ব্লগ লেখা শুরু করুন" : "Start Writing Blog"}
+            </Link>
+          </Button>
+        </div>
 
         {/* Live Business Sourcing Ideas Section (fetches /api/ideas) */}
         <div className="pt-8 border-t-2 border-line">

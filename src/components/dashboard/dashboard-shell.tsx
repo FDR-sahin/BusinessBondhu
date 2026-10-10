@@ -1,6 +1,6 @@
 "use client";
 
-import { LogOut, MoreHorizontal, Plus, Search, X } from "lucide-react";
+import { BookOpen, LogOut, MoreHorizontal, Plus, Search, X } from "lucide-react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useState, type FormEvent, type ReactNode } from "react";
@@ -91,8 +91,9 @@ export function DashboardShell({ children }: { children: ReactNode }) {
       {/* ---------- Desktop sidebar ---------- */}
       <aside className="sticky top-0 hidden h-screen flex-col border-r border-border bg-surface lg:flex" aria-label={isEn ? "Dashboard Menu" : "ড্যাশবোর্ড মেনু"}>
         <div className="flex h-16 shrink-0 items-center px-5"><Logo /></div>
-        <div className="px-4 pb-4">
+        <div className="px-4 pb-4 space-y-2">
           <Button asChild className="w-full"><Link href="/dashboard/create-post"><Plus aria-hidden /> {isEn ? "New Post" : "নতুন পোস্ট"}</Link></Button>
+          <Button asChild variant="outline" className="w-full border-green/30 text-green hover:bg-green/10"><Link href="/dashboard/create-blog"><BookOpen className="mr-2 h-4 w-4" aria-hidden /> {isEn ? "Write Blog" : "ব্লগ লিখুন"}</Link></Button>
         </div>
         <nav className="flex-1 overflow-y-auto px-4 pb-4" aria-label={isEn ? "Dashboard Navigation" : "ড্যাশবোর্ড নেভিগেশন"}><NavList /></nav>
         <div className="space-y-1 border-t border-border p-4">

@@ -13,6 +13,7 @@ import { DETAILED_BLOG_POSTS } from "@/lib/blog-data";
 import { estimateReadingMinutes, getBlogCategory } from "@/lib/blog";
 import { parseRichBlogText } from "@/lib/blog-formatter";
 import { sanitizeContent } from "@/lib/sanitize";
+import { findUserBlog } from "@/lib/user-blogs-store";
 import type { BlogPostDetail } from "@/types";
 
 interface PageProps {
@@ -45,6 +46,31 @@ const getArticle = cache(async (slug: string): Promise<{ post: BlogPostDetail | 
         content: parseRichBlogText(localPost.content, localPost.excerpt),
         commentsEnabled: true,
       },
+      missing: false,
+    };
+  }
+
+  // 1.5. Search in user-created blogs store
+  const userBlog = findUserBlog(slug) || findUserBlog(decodedSlug);
+  if (userBlog) {
+    return {
+      post: {
+        id: String(userBlog.id),
+        slug: userBlog.slug,
+        title: userBlog.title,
+        category: userBlog.category || "general",
+        excerpt: userBlog.excerpt,
+        content: parseRichBlogText(userBlog.content, userBlog.excerpt),
+        coverImage: userBlog.coverImage,
+        publishedAt: userBlog.createdAt,
+        readingTime: userBlog.readingTime || 5,
+        author: {
+          id: userBlog.author?.id || "u-author",
+          name: userBlog.author?.name || "লেখক",
+          avatar: userBlog.author?.avatar || "/images/avatars/default.jpg",
+        },
+        commentsEnabled: true,
+      } as BlogPostDetail,
       missing: false,
     };
   }

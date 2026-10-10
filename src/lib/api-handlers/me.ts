@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import { getUserPosts, findUserPost } from "@/lib/user-posts-store";
 import { getUserProfile, saveUserProfile } from "@/lib/user-profile-store";
+import { getUserBlogs, findUserBlog } from "@/lib/user-blogs-store";
+import { handleBlogDelete } from "./blog";
 
 export async function handleMeDelete() {
   return NextResponse.json({
@@ -349,3 +351,118 @@ export async function handleMeNotifications() {
     totalPages: 1,
   });
 }
+
+export async function handleMeBlogs(request: Request) {
+  const { searchParams } = new URL(request.url);
+  const status = searchParams.get("status");
+  const q = searchParams.get("q")?.toLowerCase();
+  const page = Number(searchParams.get("page") || 1);
+  const limit = Number(searchParams.get("limit") || 12);
+  const userId = searchParams.get("userId") || request.headers.get("x-user-id") || "";
+  const userEmail = (searchParams.get("userEmail") || searchParams.get("email") || request.headers.get("x-user-email") || "").toLowerCase().trim();
+  const backendUrl = process.env.NEXT_PUBLIC_API_URL || "https://uddok-admin.vercel.app";
+
+  if (!userId && !userEmail) {
+    return NextResponse.json({
+      items: [],
+      total: 0,
+      page,
+      limit,
+      totalPages: 0,
+    });
+  }
+
+  let adminBlogs: any[] = [];
+  try {
+    const res = await fetch(`${backendUrl.replace(/\/$/, "")}/api/blogs`, {
+      cache: "no-store",
+      headers: { "Content-Type": "application/json" },
+    });
+    if (res.ok) {
+      const data = await res.json();
+      if (data.success && Array.isArray(data.data)) {
+        adminBlogs = data.data
+          .filter((item: any) => {
+            const matchesId = userId && (item.userId === userId || item.author?.id === userId);
+            const itemEmail = (item.authorEmail || "").toLowerCase().trim();
+            const matchesEmail = userEmail && itemEmail === userEmail;
+            return Boolean(matchesId || matchesEmail);
+          })
+          .map((item: any) => ({
+            id: String(item.id || item._id),
+            _id: String(item._id || item.id),
+            title: item.title,
+            slug: item.slug || (item.title || "").toLowerCase().replace(/\s+/g, "-"),
+            category: item.category || "ব্যবসা শুরু",
+            excerpt: item.excerpt || "",
+            content: item.content || "",
+            coverImage: item.image || item.coverImage || "/images/blog/default.jpg",
+            readTime: item.readTime || "৫ মিনিট",
+            readingTime: item.readingTime || 5,
+            status: item.status || "approved",
+            author: {
+              name: typeof item.author === "string" ? item.author : item.author?.name || "ব্যবহারকারী",
+              avatar: "/images/avatars/default.jpg",
+            },
+            likesCount: item.likesCount || item.likes || 0,
+            commentsCount: item.comments?.length || 0,
+            createdAt: item.createdAt || new Date().toISOString(),
+          }));
+      }
+    }
+  } catch (err) {
+    console.error("Failed to fetch user blogs from backend in me/blogs:", err);
+  }
+
+  const localItems = getUserBlogs().filter((b) => {
+    const matchesId = userId && (b.userId === userId || b.author?.id === userId);
+    const postEmail = (b.authorEmail || "").toLowerCase().trim();
+    const matchesEmail = userEmail && postEmail === userEmail;
+    return Boolean(matchesId || matchesEmail);
+  });
+
+  const existingTitles = new Set(adminBlogs.map((i) => i.title.trim().toLowerCase()));
+  const existingIds = new Set(adminBlogs.map((i) => i.id));
+  const filteredLocal = localItems.filter((l) => !existingTitles.has(l.title.trim().toLowerCase()) && !existingIds.has(l.id));
+  let items = [...adminBlogs, ...filteredLocal];
+
+  if (status && status !== "all") {
+    items = items.filter((b) => b.status === status);
+  }
+
+  if (q) {
+    items = items.filter(
+      (b) =>
+        b.title.toLowerCase().includes(q) ||
+        (b.category && b.category.toLowerCase().includes(q)) ||
+        (b.excerpt && b.excerpt.toLowerCase().includes(q))
+    );
+  }
+
+  const total = items.length;
+  const totalPages = Math.ceil(total / limit);
+  const start = (page - 1) * limit;
+  const paginatedItems = items.slice(start, start + limit);
+
+  return NextResponse.json({
+    items: paginatedItems,
+    total,
+    page,
+    limit,
+    totalPages,
+  });
+}
+
+export async function handleMeBlogDetail(id: string) {
+  const decodedId = decodeURIComponent(id);
+  const localBlog = findUserBlog(decodedId);
+  if (localBlog) {
+    return NextResponse.json(localBlog);
+  }
+  return NextResponse.json({ message: "Blog not found" }, { status: 404 });
+}
+
+export async function handleMeBlogDelete(id: string) {
+  return handleBlogDelete(id);
+}
+
