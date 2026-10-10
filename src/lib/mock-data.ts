@@ -1560,11 +1560,12 @@ export function getMockPaginatedPosts(params: any = {}): Paginated<Post> {
   };
 }
 
-export function getMockPostDetail(id: string): PostDetail {
-  const base = MOCK_POSTS.find((p) => p.id === id) || MOCK_POSTS[0];
+export function getMockPostDetail(id: string): PostDetail | null {
+  const base = MOCK_POSTS.find((p) => String(p.id) === id || String(p._id) === id);
+  if (!base) return null;
   return {
     ...base,
-    description: base.description || `এই ব্যবসাটি শুরু করার জন্য প্রাথমিক বিনিয়োগের প্রয়োজন তুলনামূলক কম। এলাকায় প্রচুর চাহিদা রয়েছে। আধুনিক প্রযুক্তির সঠিক ব্যবহারে পাইকারি খরচে পণ্য উৎপাদন করে খুচরা বাজারে ভালো লাভে বিক্রি করা সম্ভব। বিস্তারিত তথ্যের জন্য মন্তব্যে প্রশ্ন করতে পারেন।`,
+    description: base.description || `উৎপাদন ও সোর্সিং সংক্রান্ত সকল বিস্তারিত তথ্য।`,
     tags: base.tags || ["ব্যবসা", "উদ্যোক্তা", "পাইকারি_দাম", "বাংলাদেশ"],
   };
 }

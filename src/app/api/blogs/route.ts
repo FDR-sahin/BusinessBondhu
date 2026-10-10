@@ -5,6 +5,7 @@ export const dynamic = "force-dynamic";
 
 export async function GET() {
   const backendUrl = process.env.NEXT_PUBLIC_API_URL || "https://uddok-admin.vercel.app";
+  let adminBlogs: any[] = [];
 
   try {
     const res = await fetch(`${backendUrl.replace(/\/$/, "")}/api/blogs`, {
@@ -14,33 +15,28 @@ export async function GET() {
 
     if (res.ok) {
       const result = await res.json();
-      if (result.success && Array.isArray(result.data) && result.data.length > 0) {
-        const data = result.data.map((post: any) => ({
-          _id: post._id || post.id,
-          id: post.id || post._id,
+      if (result.success && Array.isArray(result.data)) {
+        adminBlogs = result.data.map((post: any) => ({
+          _id: String(post._id || post.id),
+          id: String(post.id || post._id),
           title: post.title,
           category: post.category,
           excerpt: post.excerpt,
           content: post.content,
           createdAt: post.createdAt || post.date || new Date().toISOString(),
-          author: post.author || "Business Hub BD Team",
+          author: typeof post.author === "string" ? post.author : "Business Hub BD Team",
           authorTitle: post.authorTitle || "Founder & CEO, Regards Tech",
           readTime: post.readTime || "৫ মিনিট",
         }));
-
-        return NextResponse.json({
-          success: true,
-          count: data.length,
-          data,
-        });
       }
     }
   } catch (err) {
-    console.error("Failed to fetch blogs from admin backend, using fallback:", err);
+    console.error("Failed to fetch blogs from admin backend:", err);
   }
 
-  // Fallback to static detailed posts if backend is offline
-  const fallbackData = DETAILED_BLOG_POSTS.map((post) => ({
+  // Merge admin blogs with DETAILED_BLOG_POSTS
+  const existingIds = new Set(adminBlogs.map((b) => String(b.id)));
+  const fallbackFormatted = DETAILED_BLOG_POSTS.filter((post) => !existingIds.has(String(post.id))).map((post) => ({
     _id: post.id,
     id: post.id,
     title: post.title,
@@ -53,9 +49,11 @@ export async function GET() {
     readTime: `${post.readingTime || 5} মিনিট`,
   }));
 
+  const combined = [...adminBlogs, ...fallbackFormatted];
+
   return NextResponse.json({
     success: true,
-    count: fallbackData.length,
-    data: fallbackData,
+    count: combined.length,
+    data: combined,
   });
 }
