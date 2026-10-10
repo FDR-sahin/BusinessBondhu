@@ -40,76 +40,76 @@ export function PostCard({ post }: { post: Post }) {
     >
       <Link
         href={`/post/${post.id}`}
-        className="flex h-full flex-col overflow-hidden rounded-xl border border-line/80 bg-surface p-5 shadow-sm transition-all duration-200 group-hover:border-green group-hover:shadow-md"
+        className="flex h-full flex-col overflow-hidden rounded-xl border border-line/80 bg-surface p-5 sm:p-6 shadow-sm transition-all duration-200 group-hover:border-green group-hover:shadow-md"
       >
         {/* Top Micro-label row: Category • District */}
-        <div className="flex items-center justify-between gap-2 text-[11px] font-mono uppercase tracking-wider text-muted">
-          <span className="flex items-center gap-1.5 font-semibold text-ink/80">
-            {CategoryIcon && <CategoryIcon className="h-3.5 w-3.5 text-green" aria-hidden />}
-            <span>{lang === "bn" ? category?.nameBn : category?.nameEn}</span>
+        <div className="flex items-center justify-between gap-2 text-xs sm:text-[13px] font-mono uppercase tracking-wider text-muted">
+          <span className="flex items-center gap-1.5 font-semibold text-ink/85 min-w-0 truncate">
+            {CategoryIcon && <CategoryIcon className="h-4 w-4 text-green shrink-0" aria-hidden />}
+            <span className="truncate">{lang === "bn" ? category?.nameBn : category?.nameEn}</span>
           </span>
-          <span className="truncate">{districtName}</span>
+          <span className="truncate font-medium shrink-0">{districtName}</span>
         </div>
 
         {/* Title */}
-        <h3 className="mt-3 line-clamp-2 font-display text-lg font-bold leading-snug text-ink transition-colors group-hover:text-green">
+        <h3 className="mt-3 line-clamp-2 font-display text-lg sm:text-xl font-bold leading-snug md:text-[21px] text-ink transition-colors group-hover:text-green">
           {post.title}
         </h3>
 
         {/* Exact Location Front View Badge */}
-        <div className="mt-2 flex items-center gap-1.5 text-xs text-ink-secondary">
-          <MapPin className="h-3.5 w-3.5 text-green shrink-0" aria-hidden />
+        <div className="mt-2.5 flex items-center gap-1.5 text-xs sm:text-[13px] text-ink-secondary">
+          <MapPin className="h-4 w-4 text-green shrink-0" aria-hidden />
           <span className="truncate font-medium">{exactLoc}</span>
         </div>
 
         {/* Price Slip Ledger Numbers (Wholesale Range, Retail Range, Profit) */}
-        <div className="mt-4 grid grid-cols-3 gap-1.5 rounded-md border border-line bg-surface p-2.5 text-xs shadow-inner">
+        <div className="mt-4 grid grid-cols-3 gap-2 rounded-lg border border-line bg-background/70 p-3 sm:p-3.5 shadow-xs">
           <div className="min-w-0">
-            <span className="block text-[10px] font-mono font-semibold uppercase tracking-wider text-muted truncate" title={lang === "bn" ? "পাইকারি রেঞ্জ" : "Wholesale Range"}>
+            <span className="block text-[11px] sm:text-xs font-mono font-semibold uppercase tracking-wider text-muted truncate" title={lang === "bn" ? "পাইকারি রেঞ্জ" : "Wholesale Range"}>
               {lang === "bn" ? "পাইকারি রেঞ্জ" : "Wholesale"}
             </span>
-            <span className="font-mono text-xs font-semibold tabular-nums text-ink block truncate" title={formatPriceRange(post.wholesalePrice, post.wholesalePriceMax, post.wholesalePriceText, lang)}>
+            <span className="font-mono text-sm sm:text-base font-bold tabular-nums text-ink block truncate mt-0.5" title={formatPriceRange(post.wholesalePrice, post.wholesalePriceMax, post.wholesalePriceText, lang)}>
               {formatPriceRange(post.wholesalePrice, post.wholesalePriceMax, post.wholesalePriceText, lang)}
             </span>
           </div>
           <div className="min-w-0">
-            <span className="block text-[10px] font-mono font-semibold uppercase tracking-wider text-muted truncate" title={lang === "bn" ? "খুচরা রেঞ্জ" : "Retail Range"}>
+            <span className="block text-[11px] sm:text-xs font-mono font-semibold uppercase tracking-wider text-muted truncate" title={lang === "bn" ? "খুচরা রেঞ্জ" : "Retail Range"}>
               {lang === "bn" ? "খুচরা রেঞ্জ" : "Retail"}
             </span>
-            <span className="font-mono text-xs font-semibold tabular-nums text-ink block truncate" title={formatPriceRange(post.retailPrice, post.retailPriceMax, post.retailPriceText, lang)}>
+            <span className="font-mono text-sm sm:text-base font-bold tabular-nums text-ink block truncate mt-0.5" title={formatPriceRange(post.retailPrice, post.retailPriceMax, post.retailPriceText, lang)}>
               {formatPriceRange(post.retailPrice, post.retailPriceMax, post.retailPriceText, lang)}
             </span>
           </div>
           <div className="min-w-0">
-            <span className="block text-[10px] font-mono font-semibold uppercase tracking-wider text-green truncate" title={lang === "bn" ? "প্রফিট মার্জিন" : "Margin"}>
+            <span className="block text-[11px] sm:text-xs font-mono font-semibold uppercase tracking-wider text-green truncate" title={lang === "bn" ? "প্রফিট মার্জিন" : "Margin"}>
               {lang === "bn" ? "মার্জিন" : "Margin"}
             </span>
-            <span className="font-mono text-xs font-bold tabular-nums text-green block truncate">
+            <span className="font-mono text-sm sm:text-base font-bold tabular-nums text-green block truncate mt-0.5">
               {formatBDT(profit, lang)}
             </span>
           </div>
         </div>
 
         {/* Map & Detail Action Bar */}
-        <div className="mt-3 flex items-center justify-between text-xs font-medium text-green transition-colors group-hover:underline">
+        <div className="mt-3.5 flex items-center justify-between text-xs sm:text-sm font-semibold text-green transition-colors group-hover:underline">
           <span>{lang === "bn" ? "ম্যাপ ও বিস্তারিত দেখুন" : "View Map & Details"}</span>
-          <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-1" />
+          <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
         </div>
 
         {/* Dotted Tear-off Divider */}
-        <div className="my-3 border-t border-dashed border-line" />
+        <div className="my-3.5 border-t border-dashed border-line" />
 
         {/* Footer: Author, Profit Badge & Stats */}
-        <div className="mt-auto flex items-center justify-between gap-2 text-xs">
+        <div className="mt-auto flex items-center justify-between gap-2 text-xs sm:text-[13px]">
           <div className="flex items-center gap-2 min-w-0">
             <span className="truncate font-medium text-ink/80">{post.author.name}</span>
           </div>
 
-          <div className="flex items-center gap-3 text-muted shrink-0">
-            <span className={`rounded-full border px-2 py-0.5 text-[10px] font-mono font-medium ${profitBadgeStyle}`}>
+          <div className="flex items-center gap-2.5 text-muted shrink-0">
+            <span className={`rounded-full border px-2.5 py-0.5 text-xs font-mono font-semibold ${profitBadgeStyle}`}>
               {profitText}
             </span>
-            <span className="inline-flex items-center gap-1 font-mono text-[11px]">
+            <span className="inline-flex items-center gap-1 font-mono text-xs sm:text-sm">
               <Heart className="h-3.5 w-3.5" aria-hidden />
               {toFormattedNumber(post.likesCount, lang)}
             </span>

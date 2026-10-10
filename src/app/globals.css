@@ -65,7 +65,7 @@
     background-color: rgb(var(--bg));
     color: rgb(var(--ink));
     font-family: var(--font-inter), var(--font-hind), system-ui, sans-serif;
-    font-size: clamp(0.875rem, 0.85vw + 0.4rem, 1rem);
+    font-size: clamp(0.9375rem, 0.5vw + 0.75rem, 1.0625rem);
     line-height: 1.6;
     -webkit-font-smoothing: antialiased;
   }
@@ -133,7 +133,7 @@
 
 @layer components {
   .container-page {
-    @apply mx-auto w-full max-w-[1440px] px-4 sm:px-5 md:px-6 lg:px-8 xl:px-10;
+    @apply mx-auto w-full max-w-[1600px] px-4 sm:px-6 md:px-8 lg:px-10 xl:px-12 2xl:px-14;
   }
   .section {
     @apply py-8 md:py-16;

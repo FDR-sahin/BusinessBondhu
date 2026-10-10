@@ -38,10 +38,10 @@ export function BudgetCard() {
   const matchingPosts = postsData?.items ?? [];
 
   return (
-    <div className="rounded-2xl border border-line bg-surface p-5 shadow-sm sticky top-24">
+    <div className="rounded-2xl border border-line bg-surface p-5 sm:p-6 shadow-sm sticky top-24">
       {/* Top Widget Header Badge */}
-      <div className="mb-3 flex items-center gap-1.5 text-[11px] font-mono font-semibold uppercase tracking-wider text-green">
-        <Sparkles className="h-3.5 w-3.5 shrink-0" aria-hidden />
+      <div className="mb-3 flex items-center gap-1.5 text-xs font-mono font-semibold uppercase tracking-wider text-green">
+        <Sparkles className="h-4 w-4 shrink-0" aria-hidden />
         <span>{lang === "bn" ? "ইনস্ট্যান্ট বাজেট ফিল্টার" : "Instant Budget Calculator"}</span>
       </div>
 
@@ -68,7 +68,7 @@ export function BudgetCard() {
         />
       </div>
 
-      <div className="mt-2 flex items-center justify-between text-[11px] font-mono font-medium text-muted">
+      <div className="mt-2.5 flex items-center justify-between text-xs font-mono font-medium text-muted">
         <span>{formatBDT(5000, lang)}</span>
         <span>{formatBDT(1000000, lang)}</span>
       </div>
@@ -78,7 +78,7 @@ export function BudgetCard() {
 
       {/* Middle Section: 3 Matching Entries */}
       <div className="flex items-center justify-between gap-2 pb-2.5">
-        <div className="text-xs font-mono uppercase tracking-wider font-semibold text-ink">
+        <div className="text-xs sm:text-sm font-mono uppercase tracking-wider font-semibold text-ink">
           {lang === "bn" ? "বাজেট উপযোগী নমুনা খাতা" : "Matching sample entries"}
         </div>
         <span className="rounded-full bg-green/10 border border-green/20 px-2.5 py-0.5 text-xs font-mono font-bold text-green">
@@ -86,7 +86,7 @@ export function BudgetCard() {
         </span>
       </div>
 
-      <div className="space-y-2">
+      <div className="space-y-2.5">
         {isLoading ? (
           <div className="space-y-2">
             <Skeleton className="h-12 w-full rounded-xl" />
@@ -110,10 +110,10 @@ export function BudgetCard() {
                   </span>
                 </div>
                 <div className="flex items-center gap-1.5 shrink-0">
-                  <span className="rounded bg-surface px-1.5 py-0.5 text-[10px] font-mono font-medium text-muted border border-line/60">
+                  <span className="rounded bg-surface px-1.5 py-0.5 text-[11px] font-mono font-medium text-muted border border-line/60">
                     {getDistrictLabel(post.district) || post.district}
                   </span>
-                  <span className="font-mono text-xs font-bold text-green">
+                  <span className="font-mono text-xs sm:text-sm font-bold text-green">
                     +{marginPct}%
                   </span>
                 </div>
@@ -131,10 +131,10 @@ export function BudgetCard() {
       <div className="mt-4 border-t border-line/60 pt-3 text-right">
         <Link
           href={`/ai-advisor?budget=${selectedBudget}`}
-          className="inline-flex items-center gap-1.5 text-xs font-semibold text-green hover:underline"
+          className="inline-flex items-center gap-1.5 text-xs sm:text-sm font-semibold text-green hover:underline"
         >
           <span>{lang === "bn" ? "AI পরামর্শ নিন" : "Get AI Advice"}</span>
-          <ArrowRight className="h-3.5 w-3.5" />
+          <ArrowRight className="h-4 w-4" />
         </Link>
       </div>
     </div>

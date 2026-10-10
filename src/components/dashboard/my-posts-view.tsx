@@ -97,53 +97,53 @@ function GridCard({ post, onDelete }: { post: MyPost; onDelete: (p: MyPost) => v
       : (lang === "bn" ? "সাধারণ লাভ" : "Standard Margin");
 
   return (
-    <Card className="flex h-full flex-col overflow-hidden p-5 shadow-sm transition-all duration-200 hover:border-green hover:shadow-md">
+    <Card className="flex h-full flex-col overflow-hidden p-5 sm:p-6 shadow-sm transition-all duration-200 hover:border-green hover:shadow-md">
       {/* Top Micro-label row: Category • District + Status Badge */}
-      <div className="flex items-center justify-between gap-2 text-[11px] font-mono uppercase tracking-wider text-muted">
-        <span className="flex items-center gap-1.5 font-semibold text-ink/80 min-w-0 truncate">
-          {CategoryIcon && <CategoryIcon className="h-3.5 w-3.5 text-green shrink-0" aria-hidden />}
+      <div className="flex items-center justify-between gap-2 text-xs sm:text-[13px] font-mono uppercase tracking-wider text-muted">
+        <span className="flex items-center gap-1.5 font-semibold text-ink/85 min-w-0 truncate">
+          {CategoryIcon && <CategoryIcon className="h-4 w-4 text-green shrink-0" aria-hidden />}
           <span className="truncate">{lang === "bn" ? category?.nameBn : category?.nameEn}</span>
         </span>
         <div className="flex items-center gap-2 shrink-0">
-          <span className="truncate">{districtName}</span>
+          <span className="truncate font-medium">{districtName}</span>
           <StatusBadge status={post.status} />
         </div>
       </div>
 
       {/* Title */}
-      <h3 className="mt-3 line-clamp-2 font-display text-lg font-bold leading-snug text-ink">
+      <h3 className="mt-3 line-clamp-2 font-display text-lg sm:text-xl font-bold leading-snug md:text-[21px] text-ink">
         {post.title}
       </h3>
 
       {/* Exact Location Front View Badge */}
-      <div className="mt-2 flex items-center gap-1.5 text-xs text-ink-secondary">
-        <MapPin className="h-3.5 w-3.5 text-green shrink-0" aria-hidden />
+      <div className="mt-2.5 flex items-center gap-1.5 text-xs sm:text-[13px] text-ink-secondary">
+        <MapPin className="h-4 w-4 text-green shrink-0" aria-hidden />
         <span className="truncate font-medium">{exactLoc}</span>
       </div>
 
       {/* Price Slip Ledger Numbers (Wholesale Range, Retail Range, Profit) */}
-      <div className="mt-4 grid grid-cols-3 gap-1.5 rounded-md border border-line bg-surface p-2.5 text-xs shadow-inner">
+      <div className="mt-4 grid grid-cols-3 gap-2 rounded-lg border border-line bg-background/70 p-3 sm:p-3.5 shadow-xs">
         <div className="min-w-0">
-          <span className="block text-[10px] font-mono font-semibold uppercase tracking-wider text-muted truncate" title={lang === "bn" ? "পাইকারি রেঞ্জ" : "Wholesale Range"}>
+          <span className="block text-[11px] sm:text-xs font-mono font-semibold uppercase tracking-wider text-muted truncate" title={lang === "bn" ? "পাইকারি রেঞ্জ" : "Wholesale Range"}>
             {lang === "bn" ? "পাইকারি রেঞ্জ" : "Wholesale"}
           </span>
-          <span className="font-mono text-xs font-semibold tabular-nums text-ink block truncate" title={formatPriceRange(post.wholesalePrice, post.wholesalePriceMax, post.wholesalePriceText, lang)}>
+          <span className="font-mono text-sm sm:text-base font-bold tabular-nums text-ink block truncate mt-0.5" title={formatPriceRange(post.wholesalePrice, post.wholesalePriceMax, post.wholesalePriceText, lang)}>
             {formatPriceRange(post.wholesalePrice, post.wholesalePriceMax, post.wholesalePriceText, lang)}
           </span>
         </div>
         <div className="min-w-0">
-          <span className="block text-[10px] font-mono font-semibold uppercase tracking-wider text-muted truncate" title={lang === "bn" ? "খুচরা রেঞ্জ" : "Retail Range"}>
+          <span className="block text-[11px] sm:text-xs font-mono font-semibold uppercase tracking-wider text-muted truncate" title={lang === "bn" ? "খুচরা রেঞ্জ" : "Retail Range"}>
             {lang === "bn" ? "খুচরা রেঞ্জ" : "Retail"}
           </span>
-          <span className="font-mono text-xs font-semibold tabular-nums text-ink block truncate" title={formatPriceRange(post.retailPrice, post.retailPriceMax, post.retailPriceText, lang)}>
+          <span className="font-mono text-sm sm:text-base font-bold tabular-nums text-ink block truncate mt-0.5" title={formatPriceRange(post.retailPrice, post.retailPriceMax, post.retailPriceText, lang)}>
             {formatPriceRange(post.retailPrice, post.retailPriceMax, post.retailPriceText, lang)}
           </span>
         </div>
         <div className="min-w-0">
-          <span className="block text-[10px] font-mono font-semibold uppercase tracking-wider text-green truncate" title={lang === "bn" ? "প্রফিট মার্জিন" : "Margin"}>
+          <span className="block text-[11px] sm:text-xs font-mono font-semibold uppercase tracking-wider text-green truncate" title={lang === "bn" ? "প্রফিট মার্জিন" : "Margin"}>
             {lang === "bn" ? "মার্জিন" : "Margin"}
           </span>
-          <span className="font-mono text-xs font-bold tabular-nums text-green block truncate">
+          <span className="font-mono text-sm sm:text-base font-bold tabular-nums text-green block truncate mt-0.5">
             {formatBDT(profit, lang)}
           </span>
         </div>
