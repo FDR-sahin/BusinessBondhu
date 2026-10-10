@@ -2,6 +2,7 @@
 
 import * as AvatarPrimitive from "@radix-ui/react-avatar";
 import * as React from "react";
+import { User } from "lucide-react";
 import { cn, getInitials } from "@/lib/utils";
 
 export const Avatar = React.forwardRef<
@@ -24,16 +25,19 @@ export const AvatarFallback = React.forwardRef<
   React.ElementRef<typeof AvatarPrimitive.Fallback>,
   React.ComponentPropsWithoutRef<typeof AvatarPrimitive.Fallback>
 >(({ className, ...props }, ref) => (
-  <AvatarPrimitive.Fallback ref={ref} className={cn("flex h-full w-full items-center justify-center bg-primary-soft text-sm font-semibold text-primary-soft-foreground", className)} {...props} />
+  <AvatarPrimitive.Fallback ref={ref} className={cn("flex h-full w-full items-center justify-center bg-emerald-100 text-sm font-semibold text-emerald-800", className)} {...props} />
 ));
 AvatarFallback.displayName = "AvatarFallback";
 
 /** One-liner: <UserAvatar name="রহিম" src={url} className="h-8 w-8" /> */
 export function UserAvatar({ name, src, className }: { name?: string; src?: string; className?: string }) {
+  const initials = getInitials(name);
   return (
     <Avatar className={className}>
       {src && <AvatarImage src={src} alt={name ?? "ব্যবহারকারী"} />}
-      <AvatarFallback>{getInitials(name)}</AvatarFallback>
+      <AvatarFallback>
+        {initials ? initials : <User className="h-4 w-4 text-emerald-700" aria-hidden />}
+      </AvatarFallback>
     </Avatar>
   );
 }
