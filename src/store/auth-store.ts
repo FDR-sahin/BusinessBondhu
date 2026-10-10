@@ -26,16 +26,21 @@ function syncUserCookies(user: User | null, remember: boolean) {
   if (typeof document === "undefined") return;
   const secure = window.location.protocol === "https:" ? "; Secure" : "";
   const maxAgeStr = remember ? `Max-Age=${REMEMBER_MAX_AGE}; ` : "";
-  if (user?.name) {
-    document.cookie = `bhbd_user_name=${encodeURIComponent(user.name)}; Path=/; ${maxAgeStr}SameSite=Lax${secure}`;
-  } else {
-    document.cookie = `bhbd_user_name=; Path=/; Max-Age=0; SameSite=Lax${secure}`;
-  }
-  if (user?.email) {
-    document.cookie = `bhbd_user_email=${encodeURIComponent(user.email)}; Path=/; ${maxAgeStr}SameSite=Lax${secure}`;
-  } else {
-    document.cookie = `bhbd_user_email=; Path=/; Max-Age=0; SameSite=Lax${secure}`;
-  }
+
+  const setOrClear = (name: string, val?: string | null) => {
+    if (val) {
+      document.cookie = `${name}=${encodeURIComponent(val)}; Path=/; ${maxAgeStr}SameSite=Lax${secure}`;
+    } else {
+      document.cookie = `${name}=; Path=/; Max-Age=0; SameSite=Lax${secure}`;
+    }
+  };
+
+  setOrClear("bhbd_user_name", user?.name);
+  setOrClear("bhbd_user_email", user?.email);
+  setOrClear("bhbd_user_division", user?.division);
+  setOrClear("bhbd_user_district", user?.district);
+  setOrClear("bhbd_user_area", user?.area);
+  setOrClear("bhbd_user_bio", user?.bio);
 }
 
 const hasAuthCookie = () =>

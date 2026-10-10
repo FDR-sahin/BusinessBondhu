@@ -20,6 +20,11 @@ export function handleMockFallback(config?: AxiosRequestConfig): AxiosResponse |
   // Clean endpoint path
   const path = url.replace(/^https?:\/\/[^\/]+/, "").replace(/^\/api\/v1/, "");
 
+  // Do NOT return success 200 for /me/password
+  if (path.includes("/me/password")) {
+    return null;
+  }
+
   // Auth Fallbacks
   if (path.includes("/auth/signup") || path.includes("/auth/login")) {
     let body: any = {};
@@ -28,15 +33,30 @@ export function handleMockFallback(config?: AxiosRequestConfig): AxiosResponse |
     } catch {
       body = {};
     }
+
     let storedUser: any = null;
+    let storedCreds: Record<string, string> = {};
     if (typeof window !== "undefined") {
       try {
         const raw = localStorage.getItem("bhbd_user_profile");
         if (raw) storedUser = JSON.parse(raw);
+        const credsRaw = localStorage.getItem("bhbd_user_credentials");
+        if (credsRaw) storedCreds = JSON.parse(credsRaw);
       } catch (e) {
         console.error(e);
       }
     }
+
+    if (path.includes("/auth/login")) {
+      // Do NOT return success 200 blindly for login when password is wrong
+      const emailKey = (body.email || "").toLowerCase().trim();
+      const storedPassword = storedUser?.password || (emailKey ? storedCreds[emailKey] : null);
+
+      if (!body.password || !storedPassword || body.password !== storedPassword) {
+        return null;
+      }
+    }
+
     const name = (body.name && body.name.trim() !== "উদ্যোক্তা" ? body.name.trim() : "") ||
       (storedUser?.name && storedUser.name !== "উদ্যোক্তা" ? storedUser.name : "") ||
       (body.email ? body.email.split("@")[0] : "ব্যবহারকারী");
@@ -45,8 +65,12 @@ export function handleMockFallback(config?: AxiosRequestConfig): AxiosResponse |
       id: storedUser?.id || `u-${Date.now()}`,
       name,
       email: body.email || storedUser?.email || "user@example.com",
+      password: body.password || storedUser?.password,
       division: body.division || storedUser?.division || "",
       district: body.district || storedUser?.district || "",
+      area: body.area || storedUser?.area || "",
+      bio: body.bio || storedUser?.bio || "",
+      avatar: body.avatar || storedUser?.avatar || "",
       role: "user",
       createdAt: storedUser?.createdAt || new Date().toISOString(),
     };
@@ -54,6 +78,10 @@ export function handleMockFallback(config?: AxiosRequestConfig): AxiosResponse |
     if (typeof window !== "undefined") {
       try {
         localStorage.setItem("bhbd_user_profile", JSON.stringify(user));
+        if (body.password && user.email) {
+          storedCreds[user.email.toLowerCase()] = body.password;
+          localStorage.setItem("bhbd_user_credentials", JSON.stringify(storedCreds));
+        }
       } catch (e) {
         console.error(e);
       }
@@ -190,10 +218,26 @@ export function handleMockFallback(config?: AxiosRequestConfig): AxiosResponse |
     const isPut = config.method?.toLowerCase() === "put" || Object.keys(body).length > 0;
 
     let cookieName = "";
+    let cookieDivision = "";
+    let cookieDistrict = "";
+    let cookieArea = "";
+    let cookieBio = "";
     if (typeof document !== "undefined") {
-      const match = document.cookie.match(/(?:^|;\s*)bhbd_user_name=([^;]*)/);
-      if (match) cookieName = decodeURIComponent(match[1]).trim();
+      const matchName = document.cookie.match(/(?:^|;\s*)bhbd_user_name=([^;]*)/);
+      if (matchName) cookieName = decodeURIComponent(matchName[1]).trim();
+      const matchDiv = document.cookie.match(/(?:^|;\s*)bhbd_user_division=([^;]*)/);
+      if (matchDiv) cookieDivision = decodeURIComponent(matchDiv[1]).trim();
+      const matchDist = document.cookie.match(/(?:^|;\s*)bhbd_user_district=([^;]*)/);
+      if (matchDist) cookieDistrict = decodeURIComponent(matchDist[1]).trim();
+      const matchArea = document.cookie.match(/(?:^|;\s*)bhbd_user_area=([^;]*)/);
+      if (matchArea) cookieArea = decodeURIComponent(matchArea[1]).trim();
+      const matchBio = document.cookie.match(/(?:^|;\s*)bhbd_user_bio=([^;]*)/);
+      if (matchBio) cookieBio = decodeURIComponent(matchBio[1]).trim();
     }
+
+    const headerDivision = config.headers?.["X-User-Division"] ? decodeURIComponent(String(config.headers["X-User-Division"])).trim() : "";
+    const headerDistrict = config.headers?.["X-User-District"] ? decodeURIComponent(String(config.headers["X-User-District"])).trim() : "";
+    const headerArea = config.headers?.["X-User-Area"] ? decodeURIComponent(String(config.headers["X-User-Area"])).trim() : "";
 
     const fallbackName = (body.email || storedUser?.email)
       ? (body.email || storedUser?.email).split("@")[0]
@@ -207,28 +251,62 @@ export function handleMockFallback(config?: AxiosRequestConfig): AxiosResponse |
       cookieName ||
       fallbackName;
 
+    const resolvedBio = (isPut && body.bio !== undefined && body.bio !== "" ? body.bio : "") ||
+      storedUser?.bio ||
+      cookieBio ||
+      (isPut && body.bio !== undefined ? body.bio : "") ||
+      "";
+
+    const resolvedDivision = (isPut && body.division !== undefined && body.division !== "" ? body.division : "") ||
+      storedUser?.division ||
+      headerDivision ||
+      cookieDivision ||
+      (isPut && body.division !== undefined ? body.division : "") ||
+      "";
+
+    const resolvedDistrict = (isPut && body.district !== undefined && body.district !== "" ? body.district : "") ||
+      storedUser?.district ||
+      headerDistrict ||
+      cookieDistrict ||
+      (isPut && body.district !== undefined ? body.district : "") ||
+      "";
+
+    const resolvedArea = (isPut && body.area !== undefined && body.area !== "" ? body.area : "") ||
+      storedUser?.area ||
+      headerArea ||
+      cookieArea ||
+      (isPut && body.area !== undefined ? body.area : "") ||
+      "";
+
+    const resolvedAvatar = (isPut && body.avatar !== undefined && body.avatar !== "" ? body.avatar : "") ||
+      storedUser?.avatar ||
+      (isPut && body.avatar !== undefined ? body.avatar : "") ||
+      "";
+
     const user = {
       id: storedUser?.id || "u-1",
       name: resolvedName,
       email: (isPut ? body.email : undefined) || storedUser?.email || "user@example.com",
-      bio: (isPut && body.bio !== undefined ? body.bio : storedUser?.bio) || "",
-      division: (isPut && body.division !== undefined ? body.division : storedUser?.division) || "",
-      district: (isPut && body.district !== undefined ? body.district : storedUser?.district) || "",
-      area: (isPut && body.area !== undefined ? body.area : storedUser?.area) || "",
-      avatar: (isPut && body.avatar !== undefined ? body.avatar : storedUser?.avatar) || "",
+      bio: resolvedBio,
+      division: resolvedDivision,
+      district: resolvedDistrict,
+      area: resolvedArea,
+      avatar: resolvedAvatar,
       role: storedUser?.role || "user",
       createdAt: storedUser?.createdAt || new Date().toISOString(),
     };
 
-    if (isPut && typeof window !== "undefined") {
+    if (typeof window !== "undefined") {
       try {
         localStorage.setItem("bhbd_user_profile", JSON.stringify(user));
-        const authRaw = localStorage.getItem("bhbd-auth");
-        if (authRaw) {
-          const parsed = JSON.parse(authRaw);
-          if (parsed?.state) {
-            parsed.state.user = user;
-            localStorage.setItem("bhbd-auth", JSON.stringify(parsed));
+        if (isPut) {
+          const authRaw = localStorage.getItem("bhbd-auth");
+          if (authRaw) {
+            const parsed = JSON.parse(authRaw);
+            if (parsed?.state) {
+              parsed.state.user = user;
+              localStorage.setItem("bhbd-auth", JSON.stringify(parsed));
+            }
           }
         }
       } catch (e) {

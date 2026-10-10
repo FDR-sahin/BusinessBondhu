@@ -8,6 +8,7 @@ import {
   handleAuthMePut,
   handleAuthForgotPassword,
   handleAuthResetPassword,
+  handleMePasswordPut,
 } from "./auth";
 import {
   handleBlogList,
@@ -87,7 +88,8 @@ export async function dispatchApiRequest(request: Request, pathSegments: string[
         if (method === "PUT") return handleAuthMePut(request);
       }
       if (action === "forgot-password" && method === "POST") return handleAuthForgotPassword();
-      if (action === "reset-password" && method === "POST") return handleAuthResetPassword();
+      if (action === "reset-password" && method === "POST") return handleAuthResetPassword(request);
+      if (action === "password" && method === "PUT") return handleMePasswordPut(request);
     }
 
     // /api/v1/chat
@@ -111,6 +113,9 @@ export async function dispatchApiRequest(request: Request, pathSegments: string[
       const meSub = rest.slice(1);
       if (meSub.length === 0) {
         if (method === "DELETE") return handleMeDelete();
+      }
+      if (meSub[0] === "password" && method === "PUT") {
+        return handleMePasswordPut(request);
       }
       if (meSub[0] === "profile") {
         if (method === "GET") return handleMeProfileGet(request);

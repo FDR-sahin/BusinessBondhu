@@ -51,6 +51,12 @@ const toValues = (u?: User | null, customFallbackName?: string): ProfileValues =
   };
 };
 
+function getClientCookie(name: string): string {
+  if (typeof document === "undefined") return "";
+  const match = document.cookie.match(new RegExp(`(?:^|;\\s*)${name}=([^;]*)`));
+  return match ? decodeURIComponent(match[1]).trim() : "";
+}
+
 export function ProfileView() {
   const storeUser = useAuthStore((s) => s.user);
   const setUser = useAuthStore((s) => s.setUser);
@@ -59,6 +65,58 @@ export function ProfileView() {
   const isEn = lang === "en";
   const [uploading, setUploading] = useState(false);
 
+  // Initialize and merge user data from storeUser, localStorage or cookies
+  const user = useMemo(() => {
+    let storageUser: Partial<User> | null = null;
+    if (typeof window !== "undefined") {
+      try {
+        const raw = localStorage.getItem("bhbd_user_profile");
+        if (raw) storageUser = JSON.parse(raw);
+        if (!storageUser) {
+          const authRaw = localStorage.getItem("bhbd-auth");
+          if (authRaw) {
+            const parsed = JSON.parse(authRaw);
+            if (parsed?.state?.user) storageUser = parsed.state.user;
+          }
+        }
+      } catch {}
+    }
+
+    const cookieDivision = typeof window !== "undefined" ? getClientCookie("bhbd_user_division") : "";
+    const cookieDistrict = typeof window !== "undefined" ? getClientCookie("bhbd_user_district") : "";
+    const cookieArea = typeof window !== "undefined" ? getClientCookie("bhbd_user_area") : "";
+    const cookieBio = typeof window !== "undefined" ? getClientCookie("bhbd_user_bio") : "";
+    const cookieName = typeof window !== "undefined" ? getClientCookie("bhbd_user_name") : "";
+    const cookieEmail = typeof window !== "undefined" ? getClientCookie("bhbd_user_email") : "";
+
+    const activeUser = storeUser || localProfile || storageUser;
+
+    return {
+      id: activeUser?.id || "u-1",
+      name: (activeUser?.name && activeUser.name !== "উদ্যোক্তা" ? activeUser.name : "") ||
+        cookieName ||
+        "ব্যবহারকারী",
+      email: activeUser?.email || cookieEmail || "user@example.com",
+      bio: activeUser?.bio || storageUser?.bio || cookieBio || "",
+      division: activeUser?.division || storageUser?.division || cookieDivision || "",
+      district: activeUser?.district || storageUser?.district || cookieDistrict || "",
+      area: activeUser?.area || storageUser?.area || cookieArea || "",
+      avatar: activeUser?.avatar || storageUser?.avatar || "",
+      role: activeUser?.role || "user",
+      createdAt: activeUser?.createdAt || new Date().toISOString(),
+    } as User;
+  }, [storeUser, localProfile]);
+
+  const customFallback = user.name && user.name !== "উদ্যোক্তা" ? user.name : undefined;
+  const values = useMemo(() => toValues(user, customFallback), [user, customFallback]);
+
+  const { register, control, handleSubmit, setValue, setError, watch, reset, formState: { errors, isDirty } } = useForm<ProfileValues>({
+    resolver: zodResolver(profileSchema),
+    defaultValues: values,
+    values, // fills the form when /auth/me or storeUser finishes loading
+    resetOptions: { keepDirtyValues: true }, // …without wiping what the user already typed
+  });
+
   // Read local profile fallback on client mount
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -66,24 +124,16 @@ export function ProfileView() {
         const raw = localStorage.getItem("bhbd_user_profile");
         if (raw) {
           const parsed = JSON.parse(raw);
-          if (parsed?.name && parsed.name !== "উদ্যোক্তা") setLocalProfile(parsed);
+          if (parsed?.name && parsed.name !== "উদ্যোক্তা") {
+            setLocalProfile(parsed);
+            reset(toValues(parsed));
+          }
         }
       } catch (e) {
         console.error(e);
       }
     }
-  }, []);
-
-  const user = storeUser || localProfile || defaultUser;
-  const customFallback = localProfile?.name && localProfile.name !== "উদ্যোক্তা" ? localProfile.name : undefined;
-
-  const values = useMemo(() => toValues(user, customFallback), [user, customFallback]);
-  const { register, control, handleSubmit, setValue, setError, watch, reset, formState: { errors, isDirty } } = useForm<ProfileValues>({
-    resolver: zodResolver(profileSchema),
-    defaultValues: values,
-    values, // fills the form when /auth/me or storeUser finishes loading
-    resetOptions: { keepDirtyValues: true }, // …without wiping what the user already typed
-  });
+  }, [reset]);
 
   const v = watch();
   const districts = getDistricts(v.division ?? "");
@@ -96,17 +146,18 @@ export function ProfileView() {
         (user.name && user.name !== "উদ্যোক্তা" ? user.name : "") ||
         emailPrefix;
 
-      const updatedUser: User = res.data?.user || {
-        id: user.id || "u-1",
+      const returned = res.data?.user;
+      const updatedUser: User = {
+        id: returned?.id || user.id || "u-1",
         name: resolvedName,
-        email: user.email || "user@example.com",
-        bio: body.bio,
-        division: body.division,
-        district: body.district,
-        area: body.area,
-        avatar: body.avatar,
-        role: user.role || "user",
-        createdAt: user.createdAt || new Date().toISOString(),
+        email: returned?.email || user.email || "user@example.com",
+        bio: body.bio || returned?.bio || user.bio || "",
+        division: body.division || returned?.division || user.division || "",
+        district: body.district || returned?.district || user.district || "",
+        area: body.area || returned?.area || user.area || "",
+        avatar: body.avatar || returned?.avatar || user.avatar || "",
+        role: returned?.role || user.role || "user",
+        createdAt: returned?.createdAt || user.createdAt || new Date().toISOString(),
       };
       return updatedUser;
     },
@@ -117,8 +168,14 @@ export function ProfileView() {
         if (typeof window !== "undefined") {
           try {
             localStorage.setItem("bhbd_user_profile", JSON.stringify(updated));
-            document.cookie = `bhbd_user_name=${encodeURIComponent(updated.name)}; Path=/; Max-Age=2592000; SameSite=Lax`;
-            document.cookie = `bhbd_user_email=${encodeURIComponent(updated.email)}; Path=/; Max-Age=2592000; SameSite=Lax`;
+            const secure = window.location.protocol === "https:" ? "; Secure" : "";
+            const maxAge = 60 * 60 * 24 * 30; // 30 days
+            document.cookie = `bhbd_user_name=${encodeURIComponent(updated.name)}; Path=/; Max-Age=${maxAge}; SameSite=Lax${secure}`;
+            document.cookie = `bhbd_user_email=${encodeURIComponent(updated.email)}; Path=/; Max-Age=${maxAge}; SameSite=Lax${secure}`;
+            document.cookie = `bhbd_user_division=${encodeURIComponent(updated.division || "")}; Path=/; Max-Age=${maxAge}; SameSite=Lax${secure}`;
+            document.cookie = `bhbd_user_district=${encodeURIComponent(updated.district || "")}; Path=/; Max-Age=${maxAge}; SameSite=Lax${secure}`;
+            document.cookie = `bhbd_user_area=${encodeURIComponent(updated.area || "")}; Path=/; Max-Age=${maxAge}; SameSite=Lax${secure}`;
+            document.cookie = `bhbd_user_bio=${encodeURIComponent(updated.bio || "")}; Path=/; Max-Age=${maxAge}; SameSite=Lax${secure}`;
           } catch (e) {
             console.error(e);
           }

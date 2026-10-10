@@ -22,6 +22,25 @@ api.interceptors.request.use((config) => {
   if (user?.email) config.headers.set("X-User-Email", user.email);
   if (user?.id) config.headers.set("X-User-Id", user.id);
   if (user?.name) config.headers.set("X-User-Name", encodeURIComponent(user.name));
+
+  let division = user?.division;
+  let district = user?.district;
+  let area = user?.area;
+  if ((!division || !district || !area) && typeof window !== "undefined") {
+    try {
+      const raw = localStorage.getItem("bhbd_user_profile");
+      if (raw) {
+        const p = JSON.parse(raw);
+        division = division || p?.division;
+        district = district || p?.district;
+        area = area || p?.area;
+      }
+    } catch {}
+  }
+  if (division) config.headers.set("X-User-Division", encodeURIComponent(division));
+  if (district) config.headers.set("X-User-District", encodeURIComponent(district));
+  if (area) config.headers.set("X-User-Area", encodeURIComponent(area));
+
   return config;
 });
 
@@ -66,7 +85,24 @@ api.interceptors.response.use(
       }
     }
 
-    // Network / Server / 404 connection error: Fallback to mock router
+    // Stop swallowing 400, 401, 403, 422 HTTP responses from the server!
+    // Mock fallback should ONLY be used when there is a network error (no response) or 404 on mockable endpoints,
+    // NEVER on auth/credential errors.
+    const url = original?.url || error.config?.url || "";
+    const isAuthOrCredentialEndpoint = /\/(auth|login|signup|register|me\/password)/i.test(url);
+
+    if (isAuthOrCredentialEndpoint) {
+      return Promise.reject(error);
+    }
+
+    if (error.response) {
+      // Server returned a response; only 404 on mockable endpoints is allowed to fall back
+      if (error.response.status !== 404) {
+        return Promise.reject(error);
+      }
+    }
+
+    // Network error (no response) or 404 on mockable endpoints: Fallback to mock router
     const mockRes = handleMockFallback(error.config);
     if (mockRes) {
       return mockRes;

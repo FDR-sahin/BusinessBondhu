@@ -1,8 +1,11 @@
 import fs from "fs";
 import path from "path";
+import crypto from "crypto";
 import type { User } from "@/types";
 
 export interface StoredUserProfile extends User {
+  password?: string;
+  passwordHash?: string;
   updatedAt?: string;
 }
 
@@ -14,6 +17,26 @@ declare global {
 const STORAGE_FILE = process.env.VERCEL
   ? path.join("/tmp", "user_profile_cache.json")
   : path.join(process.cwd(), ".next", "user_profile_cache.json");
+
+export function hashPassword(password: string): string {
+  return crypto.createHash("sha256").update(password).digest("hex");
+}
+
+export function verifyPassword(password: string, user: StoredUserProfile): boolean {
+  if (!password) return false;
+  if (!user.password && !user.passwordHash) return false;
+  const hash = hashPassword(password);
+  if (user.passwordHash && user.passwordHash === hash) return true;
+  if (user.password && user.password === password) return true;
+  return false;
+}
+
+export function sanitizeUser(user: StoredUserProfile): User {
+  const safeUser = { ...user };
+  delete (safeUser as { password?: string }).password;
+  delete (safeUser as { passwordHash?: string }).passwordHash;
+  return safeUser;
+}
 
 function loadFromDisk(): Record<string, StoredUserProfile> {
   try {
@@ -62,34 +85,59 @@ export function getUserProfile(identifier?: string | null): StoredUserProfile | 
   if (!global.__GLOBAL_USER_PROFILES__ || Object.keys(global.__GLOBAL_USER_PROFILES__).length === 0) {
     global.__GLOBAL_USER_PROFILES__ = loadFromDisk();
   }
-  if (!identifier) {
+  if (identifier === undefined || identifier === null) {
     const keys = Object.keys(global.__GLOBAL_USER_PROFILES__);
     if (keys.length > 0) {
       return global.__GLOBAL_USER_PROFILES__[keys[keys.length - 1]];
     }
     return null;
   }
-  const idLower = identifier.toLowerCase().trim();
-  const directMatch = global.__GLOBAL_USER_PROFILES__[idLower];
-  if (directMatch) return directMatch;
+  const trimmed = identifier.trim();
+  if (!trimmed) {
+    return null;
+  }
+  const idLower = trimmed.toLowerCase();
+  let match = global.__GLOBAL_USER_PROFILES__[idLower];
+  if (match) return match;
 
-  // Search by email or id
+  // Search by email or id in memory
   for (const key of Object.keys(global.__GLOBAL_USER_PROFILES__)) {
     const u = global.__GLOBAL_USER_PROFILES__[key];
-    if (u.id === identifier || u.email?.toLowerCase() === idLower) {
+    if (u.id === trimmed || u.email?.toLowerCase() === idLower) {
       return u;
     }
   }
+
+  // Reload from disk in case updated by another worker/process
+  const diskProfiles = loadFromDisk();
+  global.__GLOBAL_USER_PROFILES__ = { ...global.__GLOBAL_USER_PROFILES__, ...diskProfiles };
+  match = global.__GLOBAL_USER_PROFILES__[idLower];
+  if (match) return match;
+
+  for (const key of Object.keys(global.__GLOBAL_USER_PROFILES__)) {
+    const u = global.__GLOBAL_USER_PROFILES__[key];
+    if (u.id === trimmed || u.email?.toLowerCase() === idLower) {
+      return u;
+    }
+  }
+
   return null;
 }
 
-export function saveUserProfile(userData: Partial<User> & { email?: string; id?: string }): StoredUserProfile {
+export function saveUserProfile(
+  userData: Partial<User> & {
+    email?: string;
+    id?: string;
+    password?: string;
+    passwordHash?: string;
+  }
+): StoredUserProfile {
   if (!global.__GLOBAL_USER_PROFILES__) {
     global.__GLOBAL_USER_PROFILES__ = {};
   }
 
   const emailKey = (userData.email || "user@example.com").toLowerCase().trim();
-  const existing = getUserProfile(emailKey) || getUserProfile(userData.id);
+  const existing = getUserProfile(emailKey) || (userData.id ? getUserProfile(userData.id) : null);
 
   const fallbackName = emailKey.includes("@") && emailKey !== "user@example.com"
     ? emailKey.split("@")[0]
@@ -116,18 +164,32 @@ export function saveUserProfile(userData: Partial<User> & { email?: string; id?:
   }
 
   const now = new Date().toISOString();
+
+  // Preserve existing password if not provided in this update
+  const password = userData.password !== undefined
+    ? userData.password
+    : existing?.password;
+
+  const passwordHash = userData.password !== undefined
+    ? hashPassword(userData.password)
+    : userData.passwordHash !== undefined
+      ? userData.passwordHash
+      : existing?.passwordHash;
+
   const updated: StoredUserProfile = {
     id: userData.id || existing?.id || `u-${Date.now()}`,
     name: resolvedName,
     email: userData.email || existing?.email || "user@example.com",
-    avatar: userData.avatar !== undefined ? userData.avatar : existing?.avatar || "",
-    bio: userData.bio !== undefined ? userData.bio : existing?.bio || "",
-    division: userData.division !== undefined ? userData.division : existing?.division || "",
-    district: userData.district !== undefined ? userData.district : existing?.district || "",
-    area: userData.area !== undefined ? userData.area : existing?.area || "",
+    avatar: (userData.avatar && userData.avatar.trim()) ? userData.avatar : (existing?.avatar || userData.avatar || ""),
+    bio: (userData.bio && userData.bio.trim()) ? userData.bio : (existing?.bio || userData.bio || ""),
+    division: (userData.division && userData.division.trim()) ? userData.division : (existing?.division || userData.division || ""),
+    district: (userData.district && userData.district.trim()) ? userData.district : (existing?.district || userData.district || ""),
+    area: (userData.area && userData.area.trim()) ? userData.area : (existing?.area || userData.area || ""),
     role: (userData.role || existing?.role || "user") as "user" | "admin",
     createdAt: existing?.createdAt || now,
     updatedAt: now,
+    password,
+    passwordHash,
   };
 
   global.__GLOBAL_USER_PROFILES__[emailKey] = updated;

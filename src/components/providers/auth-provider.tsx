@@ -26,20 +26,29 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       .then(({ data }) => {
         if (!cancelled && data?.user?.id) {
           const currentStoreUser = useAuthStore.getState().user;
-          const emailPrefix = (data.user.email || currentStoreUser?.email || "").split("@")[0];
-          const serverName = (data.user.name || "").trim();
+          let profileStorageUser: Partial<User> | null = null;
+          let authStorageUser: Partial<User> | null = null;
 
-          let clientName = (currentStoreUser?.name || "").trim();
-          if ((!clientName || clientName === emailPrefix || clientName === "উদ্যোক্তা") && typeof window !== "undefined") {
+          if (typeof window !== "undefined") {
             try {
-              const raw = localStorage.getItem("bhbd_user_profile");
-              if (raw) {
-                const p = JSON.parse(raw);
-                if (p?.name && p.name !== "উদ্যোক্তা" && p.name !== emailPrefix) {
-                  clientName = p.name;
-                }
+              const rawProfile = localStorage.getItem("bhbd_user_profile");
+              if (rawProfile) profileStorageUser = JSON.parse(rawProfile);
+            } catch {}
+            try {
+              const rawAuth = localStorage.getItem("bhbd-auth");
+              if (rawAuth) {
+                const parsed = JSON.parse(rawAuth);
+                if (parsed?.state?.user) authStorageUser = parsed.state.user;
               }
             } catch {}
+          }
+
+          const emailPrefix = (data.user.email || currentStoreUser?.email || profileStorageUser?.email || "").split("@")[0];
+          const serverName = (data.user.name || "").trim();
+
+          let clientName = (currentStoreUser?.name || profileStorageUser?.name || authStorageUser?.name || "").trim();
+          if (clientName === "উদ্যোক্তা" || clientName === emailPrefix) {
+            clientName = "";
           }
 
           // If client has a valid custom name, don't let a fallback email prefix wipe it out
@@ -50,9 +59,24 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             }
           }
 
+          // Merge fields carefully: preserve non-empty values from client if server returns empty/undefined
+          const pickField = (serverVal?: string | null, fieldKey?: keyof User) => {
+            if (serverVal && serverVal.trim()) return serverVal;
+            const clientVal =
+              (fieldKey && currentStoreUser?.[fieldKey]) ||
+              (fieldKey && profileStorageUser?.[fieldKey]) ||
+              (fieldKey && authStorageUser?.[fieldKey]);
+            return (typeof clientVal === "string" && clientVal.trim()) ? clientVal : (serverVal || "");
+          };
+
           const finalUser: User = {
             ...data.user,
             name: resolvedName || serverName || clientName || emailPrefix || "ব্যবহারকারী",
+            bio: pickField(data.user.bio, "bio"),
+            division: pickField(data.user.division, "division"),
+            district: pickField(data.user.district, "district"),
+            area: pickField(data.user.area, "area"),
+            avatar: pickField(data.user.avatar, "avatar"),
           };
 
           setUser(finalUser);

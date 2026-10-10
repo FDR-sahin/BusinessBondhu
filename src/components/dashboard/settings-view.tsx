@@ -140,22 +140,30 @@ function PasswordSection() {
   const pw = watch("password");
 
   const { mutate, isPending, error } = useMutation({
-    mutationFn: (v: ChangePasswordValues) => api.put("/me/password", { currentPassword: v.currentPassword, newPassword: v.password }),
-    onSuccess: () => { toast.success(isEn ? "Password changed successfully" : "পাসওয়ার্ড বদলানো হয়েছে"); reset(); },
+    mutationFn: (v: ChangePasswordValues) =>
+      api.put("/me/password", {
+        currentPassword: v.currentPassword,
+        newPassword: v.password,
+        confirmPassword: v.confirmPassword,
+      }),
+    onSuccess: () => {
+      toast.success(isEn ? "Password changed successfully" : "পাসওয়ার্ড বদলানো হয়েছে");
+      reset();
+    },
     onError: (e) => {
       const fields = getFieldErrors(e);
       if (fields.currentPassword) setError("currentPassword", { message: fields.currentPassword });
     },
   });
 
-  // 400/403 from the API are treated as "wrong current password"
+  const apiMsg = (error as any)?.response?.data?.message;
   const wrongCurrent = (error as { response?: { status?: number } } | null)?.response?.status;
   const message = error
-    ? wrongCurrent === 400 || wrongCurrent === 403
+    ? apiMsg || (wrongCurrent === 400 || wrongCurrent === 403
       ? isEn
         ? "Current password is incorrect."
         : "বর্তমান পাসওয়ার্ড সঠিক নয়।"
-      : getErrorMessage(error)
+      : getErrorMessage(error))
     : null;
 
   return (

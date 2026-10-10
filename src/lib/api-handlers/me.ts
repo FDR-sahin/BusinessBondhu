@@ -1,8 +1,9 @@
 import { NextResponse } from "next/server";
 import { getUserPosts, findUserPost } from "@/lib/user-posts-store";
-import { getUserProfile, saveUserProfile, getCookieValue } from "@/lib/user-profile-store";
+import { getUserProfile, saveUserProfile, getCookieValue, sanitizeUser } from "@/lib/user-profile-store";
 import { getUserBlogs, findUserBlog } from "@/lib/user-blogs-store";
 import { handleBlogDelete } from "./blog";
+export { handleMePasswordPut } from "./auth";
 
 export async function handleMeDelete() {
   return NextResponse.json({
@@ -20,6 +21,18 @@ export async function handleMeProfileGet(request: Request) {
   const rawHeaderName = request.headers.get("x-user-name");
   const headerName = rawHeaderName ? decodeURIComponent(rawHeaderName).trim() : "";
   const cookieName = (getCookieValue(request, "bhbd_user_name") || "").trim();
+
+  const cookieDivision = (getCookieValue(request, "bhbd_user_division") || "").trim();
+  const cookieDistrict = (getCookieValue(request, "bhbd_user_district") || "").trim();
+  const cookieArea = (getCookieValue(request, "bhbd_user_area") || "").trim();
+  const cookieBio = (getCookieValue(request, "bhbd_user_bio") || "").trim();
+
+  const rawHeaderDivision = request.headers.get("x-user-division");
+  const headerDivision = rawHeaderDivision ? decodeURIComponent(rawHeaderDivision).trim() : "";
+  const rawHeaderDistrict = request.headers.get("x-user-district");
+  const headerDistrict = rawHeaderDistrict ? decodeURIComponent(rawHeaderDistrict).trim() : "";
+  const rawHeaderArea = request.headers.get("x-user-area");
+  const headerArea = rawHeaderArea ? decodeURIComponent(rawHeaderArea).trim() : "";
 
   const existing = getUserProfile(email) || getUserProfile(id) || getUserProfile();
   const emailPrefix = email ? email.split("@")[0] : "ব্যবহারকারী";
@@ -39,6 +52,11 @@ export async function handleMeProfileGet(request: Request) {
     resolvedName = cookieName;
   }
 
+  const division = existing?.division || headerDivision || cookieDivision || "";
+  const district = existing?.district || headerDistrict || cookieDistrict || "";
+  const area = existing?.area || headerArea || cookieArea || "";
+  const bio = existing?.bio || cookieBio || "";
+
   const user = {
     id: existing?.id || id || `u-${Date.now()}`,
     name: resolvedName,
@@ -46,23 +64,36 @@ export async function handleMeProfileGet(request: Request) {
     role: (existing?.role || "user") as "user" | "admin",
     createdAt: existing?.createdAt || new Date().toISOString(),
     avatar: existing?.avatar || "",
-    bio: existing?.bio || "",
-    division: existing?.division || "",
-    district: existing?.district || "",
-    area: existing?.area || "",
+    bio,
+    division,
+    district,
+    area,
   };
 
   if (email) {
     saveUserProfile(user);
   }
 
-  const res = NextResponse.json({ user });
+  const res = NextResponse.json({ user: sanitizeUser(user as any) });
+  const maxAge = 60 * 60 * 24 * 30;
   if (resolvedName && resolvedName !== emailPrefix) {
     res.cookies.set("bhbd_user_name", encodeURIComponent(resolvedName), {
       path: "/",
-      maxAge: 60 * 60 * 24 * 30,
+      maxAge,
       sameSite: "lax",
     });
+  }
+  if (division) {
+    res.cookies.set("bhbd_user_division", encodeURIComponent(division), { path: "/", maxAge, sameSite: "lax" });
+  }
+  if (district) {
+    res.cookies.set("bhbd_user_district", encodeURIComponent(district), { path: "/", maxAge, sameSite: "lax" });
+  }
+  if (area) {
+    res.cookies.set("bhbd_user_area", encodeURIComponent(area), { path: "/", maxAge, sameSite: "lax" });
+  }
+  if (bio) {
+    res.cookies.set("bhbd_user_bio", encodeURIComponent(bio), { path: "/", maxAge, sameSite: "lax" });
   }
   return res;
 }
@@ -77,30 +108,54 @@ export async function handleMeProfilePut(request: Request) {
     const email = (body.email || emailHeader || cookieEmail || "user@example.com").toLowerCase().trim();
     const id = body.id || idHeader;
 
+    const cookieDivision = (getCookieValue(request, "bhbd_user_division") || "").trim();
+    const cookieDistrict = (getCookieValue(request, "bhbd_user_district") || "").trim();
+    const cookieArea = (getCookieValue(request, "bhbd_user_area") || "").trim();
+    const cookieBio = (getCookieValue(request, "bhbd_user_bio") || "").trim();
+
+    const existing = getUserProfile(email) || getUserProfile(id);
+
     const rawName = (body.name || "").trim();
     const emailPrefix = email.includes("@") ? email.split("@")[0] : "ব্যবহারকারী";
     const name = rawName && rawName !== "উদ্যোক্তা" ? rawName : emailPrefix;
 
+    const division = body.division !== undefined ? body.division : (existing?.division || cookieDivision || "");
+    const district = body.district !== undefined ? body.district : (existing?.district || cookieDistrict || "");
+    const area = body.area !== undefined ? body.area : (existing?.area || cookieArea || "");
+    const bio = body.bio !== undefined ? body.bio : (existing?.bio || cookieBio || "");
+    const avatar = body.avatar !== undefined ? body.avatar : (existing?.avatar || "");
+
     const saved = saveUserProfile({
+      ...existing,
       ...body,
       id,
       email,
       name,
+      division,
+      district,
+      area,
+      bio,
+      avatar,
     });
 
-    const res = NextResponse.json({ user: saved });
+    const res = NextResponse.json({ user: sanitizeUser(saved) });
+    const maxAge = 60 * 60 * 24 * 30;
     res.cookies.set("bhbd_user_name", encodeURIComponent(saved.name), {
       path: "/",
-      maxAge: 60 * 60 * 24 * 30,
+      maxAge,
       sameSite: "lax",
     });
     if (email && email !== "user@example.com") {
       res.cookies.set("bhbd_user_email", email, {
         path: "/",
-        maxAge: 60 * 60 * 24 * 30,
+        maxAge,
         sameSite: "lax",
       });
     }
+    res.cookies.set("bhbd_user_division", encodeURIComponent(saved.division || ""), { path: "/", maxAge, sameSite: "lax" });
+    res.cookies.set("bhbd_user_district", encodeURIComponent(saved.district || ""), { path: "/", maxAge, sameSite: "lax" });
+    res.cookies.set("bhbd_user_area", encodeURIComponent(saved.area || ""), { path: "/", maxAge, sameSite: "lax" });
+    res.cookies.set("bhbd_user_bio", encodeURIComponent(saved.bio || ""), { path: "/", maxAge, sameSite: "lax" });
 
     return res;
   } catch (err: any) {
