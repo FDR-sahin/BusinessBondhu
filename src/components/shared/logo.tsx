@@ -18,7 +18,7 @@ export function Logo({ className, showText = true }: { className?: string; showT
         className
       )}
     >
-      <div className="relative flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-surface p-1 shadow-sm border border-line/60 dark:border-line group-hover:border-green/40 transition-colors">
+      <div className="relative flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-white dark:bg-white/10 p-1.5 shadow-sm border border-line/60 dark:border-white/20 group-hover:border-green/50 transition-colors">
         <Image
           src="/images/biz-logo.png"
           alt="Business Idea Zone Logo"
@@ -32,10 +32,10 @@ export function Logo({ className, showText = true }: { className?: string; showT
       {showText && (
         <div className="flex flex-col leading-none select-none">
           <div className="flex items-center gap-1.5">
-            <span className="font-display text-lg font-black tracking-tight text-ink dark:text-surface">
+            <span className="font-display text-lg font-black tracking-tight text-ink">
               {lang === "bn" ? "বিজনেস" : "BUSINESS"}
             </span>
-            <span className="rounded-full bg-red-600/10 border border-red-600/20 px-1.5 py-0.5 font-mono text-[9.5px] font-extrabold tracking-widest text-red-600 dark:bg-red-500/20 dark:text-red-400 dark:border-red-500/30 shadow-2xs">
+            <span className="rounded-full bg-red-600/10 border border-red-600/20 px-1.5 py-0.5 font-mono text-[9.5px] font-extrabold tracking-widest text-red-600 dark:bg-red-500/20 dark:text-red-400 dark:border-red-500/40 shadow-2xs">
               BD
             </span>
           </div>
@@ -47,4 +47,5 @@ export function Logo({ className, showText = true }: { className?: string; showT
     </Link>
   );
 }
+
 
