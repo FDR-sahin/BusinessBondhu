@@ -4,6 +4,7 @@ import { cache } from "react";
 import { PostDetailView } from "@/components/post/post-detail-view";
 import { MOCK_POSTS } from "@/lib/mock-data";
 import { getDistrictLabel } from "@/lib/bd-data";
+import { findUserPost } from "@/lib/user-posts-store";
 import type { PostDetail } from "@/types";
 
 interface PageProps {
@@ -80,7 +81,36 @@ const getPost = cache(async (id: string): Promise<{ post: PostDetail | null; mis
     console.error("Failed to fetch post detail:", err);
   }
 
-  // 2. Fallback to local MOCK_POSTS if backend doesn't have it
+  // 2. Check local user store
+  const localPost = findUserPost(decodedId);
+  if (localPost) {
+    const districtName = (localPost.district ? getDistrictLabel(localPost.district) : undefined) || localPost.district || "ঢাকা";
+    const exactLoc = localPost.exactLocation || `${districtName}, Bangladesh`;
+    return {
+      post: {
+        ...localPost,
+        id: String(localPost.id),
+        _id: String(localPost.id),
+        district: districtName,
+        exactLocation: exactLoc,
+        retailSellPrice: localPost.retailSellPrice ?? localPost.retailPrice,
+        profitPotential: (localPost.profitPotential || "medium") as any,
+        tags: localPost.tags || [],
+        author: {
+          id: localPost.author?.id || "user",
+          name: localPost.author?.name || "উদ্যোক্তা",
+          avatar: "/images/avatars/default.jpg",
+        },
+        likesCount: localPost.likesCount || 0,
+        dislikesCount: localPost.dislikesCount || 0,
+        viewsCount: localPost.viewsCount || 1,
+        commentsCount: localPost.commentsCount || 0,
+      } as PostDetail,
+      missing: false,
+    };
+  }
+
+  // 3. Fallback to local MOCK_POSTS if backend doesn't have it
   const localFound = MOCK_POSTS.find((p) => String(p.id) === decodedId || String((p as any)._id) === decodedId);
   if (localFound) {
     const districtName = getDistrictLabel(localFound.district) || localFound.district;

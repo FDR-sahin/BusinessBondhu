@@ -20,13 +20,35 @@ export function usePost(id: string, initialData?: PostDetail) {
   });
 }
 
-/** GET /posts/:id/me -> { reaction, saved }. Only for logged-in users. */
+/** GET /posts/:id/me -> { reaction, saved }. */
 export function usePostViewer(id: string) {
-  const authed = useIsAuthenticated();
   return useQuery({
     queryKey: viewerKey(id),
-    queryFn: async () => (await api.get<PostViewerState>(`/posts/${id}/me`)).data,
-    enabled: authed,
+    queryFn: async () => {
+      try {
+        const res = await api.get<PostViewerState>(`/posts/${id}/me`);
+        if (res.data?.reaction && typeof window !== "undefined") {
+          localStorage.setItem(`reaction_${id}`, res.data.reaction);
+        }
+        return res.data;
+      } catch {
+        // Fallback to localStorage if offline or guest
+      }
+      if (typeof window !== "undefined") {
+        const local = localStorage.getItem(`reaction_${id}`) as "like" | "dislike" | null;
+        const saved = localStorage.getItem(`saved_${id}`) === "true";
+        if (local) return { reaction: local, saved };
+      }
+      return { reaction: null, saved: false };
+    },
+    initialData: () => {
+      if (typeof window !== "undefined") {
+        const local = localStorage.getItem(`reaction_${id}`) as "like" | "dislike" | null;
+        const saved = localStorage.getItem(`saved_${id}`) === "true";
+        if (local) return { reaction: local, saved };
+      }
+      return undefined;
+    },
   });
 }
 
@@ -72,11 +94,19 @@ export function useReaction(id: string) {
       const before = prevViewer.reaction;
       const after = before === target ? null : target; // tapping the active one removes it
 
+      if (typeof window !== "undefined") {
+        if (after) {
+          localStorage.setItem(`reaction_${id}`, after);
+        } else {
+          localStorage.removeItem(`reaction_${id}`);
+        }
+      }
+
       if (prevPost) {
         qc.setQueryData<PostDetail>(postKey(id), {
           ...prevPost,
-          likesCount: prevPost.likesCount - (before === "like" ? 1 : 0) + (after === "like" ? 1 : 0),
-          dislikesCount: prevPost.dislikesCount - (before === "dislike" ? 1 : 0) + (after === "dislike" ? 1 : 0),
+          likesCount: Math.max(0, prevPost.likesCount - (before === "like" ? 1 : 0) + (after === "like" ? 1 : 0)),
+          dislikesCount: Math.max(0, prevPost.dislikesCount - (before === "dislike" ? 1 : 0) + (after === "dislike" ? 1 : 0)),
         });
       }
       qc.setQueryData<PostViewerState>(viewerKey(id), { ...prevViewer, reaction: after });
@@ -85,7 +115,16 @@ export function useReaction(id: string) {
 
     onError: (error, _target, ctx) => {
       if (ctx?.prevPost) qc.setQueryData(postKey(id), ctx.prevPost);
-      if (ctx?.prevViewer) qc.setQueryData(viewerKey(id), ctx.prevViewer);
+      if (ctx?.prevViewer) {
+        qc.setQueryData(viewerKey(id), ctx.prevViewer);
+        if (typeof window !== "undefined") {
+          if (ctx.prevViewer.reaction) {
+            localStorage.setItem(`reaction_${id}`, ctx.prevViewer.reaction);
+          } else {
+            localStorage.removeItem(`reaction_${id}`);
+          }
+        }
+      }
       toast.error(getErrorMessage(error));
     },
 
