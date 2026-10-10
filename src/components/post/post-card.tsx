@@ -3,7 +3,6 @@
 import { motion } from "framer-motion";
 import { Heart, MapPin, ArrowRight } from "lucide-react";
 import Link from "next/link";
-import { UserAvatar } from "@/components/ui/avatar";
 import { getDistrictLabel } from "@/lib/bd-data";
 import { getCategory } from "@/lib/constants";
 import { formatBDT, toFormattedNumber } from "@/lib/utils";
@@ -97,7 +96,6 @@ export function PostCard({ post }: { post: Post }) {
         {/* Footer: Author, Profit Badge & Stats */}
         <div className="mt-auto flex items-center justify-between gap-2 text-xs">
           <div className="flex items-center gap-2 min-w-0">
-            <UserAvatar name={post.author.name} className="h-6 w-6 text-[10px]" />
             <span className="truncate font-medium text-ink/80">{post.author.name}</span>
           </div>
 
