@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { formatPriceRange } from "@/lib/utils";
 
 export type BusinessIdea = {
   _id?: string;
@@ -12,7 +13,11 @@ export type BusinessIdea = {
   area?: string;
   exactLocation: string;
   wholesalePrice: number;
+  wholesalePriceMax?: number;
+  wholesalePriceText?: string;
   retailPrice: number;
+  retailPriceMax?: number;
+  retailPriceText?: string;
   retailSellPrice?: number;
   profit?: number;
   profitPotential?: string;
@@ -218,7 +223,7 @@ export function BusinessIdeaSection({ lang = "bn" }: Props) {
                 </p>
 
                 <p className="mt-2 text-2xl font-bold">
-                  {money(idea.wholesalePrice)}
+                  {formatPriceRange(idea.wholesalePrice, idea.wholesalePriceMax, idea.wholesalePriceText, lang)}
                 </p>
               </div>
 
@@ -228,7 +233,7 @@ export function BusinessIdeaSection({ lang = "bn" }: Props) {
                 </p>
 
                 <p className="mt-2 text-2xl font-bold">
-                  {money(idea.retailSellPrice ?? idea.retailPrice)}
+                  {formatPriceRange(idea.retailPrice, idea.retailPriceMax, idea.retailPriceText, lang)}
                 </p>
               </div>
 
@@ -436,7 +441,7 @@ export function BusinessIdeaSection({ lang = "bn" }: Props) {
                   </p>
 
                   <p className="mt-1 font-bold">
-                    {money(item.wholesalePrice)}
+                    {formatPriceRange(item.wholesalePrice, item.wholesalePriceMax, item.wholesalePriceText, lang)}
                   </p>
                 </div>
 
@@ -446,7 +451,7 @@ export function BusinessIdeaSection({ lang = "bn" }: Props) {
                   </p>
 
                   <p className="mt-1 font-bold">
-                    {money(item.retailSellPrice ?? item.retailPrice)}
+                    {formatPriceRange(item.retailPrice, item.retailPriceMax, item.retailPriceText, lang)}
                   </p>
                 </div>
               </div>
