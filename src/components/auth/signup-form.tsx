@@ -43,16 +43,21 @@ export function SignupForm() {
       const { confirmPassword: _omit, ...body } = v;
       return (await api.post<AuthResponse>("/auth/signup", body)).data;
     },
-    onSuccess: (data) => {
-      login({ ...data, remember: true });
+    onSuccess: (data, v) => {
+      const typedName = (v.name || "").trim();
+      const resolvedName = (typedName && typedName !== "উদ্যোক্তা" ? typedName : "") || data.user.name;
+      const user = { ...data.user, name: resolvedName };
+      login({ ...data, user, remember: true });
       if (typeof window !== "undefined") {
         try {
-          localStorage.setItem("bhbd_user_profile", JSON.stringify(data.user));
+          localStorage.setItem("bhbd_user_profile", JSON.stringify(user));
+          document.cookie = `bhbd_user_name=${encodeURIComponent(user.name)}; Path=/; Max-Age=2592000; SameSite=Lax`;
+          document.cookie = `bhbd_user_email=${encodeURIComponent(user.email)}; Path=/; Max-Age=2592000; SameSite=Lax`;
         } catch (e) {
           console.error(e);
         }
       }
-      toast.success(lang === "bn" ? `অ্যাকাউন্ট তৈরি হয়েছে। স্বাগতম, ${data.user.name}!` : `Account created. Welcome, ${data.user.name}!`);
+      toast.success(lang === "bn" ? `অ্যাকাউন্ট তৈরি হয়েছে। স্বাগতম, ${user.name}!` : `Account created. Welcome, ${user.name}!`);
       go();
     },
     onError: (e) => {

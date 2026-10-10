@@ -11,6 +11,7 @@ const newPassword = z
   .regex(/\d/, "পাসওয়ার্ডে অন্তত একটি সংখ্যা থাকতে হবে");
 
 export const loginSchema = z.object({
+  name: z.string().trim().max(60).optional(),
   email,
   password: z.string().min(1, "পাসওয়ার্ড দিন"),
   remember: z.boolean(),

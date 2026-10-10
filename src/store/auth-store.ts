@@ -22,6 +22,22 @@ function syncCookie(token: string | null, remember: boolean) {
     : `${AUTH_COOKIE}=; Path=/; Max-Age=0; SameSite=Lax${secure}`;
 }
 
+function syncUserCookies(user: User | null, remember: boolean) {
+  if (typeof document === "undefined") return;
+  const secure = window.location.protocol === "https:" ? "; Secure" : "";
+  const maxAgeStr = remember ? `Max-Age=${REMEMBER_MAX_AGE}; ` : "";
+  if (user?.name) {
+    document.cookie = `bhbd_user_name=${encodeURIComponent(user.name)}; Path=/; ${maxAgeStr}SameSite=Lax${secure}`;
+  } else {
+    document.cookie = `bhbd_user_name=; Path=/; Max-Age=0; SameSite=Lax${secure}`;
+  }
+  if (user?.email) {
+    document.cookie = `bhbd_user_email=${encodeURIComponent(user.email)}; Path=/; ${maxAgeStr}SameSite=Lax${secure}`;
+  } else {
+    document.cookie = `bhbd_user_email=; Path=/; Max-Age=0; SameSite=Lax${secure}`;
+  }
+}
+
 const hasAuthCookie = () =>
   typeof document !== "undefined" && document.cookie.split("; ").some((c) => c.startsWith(`${AUTH_COOKIE}=`) && c.length > AUTH_COOKIE.length + 1);
 
@@ -52,6 +68,7 @@ export const useAuthStore = create<AuthState>()(
 
       login: ({ user, accessToken, refreshToken, remember = false }) => {
         syncCookie(accessToken, remember);
+        syncUserCookies(user, remember);
         set({ user, accessToken, refreshToken, remember });
       },
 
@@ -60,10 +77,14 @@ export const useAuthStore = create<AuthState>()(
         set((s) => ({ accessToken, refreshToken: refreshToken ?? s.refreshToken }));
       },
 
-      setUser: (user) => set({ user }),
+      setUser: (user) => {
+        syncUserCookies(user, get().remember);
+        set({ user });
+      },
 
       logout: () => {
         syncCookie(null, false);
+        syncUserCookies(null, false);
         set({ user: null, accessToken: null, refreshToken: null, remember: false });
       },
 
@@ -76,8 +97,12 @@ export const useAuthStore = create<AuthState>()(
       onRehydrateStorage: () => (state) => {
         if (!state) return;
         // Session-only login whose browser was closed: the cookie is gone, so end the session.
-        if (state.accessToken && !state.remember && !hasAuthCookie()) state.logout();
-        else syncCookie(state.accessToken, state.remember);
+        if (state.accessToken && !state.remember && !hasAuthCookie()) {
+          state.logout();
+        } else {
+          syncCookie(state.accessToken, state.remember);
+          if (state.user) syncUserCookies(state.user, state.remember);
+        }
         state.setHasHydrated(true);
       },
     },

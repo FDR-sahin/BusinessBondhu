@@ -189,12 +189,22 @@ export function handleMockFallback(config?: AxiosRequestConfig): AxiosResponse |
 
     const isPut = config.method?.toLowerCase() === "put" || Object.keys(body).length > 0;
 
+    let cookieName = "";
+    if (typeof document !== "undefined") {
+      const match = document.cookie.match(/(?:^|;\s*)bhbd_user_name=([^;]*)/);
+      if (match) cookieName = decodeURIComponent(match[1]).trim();
+    }
+
     const fallbackName = (body.email || storedUser?.email)
       ? (body.email || storedUser?.email).split("@")[0]
       : "ব্যবহারকারী";
 
-    const resolvedName = (isPut && body.name && body.name !== "উদ্যোক্তা" ? body.name : "") ||
-      (storedUser?.name && storedUser.name !== "উদ্যোক্তা" ? storedUser.name : "") ||
+    const resolvedName = (isPut && body.name && body.name !== "উদ্যোক্তা" && body.name !== fallbackName ? body.name.trim() : "") ||
+      (storedUser?.name && storedUser.name !== "উদ্যোক্তা" && storedUser.name !== fallbackName ? storedUser.name.trim() : "") ||
+      (cookieName && cookieName !== "উদ্যোক্তা" && cookieName !== fallbackName ? cookieName : "") ||
+      (isPut && body.name && body.name !== "উদ্যোক্তা" ? body.name.trim() : "") ||
+      (storedUser?.name && storedUser.name !== "উদ্যোক্তা" ? storedUser.name.trim() : "") ||
+      cookieName ||
       fallbackName;
 
     const user = {

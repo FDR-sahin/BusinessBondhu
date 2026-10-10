@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { getUserPosts, findUserPost } from "@/lib/user-posts-store";
-import { getUserProfile, saveUserProfile } from "@/lib/user-profile-store";
+import { getUserProfile, saveUserProfile, getCookieValue } from "@/lib/user-profile-store";
 import { getUserBlogs, findUserBlog } from "@/lib/user-blogs-store";
 import { handleBlogDelete } from "./blog";
 
@@ -12,42 +12,97 @@ export async function handleMeDelete() {
 }
 
 export async function handleMeProfileGet(request: Request) {
-  const email = request.headers.get("x-user-email") || undefined;
+  const emailHeader = request.headers.get("x-user-email");
+  const cookieEmail = getCookieValue(request, "bhbd_user_email");
+  const email = (emailHeader || cookieEmail || "").toLowerCase().trim() || undefined;
   const id = request.headers.get("x-user-id") || undefined;
 
-  const existing = getUserProfile(email) || getUserProfile(id) || getUserProfile();
+  const rawHeaderName = request.headers.get("x-user-name");
+  const headerName = rawHeaderName ? decodeURIComponent(rawHeaderName).trim() : "";
+  const cookieName = (getCookieValue(request, "bhbd_user_name") || "").trim();
 
-  if (existing) {
-    return NextResponse.json({ user: existing });
+  const existing = getUserProfile(email) || getUserProfile(id) || getUserProfile();
+  const emailPrefix = email ? email.split("@")[0] : "ব্যবহারকারী";
+
+  let resolvedName = emailPrefix;
+  if (existing?.name && existing.name !== "উদ্যোক্তা" && existing.name !== emailPrefix) {
+    resolvedName = existing.name;
+  } else if (headerName && headerName !== "উদ্যোক্তা" && headerName !== emailPrefix) {
+    resolvedName = headerName;
+  } else if (cookieName && cookieName !== "উদ্যোক্তা" && cookieName !== emailPrefix) {
+    resolvedName = cookieName;
+  } else if (existing?.name && existing.name !== "উদ্যোক্তা") {
+    resolvedName = existing.name;
+  } else if (headerName && headerName !== "উদ্যোক্তা") {
+    resolvedName = headerName;
+  } else if (cookieName && cookieName !== "উদ্যোক্তা") {
+    resolvedName = cookieName;
   }
 
-  const defaultUser = {
-    id: id || `u-${Date.now()}`,
-    name: email ? email.split("@")[0] : "ব্যবহারকারী",
-    email: email || "user@example.com",
-    role: "user" as const,
-    createdAt: new Date().toISOString(),
+  const user = {
+    id: existing?.id || id || `u-${Date.now()}`,
+    name: resolvedName,
+    email: existing?.email || email || "user@example.com",
+    role: (existing?.role || "user") as "user" | "admin",
+    createdAt: existing?.createdAt || new Date().toISOString(),
+    avatar: existing?.avatar || "",
+    bio: existing?.bio || "",
+    division: existing?.division || "",
+    district: existing?.district || "",
+    area: existing?.area || "",
   };
 
-  return NextResponse.json({ user: defaultUser });
+  if (email) {
+    saveUserProfile(user);
+  }
+
+  const res = NextResponse.json({ user });
+  if (resolvedName && resolvedName !== emailPrefix) {
+    res.cookies.set("bhbd_user_name", encodeURIComponent(resolvedName), {
+      path: "/",
+      maxAge: 60 * 60 * 24 * 30,
+      sameSite: "lax",
+    });
+  }
+  return res;
 }
 
 export async function handleMeProfilePut(request: Request) {
   try {
     const body = await request.json();
     const emailHeader = request.headers.get("x-user-email");
+    const cookieEmail = getCookieValue(request, "bhbd_user_email");
     const idHeader = request.headers.get("x-user-id");
 
-    const email = body.email || emailHeader || "user@example.com";
+    const email = (body.email || emailHeader || cookieEmail || "user@example.com").toLowerCase().trim();
     const id = body.id || idHeader;
+
+    const rawName = (body.name || "").trim();
+    const emailPrefix = email.includes("@") ? email.split("@")[0] : "ব্যবহারকারী";
+    const name = rawName && rawName !== "উদ্যোক্তা" ? rawName : emailPrefix;
 
     const saved = saveUserProfile({
       ...body,
       id,
       email,
+      name,
     });
 
-    return NextResponse.json({ user: saved });
+    const res = NextResponse.json({ user: saved });
+    res.cookies.set("bhbd_user_name", encodeURIComponent(saved.name), {
+      path: "/",
+      maxAge: 60 * 60 * 24 * 30,
+      sameSite: "lax",
+    });
+    if (email && email !== "user@example.com") {
+      res.cookies.set("bhbd_user_email", email, {
+        path: "/",
+        maxAge: 60 * 60 * 24 * 30,
+        sameSite: "lax",
+      });
+    }
+
+    return res;
   } catch (err: any) {
     return NextResponse.json({ message: err.message || "প্রোফাইল আপডেট করতে সমস্যা হয়েছে।" }, { status: 400 });
   }

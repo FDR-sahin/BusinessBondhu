@@ -32,14 +32,24 @@ const defaultUser: User = {
   createdAt: new Date().toISOString(),
 };
 
-const toValues = (u?: User | null): ProfileValues => ({
-  name: (u?.name && u.name !== "উদ্যোক্তা" ? u.name : (u?.email ? u.email.split("@")[0] : "ব্যবহারকারী")),
-  bio: u?.bio ?? "",
-  division: u?.division ?? "",
-  district: u?.district ?? "",
-  area: u?.area ?? "",
-  avatar: u?.avatar ?? "",
-});
+const toValues = (u?: User | null, customFallbackName?: string): ProfileValues => {
+  const emailPrefix = u?.email ? u.email.split("@")[0] : "";
+  let name = u?.name && u.name !== "উদ্যোক্তা" ? u.name : "";
+  if ((!name || name === emailPrefix) && customFallbackName && customFallbackName !== emailPrefix && customFallbackName !== "উদ্যোক্তা") {
+    name = customFallbackName;
+  }
+  if (!name && emailPrefix) name = emailPrefix;
+  if (!name) name = "ব্যবহারকারী";
+
+  return {
+    name,
+    bio: u?.bio ?? "",
+    division: u?.division ?? "",
+    district: u?.district ?? "",
+    area: u?.area ?? "",
+    avatar: u?.avatar ?? "",
+  };
+};
 
 export function ProfileView() {
   const storeUser = useAuthStore((s) => s.user);
@@ -56,7 +66,7 @@ export function ProfileView() {
         const raw = localStorage.getItem("bhbd_user_profile");
         if (raw) {
           const parsed = JSON.parse(raw);
-          if (parsed?.name) setLocalProfile(parsed);
+          if (parsed?.name && parsed.name !== "উদ্যোক্তা") setLocalProfile(parsed);
         }
       } catch (e) {
         console.error(e);
@@ -65,8 +75,9 @@ export function ProfileView() {
   }, []);
 
   const user = storeUser || localProfile || defaultUser;
+  const customFallback = localProfile?.name && localProfile.name !== "উদ্যোক্তা" ? localProfile.name : undefined;
 
-  const values = useMemo(() => toValues(user), [user]);
+  const values = useMemo(() => toValues(user, customFallback), [user, customFallback]);
   const { register, control, handleSubmit, setValue, setError, watch, reset, formState: { errors, isDirty } } = useForm<ProfileValues>({
     resolver: zodResolver(profileSchema),
     defaultValues: values,
@@ -80,9 +91,14 @@ export function ProfileView() {
   const { mutate, isPending, error } = useMutation({
     mutationFn: async (body: ProfileValues) => {
       const res = await api.put<{ user?: User; message?: string }>("/me/profile", body);
+      const emailPrefix = user.email ? user.email.split("@")[0] : "ব্যবহারকারী";
+      const resolvedName = (body.name?.trim() && body.name.trim() !== "উদ্যোক্তা" ? body.name.trim() : "") ||
+        (user.name && user.name !== "উদ্যোক্তা" ? user.name : "") ||
+        emailPrefix;
+
       const updatedUser: User = res.data?.user || {
         id: user.id || "u-1",
-        name: body.name || (user.name && user.name !== "উদ্যোক্তা" ? user.name : (user.email ? user.email.split("@")[0] : "ব্যবহারকারী")),
+        name: resolvedName,
         email: user.email || "user@example.com",
         bio: body.bio,
         division: body.division,
@@ -101,6 +117,8 @@ export function ProfileView() {
         if (typeof window !== "undefined") {
           try {
             localStorage.setItem("bhbd_user_profile", JSON.stringify(updated));
+            document.cookie = `bhbd_user_name=${encodeURIComponent(updated.name)}; Path=/; Max-Age=2592000; SameSite=Lax`;
+            document.cookie = `bhbd_user_email=${encodeURIComponent(updated.email)}; Path=/; Max-Age=2592000; SameSite=Lax`;
           } catch (e) {
             console.error(e);
           }

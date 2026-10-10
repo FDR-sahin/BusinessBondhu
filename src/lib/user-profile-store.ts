@@ -47,13 +47,20 @@ function saveToDisk(profiles: Record<string, StoredUserProfile>) {
   }
 }
 
+export function getCookieValue(request: Request, name: string): string | null {
+  const cookieHeader = request.headers.get("cookie");
+  if (!cookieHeader) return null;
+  const match = cookieHeader.match(new RegExp(`(?:^|;\\s*)${name}=([^;]*)`));
+  return match ? decodeURIComponent(match[1]) : null;
+}
+
 if (!global.__GLOBAL_USER_PROFILES__) {
   global.__GLOBAL_USER_PROFILES__ = loadFromDisk();
 }
 
 export function getUserProfile(identifier?: string | null): StoredUserProfile | null {
-  if (!global.__GLOBAL_USER_PROFILES__) {
-    global.__GLOBAL_USER_PROFILES__ = {};
+  if (!global.__GLOBAL_USER_PROFILES__ || Object.keys(global.__GLOBAL_USER_PROFILES__).length === 0) {
+    global.__GLOBAL_USER_PROFILES__ = loadFromDisk();
   }
   if (!identifier) {
     const keys = Object.keys(global.__GLOBAL_USER_PROFILES__);
@@ -88,9 +95,25 @@ export function saveUserProfile(userData: Partial<User> & { email?: string; id?:
     ? emailKey.split("@")[0]
     : "ব্যবহারকারী";
 
-  const resolvedName = (userData.name && userData.name !== "উদ্যোক্তা" ? userData.name.trim() : "") ||
-    (existing?.name && existing.name !== "উদ্যোক্তা" ? existing.name.trim() : "") ||
-    fallbackName;
+  const rawName = (userData.name || "").trim();
+  const existingName = (existing?.name || "").trim();
+
+  // Resolution order:
+  // 1. Explicit rawName if given and not "উদ্যোক্তা" and not the raw email prefix
+  // 2. Existing name if valid and not "উদ্যোক্তা" and not the raw email prefix
+  // 3. rawName if not empty and not "উদ্যোক্তা"
+  // 4. existingName if not empty and not "উদ্যোক্তা"
+  // 5. fallbackName (email prefix) only as last resort
+  let resolvedName = fallbackName;
+  if (rawName && rawName !== "উদ্যোক্তা" && rawName !== fallbackName) {
+    resolvedName = rawName;
+  } else if (existingName && existingName !== "উদ্যোক্তা" && existingName !== fallbackName) {
+    resolvedName = existingName;
+  } else if (rawName && rawName !== "উদ্যোক্তা") {
+    resolvedName = rawName;
+  } else if (existingName && existingName !== "উদ্যোক্তা") {
+    resolvedName = existingName;
+  }
 
   const now = new Date().toISOString();
   const updated: StoredUserProfile = {

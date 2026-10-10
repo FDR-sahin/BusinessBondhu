@@ -31,21 +31,60 @@ export function LoginForm() {
 
   const { register, control, handleSubmit, formState: { errors } } = useForm<LoginValues>({
     resolver: zodResolver(loginSchema),
-    defaultValues: { email: "", password: "", remember: true },
+    defaultValues: { name: "", email: "", password: "", remember: true },
   });
 
   const { mutate, isPending, error } = useMutation({
-    mutationFn: async (v: LoginValues) => (await api.post<AuthResponse>("/auth/login", v)).data,
+    mutationFn: async (v: LoginValues) => {
+      let knownName = (v.name || "").trim();
+      if (!knownName && typeof window !== "undefined") {
+        try {
+          const raw = localStorage.getItem("bhbd_user_profile");
+          if (raw) {
+            const parsed = JSON.parse(raw);
+            if (parsed?.name && parsed.name !== "উদ্যোক্তা" && !parsed.name.includes("@")) {
+              knownName = parsed.name;
+            }
+          }
+        } catch {}
+      }
+      return (await api.post<AuthResponse>("/auth/login", { ...v, name: knownName || undefined })).data;
+    },
     onSuccess: (data, v) => {
-      login({ ...data, remember: v.remember });
+      const emailPrefix = (data.user.email || "").split("@")[0];
+      const typedName = (v.name || "").trim();
+      let resolvedName = data.user.name;
+
+      if (typedName && typedName !== "উদ্যোক্তা" && typedName !== emailPrefix) {
+        resolvedName = typedName;
+      } else if (data.user.name && data.user.name !== "উদ্যোক্তা" && data.user.name !== emailPrefix) {
+        resolvedName = data.user.name;
+      } else if (typeof window !== "undefined") {
+        try {
+          const raw = localStorage.getItem("bhbd_user_profile");
+          if (raw) {
+            const parsed = JSON.parse(raw);
+            if (parsed?.name && parsed.name !== "উদ্যোক্তা" && parsed.name !== emailPrefix) {
+              resolvedName = parsed.name;
+            }
+          }
+        } catch {}
+      }
+
+      const userWithResolvedName = { ...data.user, name: resolvedName || data.user.name || emailPrefix };
+
+      login({ ...data, user: userWithResolvedName, remember: v.remember });
       if (typeof window !== "undefined") {
         try {
-          localStorage.setItem("bhbd_user_profile", JSON.stringify(data.user));
+          localStorage.setItem("bhbd_user_profile", JSON.stringify(userWithResolvedName));
+          const maxAge = v.remember ? 60 * 60 * 24 * 30 : "";
+          document.cookie = `bhbd_user_name=${encodeURIComponent(userWithResolvedName.name)}; Path=/; ${maxAge ? `Max-Age=${maxAge}; ` : ""}SameSite=Lax`;
+          document.cookie = `bhbd_user_email=${encodeURIComponent(userWithResolvedName.email)}; Path=/; ${maxAge ? `Max-Age=${maxAge}; ` : ""}SameSite=Lax`;
         } catch (e) {
           console.error(e);
         }
       }
-      toast.success(lang === "bn" ? `স্বাগতম, ${data.user.name}` : `Welcome back, ${data.user.name}`);
+      toast.success(lang === "bn" ? `স্বাগতম, ${userWithResolvedName.name}` : `Welcome back, ${userWithResolvedName.name}`);
       go();
     },
   });
@@ -60,6 +99,10 @@ export function LoginForm() {
 
       <form onSubmit={handleSubmit((v) => mutate(v))} noValidate className="space-y-4">
         <FormAlert message={error ? authErrorMessage(error, "login", lang) : null} />
+
+        <FormField label={lang === "bn" ? "নাম (ঐচ্ছিক)" : "Name (Optional)"} htmlFor="login-name">
+          <Input id="login-name" placeholder={lang === "bn" ? "আপনার নাম (যেমন: নাহিদ)" : "Your name (e.g. Nahid)"} autoComplete="name" {...register("name")} />
+        </FormField>
 
         <FormField label={t("email")} htmlFor="login-email" required error={errors.email?.message}>
           <Input id="login-email" type="email" autoComplete="email" inputMode="email" invalid={!!errors.email} {...register("email")} />
