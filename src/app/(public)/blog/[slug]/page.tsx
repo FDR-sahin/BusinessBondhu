@@ -11,6 +11,7 @@ import { Badge } from "@/components/ui/badge";
 import { Breadcrumb } from "@/components/ui/breadcrumb";
 import { DETAILED_BLOG_POSTS } from "@/lib/blog-data";
 import { estimateReadingMinutes, getBlogCategory } from "@/lib/blog";
+import { parseRichBlogText } from "@/lib/blog-formatter";
 import { sanitizeContent } from "@/lib/sanitize";
 import type { BlogPostDetail } from "@/types";
 
@@ -19,24 +20,6 @@ interface PageProps {
 }
 
 export const dynamic = "force-dynamic";
-
-/** Converts plain text multi-paragraph content from admin into rich HTML paragraphs if not already HTML */
-function formatBlogHtml(content?: string, excerpt?: string): string {
-  const text = content && content.trim() ? content : excerpt || "";
-  if (!text) return "";
-
-  // If already contains HTML tags like <p>, <h2>, <ul>, return as is
-  if (/^\s*<[a-z][\s\S]*>/i.test(text.trim())) {
-    return text;
-  }
-
-  // Convert double newlines into <p> tags and single newlines into <br />
-  return text
-    .trim()
-    .split(/\n\s*\n/)
-    .map((p) => `<p class="mb-4 text-base md:text-lg leading-relaxed text-ink">${p.trim().replace(/\n/g, "<br />")}</p>`)
-    .join("");
-}
 
 /**
  * Direct zero-latency resolution from DETAILED_BLOG_POSTS with decoding and external API fallback.
@@ -59,7 +42,7 @@ const getArticle = cache(async (slug: string): Promise<{ post: BlogPostDetail | 
     return {
       post: {
         ...localPost,
-        content: formatBlogHtml(localPost.content, localPost.excerpt),
+        content: parseRichBlogText(localPost.content, localPost.excerpt),
         commentsEnabled: true,
       },
       missing: false,
@@ -94,7 +77,7 @@ const getArticle = cache(async (slug: string): Promise<{ post: BlogPostDetail | 
               title: fetched.title,
               category: fetched.category || "general",
               excerpt: fetched.excerpt || "",
-              content: formatBlogHtml(rawContent, fetched.excerpt),
+              content: parseRichBlogText(rawContent, fetched.excerpt),
               publishedAt: fetched.createdAt || fetched.date || new Date().toISOString(),
               readingTime: 5,
               author: {

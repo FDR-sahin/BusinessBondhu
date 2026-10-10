@@ -7,20 +7,31 @@ import sanitizeHtml from "sanitize-html";
  */
 const OPTIONS: sanitizeHtml.IOptions = {
   allowedTags: [
-    "h2", "h3", "h4", "p", "br", "hr", "strong", "b", "em", "i", "u", "s", "span",
+    "h1", "h2", "h3", "h4", "p", "br", "hr", "strong", "b", "em", "i", "u", "s", "span", "div",
     "ul", "ol", "li", "blockquote", "a", "img", "figure", "figcaption",
-    "table", "thead", "tbody", "tr", "th", "td", "code", "pre",
+    "table", "thead", "tbody", "tr", "th", "td", "code", "pre", "font", "mark", "del", "ins",
   ],
   allowedAttributes: {
-    a: ["href", "title"],
-    img: ["src", "alt", "width", "height"],
+    "*": ["style", "class", "color"],
+    a: ["href", "title", "target", "rel"],
+    img: ["src", "alt", "width", "height", "loading"],
+    font: ["color", "size", "face"],
     th: ["colspan", "rowspan"],
     td: ["colspan", "rowspan"],
+  },
+  allowedStyles: {
+    "*": {
+      "color": [/^#(0-9a-f]{3,8})$/i, /^rgb\(/i, /^rgba\(/i, /^[a-z]+$/i],
+      "background-color": [/^#(0-9a-f]{3,8})$/i, /^rgb\(/i, /^rgba\(/i, /^[a-z]+$/i],
+      "font-size": [/^\d+(px|em|rem|%)$/i],
+      "font-weight": [/^(bold|normal|\d{3})$/i],
+      "text-align": [/^(left|center|right|justify)$/i],
+      "text-decoration": [/^(underline|line-through|none)$/i],
+    },
   },
   allowedSchemes: ["http", "https", "mailto", "tel"],
   allowedSchemesByTag: { img: ["http", "https"] },
   transformTags: {
-    h1: "h2", // the page already has the one <h1>
     a: (tagName, attribs) => ({ tagName, attribs: { ...attribs, target: "_blank", rel: "noopener noreferrer nofollow" } }),
     img: (tagName, attribs) => ({ tagName, attribs: { ...attribs, loading: "lazy" } }),
   },

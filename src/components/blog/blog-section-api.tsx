@@ -2,11 +2,13 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { ArrowLeft, ArrowUpRight, BookOpen, CalendarDays, RefreshCw } from "lucide-react";
+import Link from "next/link";
 import { useLangStore } from "@/store/lang-store";
 
 type Blog = {
   _id?: string;
   id?: string;
+  slug?: string;
   title: string;
   category: string;
   excerpt?: string;
@@ -26,7 +28,6 @@ export function BlogSection() {
   const bn = lang === "bn";
 
   const [blogs, setBlogs] = useState<Blog[]>([]);
-  const [activeBlog, setActiveBlog] = useState<Blog | null>(null);
   const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
@@ -115,65 +116,6 @@ export function BlogSection() {
     );
   };
 
-  // Blog details
-  if (activeBlog) {
-    return (
-      <section className="w-full text-ink">
-        <div className="mx-auto max-w-4xl">
-          <button
-            type="button"
-            onClick={() => setActiveBlog(null)}
-            className="mb-6 inline-flex items-center gap-2 border-2 border-line bg-surface px-4 py-2.5 text-sm font-bold transition hover:bg-gold/20"
-          >
-            <ArrowLeft className="h-4 w-4" />
-            {bn ? "সব ব্লগে ফিরে যান" : "Back to all blogs"}
-          </button>
-
-          <article className="border-2 border-line bg-surface">
-            <div className="border-b-2 border-line p-5 sm:p-8">
-              <span className="inline-block border border-green/40 bg-green/10 px-3 py-1 font-mono text-xs font-bold text-green">
-                {activeBlog.category}
-              </span>
-
-              <h1 className="mt-5 font-display text-3xl font-extrabold leading-tight tracking-tight sm:text-5xl">
-                {activeBlog.title}
-              </h1>
-
-              <div className="mt-5 flex flex-wrap items-center gap-4 font-mono text-xs text-muted">
-                {activeBlog.createdAt && (
-                  <span className="flex items-center gap-2">
-                    <CalendarDays className="h-4 w-4" />
-                    {formatDate(activeBlog.createdAt)}
-                  </span>
-                )}
-
-                {activeBlog.author && (
-                  <span>
-                    {bn ? "লেখক:" : "By:"} {activeBlog.author}
-                  </span>
-                )}
-              </div>
-            </div>
-
-            {activeBlog.excerpt && (
-              <div className="border-b border-line bg-background p-5 sm:p-8">
-                <p className="text-base italic leading-8 text-muted sm:text-lg">
-                  “{activeBlog.excerpt}”
-                </p>
-              </div>
-            )}
-
-            <div className="p-5 sm:p-8">
-              <div className="whitespace-pre-wrap leading-8 text-ink sm:text-lg">
-                {activeBlog.content || activeBlog.excerpt}
-              </div>
-            </div>
-          </article>
-        </div>
-      </section>
-    );
-  }
-
   return (
     <section className="w-full text-ink">
       <div className="mx-auto max-w-7xl">
@@ -224,45 +166,45 @@ export function BlogSection() {
           </div>
         ) : (
           <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-            {filteredBlogs.map((blog) => (
-              <div
-                key={blog._id || blog.id || blog.title}
-                className="flex flex-col justify-between border-2 border-line bg-surface p-6 transition hover:border-green hover:shadow-md"
-              >
-                <div>
-                  <span className="inline-block border border-line bg-background px-2.5 py-1 font-mono text-xs font-bold text-muted">
-                    {blog.category}
-                  </span>
-
-                  <h3 className="mt-4 font-display text-xl font-bold leading-snug">
-                    {blog.title}
-                  </h3>
-
-                  {blog.excerpt && (
-                    <p className="mt-3 line-clamp-3 text-sm leading-6 text-muted">
-                      {blog.excerpt}
-                    </p>
-                  )}
-                </div>
-
-                <div className="mt-6 border-t border-line pt-4">
-                  <div className="flex items-center justify-between">
-                    <span className="font-mono text-xs text-muted">
-                      {formatDate(blog.createdAt)}
+            {filteredBlogs.map((blog) => {
+              const blogTarget = `/blog/${blog.slug || blog.id || blog._id || encodeURIComponent(blog.title)}`;
+              return (
+                <Link
+                  key={blog._id || blog.id || blog.title}
+                  href={blogTarget}
+                  className="group flex flex-col justify-between border-2 border-line bg-surface p-6 transition hover:border-green hover:shadow-md"
+                >
+                  <div>
+                    <span className="inline-block border border-line bg-background px-2.5 py-1 font-mono text-xs font-bold text-muted">
+                      {blog.category}
                     </span>
 
-                    <button
-                      type="button"
-                      onClick={() => setActiveBlog(blog)}
-                      className="inline-flex items-center gap-1 font-mono text-xs font-bold text-green hover:underline"
-                    >
-                      {bn ? "বিস্তারিত পড়ুন" : "Read Article"}
-                      <ArrowUpRight className="h-4 w-4" />
-                    </button>
+                    <h3 className="mt-4 font-display text-xl font-bold leading-snug transition-colors group-hover:text-green">
+                      {blog.title}
+                    </h3>
+
+                    {blog.excerpt && (
+                      <p className="mt-3 line-clamp-3 text-sm leading-6 text-muted">
+                        {blog.excerpt}
+                      </p>
+                    )}
                   </div>
-                </div>
-              </div>
-            ))}
+
+                  <div className="mt-6 border-t border-line pt-4">
+                    <div className="flex items-center justify-between">
+                      <span className="font-mono text-xs text-muted">
+                        {formatDate(blog.createdAt)}
+                      </span>
+
+                      <span className="inline-flex items-center gap-1 font-mono text-xs font-bold text-green group-hover:underline">
+                        {bn ? "বিস্তারিত পড়ুন" : "Read Article"}
+                        <ArrowUpRight className="h-4 w-4" />
+                      </span>
+                    </div>
+                  </div>
+                </Link>
+              );
+            })}
           </div>
         )}
       </div>
