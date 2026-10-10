@@ -1,6 +1,10 @@
 import { NextResponse } from "next/server";
-import { MOCK_DASHBOARD_OVERVIEW } from "@/lib/mock-data";
 
 export async function GET() {
-  return NextResponse.json(MOCK_DASHBOARD_OVERVIEW);
+  return NextResponse.json({
+    totals: { posts: 0, likes: 0, views: 0, comments: 0 },
+    weeklyLikes: [],
+    postsByCategory: [],
+    activity: [],
+  });
 }

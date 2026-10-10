@@ -152,46 +152,48 @@ export function handleMockFallback(config?: AxiosRequestConfig): AxiosResponse |
 
   // Dashboard APIs
   if (path.includes("/me/dashboard") || path.includes("/me/overview")) {
-    return createAxiosResponse(MOCK_DASHBOARD_OVERVIEW, config);
-  }
-  if (path.includes("/me/posts")) {
-    const myPosts: MyPost[] = MOCK_POSTS.map((p, index) => ({
-      ...p,
-      status: index === 0 ? "approved" : index === 1 ? "pending" : index === 2 ? "draft" : "approved",
-    }));
     return createAxiosResponse(
       {
-        items: myPosts,
-        total: myPosts.length,
+        totals: { posts: 0, likes: 0, views: 0, comments: 0 },
+        weeklyLikes: [],
+        postsByCategory: [],
+        activity: [],
+      },
+      config,
+    );
+  }
+  if (
+    path.includes("/me/posts") ||
+    path.includes("/me/collections") ||
+    path.includes("/me/likes") ||
+    path.includes("/me/dislikes") ||
+    path.includes("/me/saved")
+  ) {
+    return createAxiosResponse(
+      {
+        items: [],
+        total: 0,
         page: 1,
         limit: 10,
-        totalPages: 1,
+        totalPages: 0,
       },
       config,
     );
   }
   if (path.includes("/me/comments")) {
     return createAxiosResponse(
-      [
-        {
-          id: "dc-1",
-          content: "গাজীপুরের কাগজের কাপের কারখানাটির পাইকারি রেট অনেক ভালো।",
-          createdAt: "2026-10-06T14:30:00Z",
-          author: { id: "u-2", name: "তানভীর আহমেদ" },
-          post: { id: "post-1", title: "গাজীপুরে পরিবেশবান্ধব কাগজের কাপ তৈরির লাভজনক ব্যবসা" },
-          likesCount: 5,
-          replied: true,
-          replies: [],
-        },
-      ],
+      {
+        items: [],
+        total: 0,
+        page: 1,
+        limit: 10,
+        totalPages: 0,
+      },
       config,
     );
   }
   if (path.includes("/me/notifications")) {
     return createAxiosResponse({ items: [], unreadCount: 0 }, config);
-  }
-  if (path.includes("/me/collections")) {
-    return createAxiosResponse(getMockPaginatedPosts(), config);
   }
 
   // Generic Fallback
