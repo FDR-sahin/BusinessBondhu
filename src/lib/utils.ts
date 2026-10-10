@@ -33,7 +33,7 @@ export function formatBDT(value: number, lang: "bn" | "en" = "bn"): string {
   return `৳ ${toFormattedNumber(value, lang)}`;
 }
 
-/** Format price or price range in BDT */
+/** Format price or price range in BDT (e.g. ৳ 500 - 650) */
 export function formatPriceRange(
   minPrice?: number | string,
   maxPrice?: number | string,
@@ -44,19 +44,26 @@ export function formatPriceRange(
     return customText;
   }
 
-  const min = typeof minPrice === "string" ? parseFloat(minPrice) : minPrice;
-  const max = typeof maxPrice === "string" ? parseFloat(maxPrice) : maxPrice;
+  let min = typeof minPrice === "string" ? parseFloat(minPrice) : minPrice;
+  let max = typeof maxPrice === "string" ? parseFloat(maxPrice) : maxPrice;
 
-  const hasMin = min !== undefined && !Number.isNaN(min) && min > 0;
-  const hasMax = max !== undefined && !Number.isNaN(max) && max > 0;
-
-  if (hasMin && hasMax && max > min) {
-    return `৳ ${toFormattedNumber(min, lang)} - ৳ ${toFormattedNumber(max, lang)}`;
+  if (typeof minPrice === "string" && minPrice.includes("-") && (max === undefined || Number.isNaN(max))) {
+    const parts = minPrice.split("-").map((p) => p.replace(/[^\d.]/g, "").trim());
+    if (parts.length >= 2) {
+      const parsedMin = parseFloat(parts[0]);
+      const parsedMax = parseFloat(parts[1]);
+      if (!Number.isNaN(parsedMin)) min = parsedMin;
+      if (!Number.isNaN(parsedMax)) max = parsedMax;
+    }
   }
-  if (hasMin) {
+
+  if (min !== undefined && max !== undefined && !Number.isNaN(min) && !Number.isNaN(max) && min > 0 && max > 0 && max > min) {
+    return `৳ ${toFormattedNumber(min, lang)} - ${toFormattedNumber(max, lang)}`;
+  }
+  if (min !== undefined && !Number.isNaN(min) && min > 0) {
     return `৳ ${toFormattedNumber(min, lang)}`;
   }
-  if (hasMax) {
+  if (max !== undefined && !Number.isNaN(max) && max > 0) {
     return `৳ ${toFormattedNumber(max, lang)}`;
   }
   return lang === "bn" ? "দাম উল্লেখ নেই" : "N/A";
