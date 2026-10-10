@@ -20,6 +20,37 @@ export function handleMockFallback(config?: AxiosRequestConfig): AxiosResponse |
   // Clean endpoint path
   const path = url.replace(/^https?:\/\/[^\/]+/, "").replace(/^\/api\/v1/, "");
 
+  // Auth Fallbacks
+  if (path.includes("/auth/signup") || path.includes("/auth/login")) {
+    let body: any = {};
+    try {
+      body = typeof config.data === "string" ? JSON.parse(config.data || "{}") : config.data || {};
+    } catch {
+      body = {};
+    }
+    const name = body.name || (body.email ? body.email.split("@")[0] : "উদ্যোক্তা");
+    return createAxiosResponse(
+      {
+        user: {
+          id: `u-${Date.now()}`,
+          name,
+          email: body.email || "user@example.com",
+          division: body.division || "",
+          district: body.district || "",
+          role: "user",
+          createdAt: new Date().toISOString(),
+        },
+        accessToken: `token-${Date.now()}`,
+        refreshToken: `rtoken-${Date.now()}`,
+      },
+      config,
+    );
+  }
+
+  if (path.includes("/auth/forgot-password") || path.includes("/auth/reset-password")) {
+    return createAxiosResponse({ success: true, message: "অপারেশনটি সফল হয়েছে" }, config);
+  }
+
   // GET /posts/stats/top-districts or /stats/top-districts
   if (path.includes("/stats/top-districts")) {
     return createAxiosResponse(MOCK_TOP_DISTRICTS, config);
