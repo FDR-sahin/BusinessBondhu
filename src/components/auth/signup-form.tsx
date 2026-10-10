@@ -63,6 +63,8 @@ export function SignupForm() {
     onError: (e) => {
       const fieldErrors = getFieldErrors(e);
       FIELDS.forEach((f) => fieldErrors[f] && setError(f, { message: fieldErrors[f] }));
+      const msg = authErrorMessage(e, "signup", lang);
+      toast.error(msg);
     },
   });
 
@@ -75,7 +77,7 @@ export function SignupForm() {
       <SocialButtons redirectTo={target} />
 
       <form onSubmit={handleSubmit((v) => mutate(v))} noValidate className="space-y-4">
-        <FormAlert message={error && Object.keys(getFieldErrors(error)).length === 0 ? authErrorMessage(error, "signup", lang) : null} />
+        <FormAlert message={error ? authErrorMessage(error, "signup", lang) : null} />
 
         <FormField label={t("fullName")} htmlFor="su-name" required error={errors.name?.message}>
           <Input id="su-name" autoComplete="name" invalid={!!errors.name} {...register("name")} />

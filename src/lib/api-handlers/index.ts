@@ -8,6 +8,7 @@ import {
   handleAuthMePut,
   handleAuthForgotPassword,
   handleAuthResetPassword,
+  handleAuthVerifyOtp,
   handleMePasswordPut,
 } from "./auth";
 import {
@@ -87,7 +88,8 @@ export async function dispatchApiRequest(request: Request, pathSegments: string[
         if (method === "GET") return handleAuthMeGet(request);
         if (method === "PUT") return handleAuthMePut(request);
       }
-      if (action === "forgot-password" && method === "POST") return handleAuthForgotPassword();
+      if (action === "forgot-password" && method === "POST") return handleAuthForgotPassword(request);
+      if (action === "verify-otp" && method === "POST") return handleAuthVerifyOtp(request);
       if (action === "reset-password" && method === "POST") return handleAuthResetPassword(request);
       if (action === "password" && method === "PUT") return handleMePasswordPut(request);
     }

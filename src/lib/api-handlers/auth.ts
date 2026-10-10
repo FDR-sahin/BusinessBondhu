@@ -6,6 +6,7 @@ import {
   verifyPassword,
   sanitizeUser,
 } from "@/lib/user-profile-store";
+import { generateOtp, verifyOtp, clearOtp } from "@/lib/otp-store";
 
 export async function handleAuthSignup(request: Request) {
   try {
@@ -25,6 +26,18 @@ export async function handleAuthSignup(request: Request) {
     }
     if (body.confirmPassword !== undefined && body.confirmPassword !== password) {
       return NextResponse.json({ message: "পাসওয়ার্ড দুটি মিলছে না।" }, { status: 400 });
+    }
+
+    // Check if account already exists with this email
+    const existingUser = getUserProfile(email);
+    if (existingUser && existingUser.email && existingUser.email.toLowerCase() === email) {
+      return NextResponse.json(
+        {
+          message: "এই ইমেইল দিয়ে আগেই অ্যাকাউন্ট খোলা হয়েছে। অনুগ্রহ করে লগইন করুন।",
+          errors: { email: ["এই ইমেইল দিয়ে আগেই অ্যাকাউন্ট খোলা হয়েছে। অনুগ্রহ করে লগইন করুন।"] },
+        },
+        { status: 409 }
+      );
     }
 
     const fallbackName = email ? email.split("@")[0] : "ব্যবহারকারী";
@@ -391,27 +404,119 @@ export async function handleMePasswordPut(request: Request) {
   }
 }
 
-export async function handleAuthForgotPassword() {
-  return NextResponse.json({
-    success: true,
-    message: "পাসওয়ার্ড রিসেট লিংক আপনার ইমেইলে পাঠানো হয়েছে।",
-  });
+export async function handleAuthForgotPassword(request?: Request) {
+  try {
+    if (!request) {
+      return NextResponse.json({ message: "ইমেইল প্রদান করুন।" }, { status: 400 });
+    }
+    const body = await request.json();
+    const email = (body.email || "").trim().toLowerCase();
+    if (!email) {
+      return NextResponse.json({ message: "ইমেইল ঠিকানা দিন।" }, { status: 400 });
+    }
+
+    const user = getUserProfile(email);
+    if (!user || !user.email || user.email.toLowerCase() !== email) {
+      return NextResponse.json(
+        { message: "এই ইমেইলে কোনো অ্যাকাউন্ট পাওয়া যায়নি। অনুগ্রহ করে সঠিক ইমেইল দিন বা সাইন-আপ করুন।" },
+        { status: 404 }
+      );
+    }
+
+    const otp = generateOtp(email);
+    console.log(`[OTP GENERATED] Email: ${email}, OTP: ${otp}`);
+
+    return NextResponse.json({
+      success: true,
+      message: "আপনার ইমেইলে ৬ ডিজিটের ওটিপি (OTP) পাঠানো হয়েছে।",
+      email,
+      otp, // Provided for client notification and testing verification
+      expiresIn: 600,
+    });
+  } catch (err: any) {
+    return NextResponse.json({ message: err.message || "ওটিপি পাঠাতে সমস্যা হয়েছে।" }, { status: 400 });
+  }
+}
+
+export async function handleAuthVerifyOtp(request?: Request) {
+  try {
+    if (!request) {
+      return NextResponse.json({ message: "তথ্য প্রদান করুন।" }, { status: 400 });
+    }
+    const body = await request.json();
+    const email = (body.email || "").trim().toLowerCase();
+    const otp = (body.otp || "").trim();
+
+    if (!email || !otp) {
+      return NextResponse.json({ message: "ইমেইল এবং ওটিপি কোড দিন।" }, { status: 400 });
+    }
+
+    const verification = verifyOtp(email, otp);
+    if (!verification.valid) {
+      return NextResponse.json({ message: verification.reason || "ভুল বা মেয়াদোত্তীর্ণ ওটিপি।" }, { status: 400 });
+    }
+
+    return NextResponse.json({
+      success: true,
+      message: "ওটিপি সফলভাবে যাচাই করা হয়েছে।",
+    });
+  } catch (err: any) {
+    return NextResponse.json({ message: err.message || "যাচাই করতে সমস্যা হয়েছে।" }, { status: 400 });
+  }
 }
 
 export async function handleAuthResetPassword(request?: Request) {
-  if (request) {
-    try {
-      const body = await request.json();
-      if (body.email && body.password) {
-        const user = getUserProfile(body.email);
-        if (user) {
-          saveUserProfile({ ...user, password: body.password });
-        }
-      }
-    } catch {}
+  try {
+    if (!request) {
+      return NextResponse.json({ message: "তথ্য প্রদান করুন।" }, { status: 400 });
+    }
+    const body = await request.json();
+    const email = (body.email || "").trim().toLowerCase();
+    const otp = (body.otp || body.token || "").trim();
+    const password = typeof body.password === "string" ? body.password : "";
+    const confirmPassword = typeof body.confirmPassword === "string" ? body.confirmPassword : password;
+
+    if (!email) {
+      return NextResponse.json({ message: "ইমেইল ঠিকানা দিন।" }, { status: 400 });
+    }
+    if (!otp) {
+      return NextResponse.json({ message: "৬ ডিজিটের ওটিপি (OTP) কোড দিন।" }, { status: 400 });
+    }
+    if (!password) {
+      return NextResponse.json({ message: "নতুন পাসওয়ার্ড দিন।" }, { status: 400 });
+    }
+    if (password.length < 6) {
+      return NextResponse.json({ message: "পাসওয়ার্ড কমপক্ষে ৬ অক্ষরের হতে হবে।" }, { status: 400 });
+    }
+    if (confirmPassword !== password) {
+      return NextResponse.json({ message: "পাসওয়ার্ড দুটি মিলছে না।" }, { status: 400 });
+    }
+
+    const user = getUserProfile(email);
+    if (!user || !user.email || user.email.toLowerCase() !== email) {
+      return NextResponse.json({ message: "ব্যবহারকারী অ্যাকাউন্ট পাওয়া যায়নি।" }, { status: 404 });
+    }
+
+    const verification = verifyOtp(email, otp);
+    if (!verification.valid) {
+      return NextResponse.json({ message: verification.reason || "ভুল বা মেয়াদোত্তীর্ণ ওটিপি।" }, { status: 400 });
+    }
+
+    // Update password
+    saveUserProfile({
+      ...user,
+      password,
+    });
+
+    // Clear used OTP
+    clearOtp(email);
+
+    return NextResponse.json({
+      success: true,
+      message: "পাসওয়ার্ড সফলভাবে পরিবর্তন করা হয়েছে। এখন নতুন পাসওয়ার্ড দিয়ে লগইন করুন।",
+    });
+  } catch (err: any) {
+    return NextResponse.json({ message: err.message || "পাসওয়ার্ড পরিবর্তন করতে সমস্যা হয়েছে।" }, { status: 400 });
   }
-  return NextResponse.json({
-    success: true,
-    message: "পাসওয়ার্ড সফলভাবে পরিবর্তন করা হয়েছে।",
-  });
 }
+

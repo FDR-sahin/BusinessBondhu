@@ -47,6 +47,15 @@ export function handleMockFallback(config?: AxiosRequestConfig): AxiosResponse |
       }
     }
 
+    if (path.includes("/auth/signup")) {
+      const emailKey = (body.email || "").toLowerCase().trim();
+      const existingInProfile = Boolean(storedUser?.email && storedUser.email.toLowerCase().trim() === emailKey);
+      const existingInCreds = Boolean(storedCreds[emailKey]);
+      if (existingInProfile || existingInCreds) {
+        return null; // Reject duplicate account signup
+      }
+    }
+
     if (path.includes("/auth/login")) {
       // Do NOT return success 200 blindly for login when password is wrong
       const emailKey = (body.email || "").toLowerCase().trim();
@@ -97,8 +106,43 @@ export function handleMockFallback(config?: AxiosRequestConfig): AxiosResponse |
     );
   }
 
-  if (path.includes("/auth/forgot-password") || path.includes("/auth/reset-password")) {
-    return createAxiosResponse({ success: true, message: "অপারেশনটি সফল হয়েছে" }, config);
+  if (path.includes("/auth/forgot-password")) {
+    let body: any = {};
+    try {
+      body = typeof config.data === "string" ? JSON.parse(config.data || "{}") : config.data || {};
+    } catch {
+      body = {};
+    }
+    const email = (body.email || "").toLowerCase().trim();
+    const otp = "123456";
+    return createAxiosResponse(
+      {
+        success: true,
+        message: "আপনার ইমেইলে ৬ ডিজিটের ওটিপি (OTP) পাঠানো হয়েছে।",
+        email,
+        otp,
+        expiresIn: 600,
+      },
+      config,
+    );
+  }
+
+  if (path.includes("/auth/reset-password")) {
+    let body: any = {};
+    try {
+      body = typeof config.data === "string" ? JSON.parse(config.data || "{}") : config.data || {};
+    } catch {
+      body = {};
+    }
+    if (body.email && body.password && typeof window !== "undefined") {
+      try {
+        const credsRaw = localStorage.getItem("bhbd_user_credentials");
+        const creds = credsRaw ? JSON.parse(credsRaw) : {};
+        creds[body.email.toLowerCase().trim()] = body.password;
+        localStorage.setItem("bhbd_user_credentials", JSON.stringify(creds));
+      } catch {}
+    }
+    return createAxiosResponse({ success: true, message: "পাসওয়ার্ড সফলভাবে পরিবর্তন করা হয়েছে।" }, config);
   }
 
   // GET /posts/stats/top-districts or /stats/top-districts

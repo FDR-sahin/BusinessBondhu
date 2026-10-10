@@ -38,6 +38,15 @@ export const resetSchema = z
   .refine((d) => d.password === d.confirmPassword, { path: ["confirmPassword"], message: "পাসওয়ার্ড দুটি মিলছে না" });
 export type ResetValues = z.infer<typeof resetSchema>;
 
+export const otpResetSchema = z
+  .object({
+    otp: z.string().trim().min(6, "৬ ডিজিটের ওটিপি দিন").max(6, "৬ ডিজিটের ওটিপি দিন"),
+    password: newPassword,
+    confirmPassword: z.string().min(1, "পাসওয়ার্ড আবার লিখুন"),
+  })
+  .refine((d) => d.password === d.confirmPassword, { path: ["confirmPassword"], message: "পাসওয়ার্ড দুটি মিলছে না" });
+export type OtpResetValues = z.infer<typeof otpResetSchema>;
+
 /* ---------- Dashboard: profile & settings ---------- */
 export const profileSchema = z.object({
   name: z.string().trim().min(2, "আপনার নাম লিখুন").max(60, "নাম সর্বোচ্চ ৬০ অক্ষরের হতে পারবে"),
