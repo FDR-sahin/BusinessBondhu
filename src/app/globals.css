@@ -13,6 +13,7 @@
     --surface: 255 255 255;    /* #FFFFFF */
     --ink: 23 19 15;           /* #17130F */
     --muted: 55 50 43;         /* #37322B (WCAG AAA 10.5:1 contrast against #F6F2E9) */
+    --muted-bg: 235 228 215;    /* Soft paper muted background */
     --line: 221 213 197;       /* #DDD5C5 */
 
     /* Accents */
@@ -34,6 +35,7 @@
     --surface: 23 26 21;       /* #171A15 */
     --ink: 243 239 230;        /* #F3EFE6 */
     --muted: 195 190 178;      /* #C3BEB2 (WCAG AAA 10.8:1 contrast against #0F110E) */
+    --muted-bg: 32 36 29;       /* Soft dark muted background */
     --line: 42 46 37;          /* #2A2E25 */
 
     /* Accents */

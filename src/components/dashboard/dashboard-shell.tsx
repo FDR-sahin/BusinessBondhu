@@ -13,8 +13,9 @@ import { Drawer, DrawerClose } from "@/components/ui/drawer";
 import { Input } from "@/components/ui/input";
 import { useLogout } from "@/hooks/use-logout";
 import { useUnreadCount } from "@/hooks/use-notifications";
-import { DASHBOARD_NAV, dashboardTitle, isNavActive } from "@/lib/dashboard";
+import { getDashboardNav, dashboardTitle, isNavActive } from "@/lib/dashboard";
 import { cn, toBanglaNumber } from "@/lib/utils";
+import { useLangStore } from "@/store/lang-store";
 
 function UnreadDot({ href }: { href: string }) {
   const { data: count = 0 } = useUnreadCount();
@@ -28,9 +29,11 @@ function UnreadDot({ href }: { href: string }) {
 
 function NavList({ onNavigate }: { onNavigate?: () => void }) {
   const pathname = usePathname();
+  const lang = useLangStore((s) => s.lang);
+  const navItems = getDashboardNav(lang);
   return (
     <ul className="space-y-1">
-      {DASHBOARD_NAV.map((item) => {
+      {navItems.map((item) => {
         const active = isNavActive(item, pathname);
         const Icon = item.icon;
         return (
@@ -41,7 +44,9 @@ function NavList({ onNavigate }: { onNavigate?: () => void }) {
               aria-current={active ? "page" : undefined}
               className={cn(
                 "flex h-11 items-center gap-3 rounded-lg px-3 text-sm font-medium transition-colors",
-                active ? "bg-primary-soft text-primary-soft-foreground" : "text-ink-secondary hover:bg-muted hover:text-foreground",
+                active
+                  ? "bg-green/10 text-green font-semibold"
+                  : "text-ink-secondary hover:bg-green/10 hover:text-green",
               )}
             >
               <Icon className="h-4 w-4 shrink-0" aria-hidden />
@@ -59,6 +64,9 @@ export function DashboardShell({ children }: { children: ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
   const logout = useLogout();
+  const lang = useLangStore((s) => s.lang);
+  const isEn = lang === "en";
+  const navItems = getDashboardNav(lang);
   const { data: unread = 0 } = useUnreadCount();
   const [moreOpen, setMoreOpen] = useState(false);
   const [query, setQuery] = useState("");
@@ -72,25 +80,25 @@ export function DashboardShell({ children }: { children: ReactNode }) {
 
   // Mobile bottom bar: 4 shortcuts + "More" (the drawer holds all 9 links).
   const bottom = [
-    { href: "/dashboard", label: "ওভারভিউ", icon: DASHBOARD_NAV[0]!.icon, exact: true },
-    { href: "/dashboard/my-posts", label: "পোস্ট", icon: DASHBOARD_NAV[1]!.icon },
-    { href: "/dashboard/create-post", label: "নতুন", icon: Plus, primary: true },
-    { href: "/dashboard/notifications", label: "নোটিফিকেশন", icon: DASHBOARD_NAV[6]!.icon, badge: unread },
+    { href: "/dashboard", label: navItems[0]?.label ?? "Overview", icon: navItems[0]!.icon, exact: true },
+    { href: "/dashboard/my-posts", label: isEn ? "Posts" : "পোস্ট", icon: navItems[1]!.icon },
+    { href: "/dashboard/create-post", label: isEn ? "New" : "নতুন", icon: Plus, primary: true },
+    { href: "/dashboard/notifications", label: navItems[6]?.label ?? "Notifications", icon: navItems[6]!.icon, badge: unread },
   ];
 
   return (
     <div className="min-h-screen lg:grid lg:grid-cols-[16rem_minmax(0,1fr)]">
       {/* ---------- Desktop sidebar ---------- */}
-      <aside className="sticky top-0 hidden h-screen flex-col border-r border-border bg-surface lg:flex" aria-label="ড্যাশবোর্ড মেনু">
+      <aside className="sticky top-0 hidden h-screen flex-col border-r border-border bg-surface lg:flex" aria-label={isEn ? "Dashboard Menu" : "ড্যাশবোর্ড মেনু"}>
         <div className="flex h-16 shrink-0 items-center px-5"><Logo /></div>
         <div className="px-4 pb-4">
-          <Button asChild className="w-full"><Link href="/dashboard/create-post"><Plus aria-hidden /> নতুন পোস্ট</Link></Button>
+          <Button asChild className="w-full"><Link href="/dashboard/create-post"><Plus aria-hidden /> {isEn ? "New Post" : "নতুন পোস্ট"}</Link></Button>
         </div>
-        <nav className="flex-1 overflow-y-auto px-4 pb-4" aria-label="ড্যাশবোর্ড নেভিগেশন"><NavList /></nav>
+        <nav className="flex-1 overflow-y-auto px-4 pb-4" aria-label={isEn ? "Dashboard Navigation" : "ড্যাশবোর্ড নেভিগেশন"}><NavList /></nav>
         <div className="space-y-1 border-t border-border p-4">
-          <Link href="/" className="flex h-10 items-center rounded-lg px-3 text-sm text-ink-secondary transition-colors hover:bg-muted hover:text-foreground">সাইটে ফিরে যান</Link>
+          <Link href="/" className="flex h-10 items-center rounded-lg px-3 text-sm text-ink-secondary transition-colors hover:bg-green/10 hover:text-green">{isEn ? "Back to Site" : "সাইটে ফিরে যান"}</Link>
           <button onClick={() => void logout()} className="flex h-10 w-full items-center gap-3 rounded-lg px-3 text-sm text-danger transition-colors hover:bg-danger-soft">
-            <LogOut className="h-4 w-4" aria-hidden />লগআউট
+            <LogOut className="h-4 w-4" aria-hidden />{isEn ? "Logout" : "লগআউট"}
           </button>
         </div>
       </aside>
@@ -100,11 +108,11 @@ export function DashboardShell({ children }: { children: ReactNode }) {
         <header className="sticky top-0 z-30 border-b border-border bg-background/80 backdrop-blur-md">
           <div className="flex h-16 items-center gap-3 px-4 md:px-6 lg:px-8">
             <div className="lg:hidden"><Logo showText={false} /></div>
-            <h1 className="min-w-0 truncate text-lg font-semibold md:text-xl">{dashboardTitle(pathname)}</h1>
+            <h1 className="min-w-0 truncate text-lg font-semibold md:text-xl">{dashboardTitle(pathname, lang)}</h1>
 
             <form onSubmit={onSearch} role="search" className="relative ml-auto hidden w-full max-w-xs md:block">
               <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-ink-secondary" aria-hidden />
-              <Input type="search" value={query} onChange={(e) => setQuery(e.target.value)} placeholder="আমার পোস্ট খুঁজুন…" aria-label="আমার পোস্ট খুঁজুন" className="h-10 pl-9" />
+              <Input type="search" value={query} onChange={(e) => setQuery(e.target.value)} placeholder={isEn ? "Search my posts..." : "আমার পোস্ট খুঁজুন…"} aria-label={isEn ? "Search my posts" : "আমার পোস্ট খুঁজুন"} className="h-10 pl-9" />
             </form>
 
             <div className="ml-auto flex items-center gap-1.5 md:ml-0">

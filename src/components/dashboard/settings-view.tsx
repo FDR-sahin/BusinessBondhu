@@ -56,22 +56,31 @@ function ChoiceCards<T extends string>({ label, value, onChange, options }: { la
 }
 
 /* ---------------- notification preferences ---------------- */
-const PREFS: { key: keyof NotificationPrefs; label: string; text: string }[] = [
-  { key: "likes", label: "লাইক", text: "কেউ আপনার পোস্টে লাইক দিলে জানান" },
-  { key: "comments", label: "মন্তব্য", text: "আপনার পোস্টে নতুন মন্তব্য এলে জানান" },
-  { key: "replies", label: "উত্তর", text: "আপনার মন্তব্যে কেউ উত্তর দিলে জানান" },
-  { key: "system", label: "অ্যাডমিন ও সিস্টেম বার্তা", text: "পোস্ট অনুমোদন, বাতিল ও গুরুত্বপূর্ণ ঘোষণা" },
-  { key: "email", label: "ইমেইলেও জানান", text: "নোটিফিকেশনের কপি ইমেইলে পাঠানো হবে" },
-];
+function getPrefs(isEn: boolean): { key: keyof NotificationPrefs; label: string; text: string }[] {
+  return [
+    { key: "likes", label: isEn ? "Likes" : "লাইক", text: isEn ? "Notify when someone likes your post" : "কেউ আপনার পোস্টে লাইক দিলে জানান" },
+    { key: "comments", label: isEn ? "Comments" : "মন্তব্য", text: isEn ? "Notify when new comments arrive on your post" : "আপনার পোস্টে নতুন মন্তব্য এলে জানান" },
+    { key: "replies", label: isEn ? "Replies" : "উত্তর", text: isEn ? "Notify when someone replies to your comment" : "আপনার মন্তব্যে কেউ উত্তর দিলে জানান" },
+    { key: "system", label: isEn ? "Admin & System Messages" : "অ্যাডমিন ও সিস্টেম বার্তা", text: isEn ? "Post approval, rejection, and announcements" : "পোস্ট অনুমোদন, বাতিল ও গুরুত্বপূর্ণ ঘোষণা" },
+    { key: "email", label: isEn ? "Email Notifications" : "ইমেইলেও জানান", text: isEn ? "Send a copy of notifications to your email" : "নোটিফিকেশনের কপি ইমেইলে পাঠানো হবে" },
+  ];
+}
 
 function NotificationSection() {
   const { data, isPending, isError, refetch } = useSettings();
   const update = useUpdatePrefs();
+  const lang = useLangStore((s) => s.lang);
+  const isEn = lang === "en";
+  const prefs = getPrefs(isEn);
+
   return (
-    <Section title="নোটিফিকেশন" description="কোন বিষয়ে খবর পেতে চান বেছে নিন। পরিবর্তন সঙ্গে সঙ্গে সেভ হয়।">
+    <Section
+      title={isEn ? "Notifications" : "নোটিফিকেশন"}
+      description={isEn ? "Choose what updates you want to receive. Changes are saved automatically." : "কোন বিষয়ে খবর পেতে চান বেছে নিন। পরিবর্তন সঙ্গে সঙ্গে সেভ হয়।"}
+    >
       {isError ? <QueryError onRetry={() => void refetch()} /> : isPending ? <Skeleton className="h-48 w-full" /> : (
         <ul className="divide-y divide-border">
-          {PREFS.map((p) => (
+          {prefs.map((p) => (
             <li key={p.key} className="flex items-center justify-between gap-4 py-3.5">
               <div>
                 <Label htmlFor={`pref-${p.key}`} className="cursor-pointer">{p.label}</Label>
@@ -91,15 +100,29 @@ function AppearanceSection() {
   const { theme, setTheme } = useTheme();
   const lang = useLangStore((s) => s.lang);
   const setLang = useLangStore((s) => s.setLang);
+  const isEn = lang === "en";
+
   return (
-    <Section title="ভাষা ও থিম" description="এই পছন্দ শুধু এই ডিভাইসে সংরক্ষিত থাকে।">
+    <Section
+      title={isEn ? "Language & Theme" : "ভাষা ও থিম"}
+      description={isEn ? "These preferences are saved only on this device." : "এই পছন্দ শুধু এই ডিভাইসে সংরক্ষিত থাকে।"}
+    >
       <div className="space-y-2">
-        <p className="text-sm font-medium">ভাষা</p>
-        <ChoiceCards<Lang> label="ভাষা" value={lang} onChange={setLang} options={[{ value: "bn", label: "বাংলা" }, { value: "en", label: "English" }]} />
+        <p className="text-sm font-medium">{isEn ? "Language" : "ভাষা"}</p>
+        <ChoiceCards<Lang> label={isEn ? "Language" : "ভাষা"} value={lang} onChange={setLang} options={[{ value: "bn", label: "বাংলা" }, { value: "en", label: "English" }]} />
       </div>
       <div className="space-y-2">
-        <p className="text-sm font-medium">থিম</p>
-        <ChoiceCards label="থিম" value={theme ?? "system"} onChange={setTheme} options={[{ value: "light", label: "লাইট", icon: Sun }, { value: "dark", label: "ডার্ক", icon: Moon }, { value: "system", label: "সিস্টেম", icon: Monitor }]} />
+        <p className="text-sm font-medium">{isEn ? "Theme" : "থিম"}</p>
+        <ChoiceCards
+          label={isEn ? "Theme" : "থিম"}
+          value={theme ?? "system"}
+          onChange={setTheme}
+          options={[
+            { value: "light", label: isEn ? "Light" : "লাইট", icon: Sun },
+            { value: "dark", label: isEn ? "Dark" : "ডার্ক", icon: Moon },
+            { value: "system", label: isEn ? "System" : "সিস্টেম", icon: Monitor },
+          ]}
+        />
       </div>
     </Section>
   );
@@ -107,6 +130,9 @@ function AppearanceSection() {
 
 /* ---------------- change password ---------------- */
 function PasswordSection() {
+  const lang = useLangStore((s) => s.lang);
+  const isEn = lang === "en";
+
   const { register, handleSubmit, reset, watch, setError, formState: { errors } } = useForm<ChangePasswordValues>({
     resolver: zodResolver(changePasswordSchema),
     defaultValues: { currentPassword: "", password: "", confirmPassword: "" },
@@ -115,7 +141,7 @@ function PasswordSection() {
 
   const { mutate, isPending, error } = useMutation({
     mutationFn: (v: ChangePasswordValues) => api.put("/me/password", { currentPassword: v.currentPassword, newPassword: v.password }),
-    onSuccess: () => { toast.success("পাসওয়ার্ড বদলানো হয়েছে"); reset(); },
+    onSuccess: () => { toast.success(isEn ? "Password changed successfully" : "পাসওয়ার্ড বদলানো হয়েছে"); reset(); },
     onError: (e) => {
       const fields = getFieldErrors(e);
       if (fields.currentPassword) setError("currentPassword", { message: fields.currentPassword });
@@ -124,25 +150,37 @@ function PasswordSection() {
 
   // 400/403 from the API are treated as "wrong current password"
   const wrongCurrent = (error as { response?: { status?: number } } | null)?.response?.status;
-  const message = error ? (wrongCurrent === 400 || wrongCurrent === 403 ? "বর্তমান পাসওয়ার্ড সঠিক নয়।" : getErrorMessage(error)) : null;
+  const message = error
+    ? wrongCurrent === 400 || wrongCurrent === 403
+      ? isEn
+        ? "Current password is incorrect."
+        : "বর্তমান পাসওয়ার্ড সঠিক নয়।"
+      : getErrorMessage(error)
+    : null;
 
   return (
-    <Section title="পাসওয়ার্ড পরিবর্তন">
+    <Section title={isEn ? "Change Password" : "পাসওয়ার্ড পরিবর্তন"}>
       <form onSubmit={handleSubmit((v) => mutate(v))} noValidate className="max-w-md space-y-4">
         <FormAlert message={message} />
-        <FormField label="বর্তমান পাসওয়ার্ড" htmlFor="cp-current" required error={errors.currentPassword?.message}>
+        <FormField label={isEn ? "Current Password" : "বর্তমান পাসওয়ার্ড"} htmlFor="cp-current" required error={errors.currentPassword?.message}>
           <PasswordInput id="cp-current" autoComplete="current-password" invalid={!!errors.currentPassword} {...register("currentPassword")} />
         </FormField>
         <div className="space-y-2">
-          <FormField label="নতুন পাসওয়ার্ড" htmlFor="cp-new" required error={errors.password?.message} hint="কমপক্ষে ৮ অক্ষর, অন্তত একটি ইংরেজি অক্ষর ও একটি সংখ্যা">
+          <FormField
+            label={isEn ? "New Password" : "নতুন পাসওয়ার্ড"}
+            htmlFor="cp-new"
+            required
+            error={errors.password?.message}
+            hint={isEn ? "At least 8 characters, with letters and numbers" : "কমপক্ষে ৮ অক্ষর, অন্তত একটি ইংরেজি অক্ষর ও একটি সংখ্যা"}
+          >
             <PasswordInput id="cp-new" autoComplete="new-password" invalid={!!errors.password} {...register("password")} />
           </FormField>
           <PasswordStrength value={pw} />
         </div>
-        <FormField label="নতুন পাসওয়ার্ড নিশ্চিত করুন" htmlFor="cp-confirm" required error={errors.confirmPassword?.message}>
+        <FormField label={isEn ? "Confirm New Password" : "নতুন পাসওয়ার্ড নিশ্চিত করুন"} htmlFor="cp-confirm" required error={errors.confirmPassword?.message}>
           <PasswordInput id="cp-confirm" autoComplete="new-password" invalid={!!errors.confirmPassword} {...register("confirmPassword")} />
         </FormField>
-        <Button type="submit" loading={isPending}>পাসওয়ার্ড বদলান</Button>
+        <Button type="submit" loading={isPending}>{isEn ? "Change Password" : "পাসওয়ার্ড বদলান"}</Button>
       </form>
     </Section>
   );
@@ -151,7 +189,10 @@ function PasswordSection() {
 /* ---------------- change email (needs verification) ---------------- */
 function EmailSection() {
   const user = useAuthStore((s) => s.user);
+  const lang = useLangStore((s) => s.lang);
+  const isEn = lang === "en";
   const [sentTo, setSentTo] = useState<string | null>(null);
+
   const { register, handleSubmit, reset, setError, formState: { errors } } = useForm<ChangeEmailValues>({
     resolver: zodResolver(changeEmailSchema),
     defaultValues: { email: "", password: "" },
@@ -167,20 +208,45 @@ function EmailSection() {
   });
 
   const status = (error as { response?: { status?: number } } | null)?.response?.status;
-  const message = error ? (status === 409 ? "এই ইমেইল দিয়ে আগেই অ্যাকাউন্ট খোলা হয়েছে।" : status === 400 || status === 403 ? "পাসওয়ার্ড সঠিক নয়।" : getErrorMessage(error)) : null;
+  const message = error
+    ? status === 409
+      ? isEn
+        ? "An account with this email already exists."
+        : "এই ইমেইল দিয়ে আগেই অ্যাকাউন্ট খোলা হয়েছে।"
+      : status === 400 || status === 403
+      ? isEn
+        ? "Password is incorrect."
+        : "পাসওয়ার্ড সঠিক নয়।"
+      : getErrorMessage(error)
+    : null;
 
   return (
-    <Section title="ইমেইল পরিবর্তন" description={`বর্তমান ইমেইল: ${user?.email ?? ""}`}>
-      {sentTo && <FormAlert tone="success" message={`${sentTo} ঠিকানায় একটি যাচাইয়ের লিংক পাঠানো হয়েছে। লিংকে চাপ দিলেই ইমেইল বদলে যাবে। তার আগে পুরনো ইমেইলই কার্যকর থাকবে।`} />}
+    <Section title={isEn ? "Change Email" : "ইমেইল পরিবর্তন"} description={isEn ? `Current Email: ${user?.email ?? ""}` : `বর্তমান ইমেইল: ${user?.email ?? ""}`}>
+      {sentTo && (
+        <FormAlert
+          tone="success"
+          message={
+            isEn
+              ? `A verification link has been sent to ${sentTo}. Click the link to complete the change.`
+              : `${sentTo} ঠিকানায় একটি যাচাইয়ের লিংক পাঠানো হয়েছে। লিংকে চাপ দিলেই ইমেইল বদলে যাবে। তার আগে পুরনো ইমেইলই কার্যকর থাকবে।`
+          }
+        />
+      )}
       <form onSubmit={handleSubmit((v) => mutate(v))} noValidate className="max-w-md space-y-4">
         <FormAlert message={message} />
-        <FormField label="নতুন ইমেইল" htmlFor="ce-email" required error={errors.email?.message}>
+        <FormField label={isEn ? "New Email" : "নতুন ইমেইল"} htmlFor="ce-email" required error={errors.email?.message}>
           <Input id="ce-email" type="email" autoComplete="email" inputMode="email" invalid={!!errors.email} {...register("email")} />
         </FormField>
-        <FormField label="আপনার পাসওয়ার্ড" htmlFor="ce-password" required error={errors.password?.message} hint="নিরাপত্তার জন্য পাসওয়ার্ড নিশ্চিত করুন।">
+        <FormField
+          label={isEn ? "Your Password" : "আপনার পাসওয়ার্ড"}
+          htmlFor="ce-password"
+          required
+          error={errors.password?.message}
+          hint={isEn ? "Confirm password for security." : "নিরাপত্তার জন্য পাসওয়ার্ড নিশ্চিত করুন।"}
+        >
           <PasswordInput id="ce-password" autoComplete="current-password" invalid={!!errors.password} {...register("password")} />
         </FormField>
-        <Button type="submit" loading={isPending}>যাচাইয়ের লিংক পাঠান</Button>
+        <Button type="submit" loading={isPending}>{isEn ? "Send Verification Link" : "যাচাইয়ের লিংক পাঠান"}</Button>
       </form>
     </Section>
   );
@@ -189,6 +255,8 @@ function EmailSection() {
 /* ---------------- danger zone ---------------- */
 function DangerSection() {
   const user = useAuthStore((s) => s.user);
+  const lang = useLangStore((s) => s.lang);
+  const isEn = lang === "en";
   const router = useRouter();
   const qc = useQueryClient();
   const [open, setOpen] = useState(false);
@@ -200,30 +268,43 @@ function DangerSection() {
     onSuccess: () => {
       useAuthStore.getState().logout();
       qc.clear();
-      toast.success("আপনার অ্যাকাউন্ট মুছে ফেলা হয়েছে");
+      toast.success(isEn ? "Your account has been deleted" : "আপনার অ্যাকাউন্ট মুছে ফেলা হয়েছে");
       router.replace("/");
       router.refresh();
     },
   });
 
   return (
-    <Section danger title="বিপজ্জনক এলাকা" description="অ্যাকাউন্ট মুছে ফেললে আপনার পোস্ট, মন্তব্য ও সেভ করা তথ্য আর ফিরে পাওয়া যাবে না।">
-      <Button variant="danger" onClick={() => { setTyped(""); setOpen(true); }}><AlertTriangle aria-hidden /> অ্যাকাউন্ট মুছে ফেলুন</Button>
+    <Section
+      danger
+      title={isEn ? "Danger Zone" : "বিপজ্জনক এলাকা"}
+      description={
+        isEn
+          ? "Deleting your account is permanent. All posts, comments, and saved data will be lost."
+          : "অ্যাকাউন্ট মুছে ফেললে আপনার পোস্ট, মন্তব্য ও সেভ করা তথ্য আর ফিরে পাওয়া যাবে না।"
+      }
+    >
+      <Button variant="danger" onClick={() => { setTyped(""); setOpen(true); }}><AlertTriangle aria-hidden /> {isEn ? "Delete Account" : "অ্যাকাউন্ট মুছে ফেলুন"}</Button>
 
       <Dialog open={open} onOpenChange={(o) => !isPending && setOpen(o)}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>সত্যিই অ্যাকাউন্ট মুছে ফেলবেন?</DialogTitle>
-            <DialogDescription>এই কাজটি আর ফেরানো যাবে না। নিশ্চিত করতে নিচে আপনার ইমেইল ঠিকানা লিখুন: <strong className="break-all text-foreground">{user?.email}</strong></DialogDescription>
+            <DialogTitle>{isEn ? "Are you sure you want to delete your account?" : "সত্যিই অ্যাকাউন্ট মুছে ফেলবেন?"}</DialogTitle>
+            <DialogDescription>
+              {isEn
+                ? "This action cannot be undone. Please type your email address to confirm: "
+                : "এই কাজটি আর ফেরানো যাবে না। নিশ্চিত করতে নিচে আপনার ইমেইল ঠিকানা লিখুন: "}{" "}
+              <strong className="break-all text-foreground">{user?.email}</strong>
+            </DialogDescription>
           </DialogHeader>
           <FormAlert message={error ? getErrorMessage(error) : null} />
           <div className="space-y-1.5">
-            <Label htmlFor="del-confirm">ইমেইল নিশ্চিত করুন</Label>
+            <Label htmlFor="del-confirm">{isEn ? "Confirm Email" : "ইমেইল নিশ্চিত করুন"}</Label>
             <Input id="del-confirm" type="email" autoComplete="off" value={typed} onChange={(e) => setTyped(e.target.value)} />
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setOpen(false)} disabled={isPending}>বাতিল</Button>
-            <Button variant="danger" disabled={!matches} loading={isPending} onClick={() => mutate()}>চিরতরে মুছে ফেলুন</Button>
+            <Button variant="outline" onClick={() => setOpen(false)} disabled={isPending}>{isEn ? "Cancel" : "বাতিল"}</Button>
+            <Button variant="danger" disabled={!matches} loading={isPending} onClick={() => mutate()}>{isEn ? "Delete Permanently" : "চিরতরে মুছে ফেলুন"}</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

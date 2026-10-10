@@ -35,7 +35,7 @@ const config: Config = {
           soft: token("surface"),
           "soft-foreground": token("gold"),
         },
-        muted: { DEFAULT: token("muted"), foreground: token("muted") },
+        muted: { DEFAULT: token("muted-bg"), foreground: token("muted") },
         accent: { DEFAULT: token("surface"), foreground: token("ink") },
         destructive: { DEFAULT: token("pen-raw"), foreground: "#FFFFFF" },
         ink: {
