@@ -22,13 +22,63 @@ interface PageProps {
 
 export const dynamic = "force-dynamic";
 
+import mongoose from "mongoose";
+import { connectToDatabase } from "@/lib/db";
+import { BlogModel } from "@/lib/models";
+
 /**
- * Direct zero-latency resolution from DETAILED_BLOG_POSTS with decoding and external API fallback.
+ * Direct query from MongoDB database with local fallbacks.
  */
 const getArticle = cache(async (slug: string): Promise<{ post: BlogPostDetail | null; missing: boolean }> => {
   const decodedSlug = decodeURIComponent(slug);
 
-  // 1. Search in local DETAILED_BLOG_POSTS
+  // 1. Direct MongoDB Database query
+  try {
+    await connectToDatabase();
+    const query: any = {
+      $or: [
+        { slug: slug },
+        { slug: decodedSlug },
+        { id: slug },
+        { id: decodedSlug },
+        { customId: slug },
+        { customId: decodedSlug },
+        { title: decodedSlug },
+      ],
+    };
+    if (mongoose.Types.ObjectId.isValid(decodedSlug)) {
+      query.$or.push({ _id: decodedSlug });
+    }
+    const dbBlog = await BlogModel.findOne(query).lean();
+    if (dbBlog) {
+      const rawContent = dbBlog.content || dbBlog.excerpt || dbBlog.title;
+      return {
+        post: {
+          id: String(dbBlog._id || dbBlog.id || dbBlog.customId),
+          _id: String(dbBlog._id || dbBlog.id || dbBlog.customId),
+          slug: dbBlog.slug || (dbBlog.title || "").toLowerCase().replace(/\s+/g, "-"),
+          title: dbBlog.title,
+          category: dbBlog.category || "general",
+          excerpt: dbBlog.excerpt || "",
+          content: parseRichBlogText(rawContent, dbBlog.excerpt),
+          coverImage: dbBlog.coverImage || dbBlog.image || "/images/blog/default.jpg",
+          publishedAt: dbBlog.createdAt || dbBlog.date || new Date().toISOString(),
+          readingTime: dbBlog.readingTime || 5,
+          author: {
+            id: dbBlog.userId || "u-admin",
+            name: typeof dbBlog.author === "string" ? dbBlog.author : dbBlog.author?.name || "Business Hub BD Team",
+            avatar: "/images/avatars/default.jpg",
+          },
+          commentsEnabled: true,
+        } as BlogPostDetail,
+        missing: false,
+      };
+    }
+  } catch (err) {
+    console.error("Direct MongoDB query error in getArticle:", err);
+  }
+
+  // 2. Search in local DETAILED_BLOG_POSTS
   const localPost = DETAILED_BLOG_POSTS.find(
     (b) =>
       String(b.id) === slug ||
@@ -50,7 +100,7 @@ const getArticle = cache(async (slug: string): Promise<{ post: BlogPostDetail | 
     };
   }
 
-  // 1.5. Search in user-created blogs store (only if approved)
+  // 3. Search in user-created blogs store
   const userBlog = findUserBlog(slug) || findUserBlog(decodedSlug);
   if (userBlog && userBlog.status === "approved") {
     return {
@@ -73,53 +123,6 @@ const getArticle = cache(async (slug: string): Promise<{ post: BlogPostDetail | 
       } as BlogPostDetail,
       missing: false,
     };
-  }
-
-  // 2. Fetch from backend API /api/blogs
-  const base = process.env.NEXT_PUBLIC_API_URL || "https://uddok-admin.vercel.app";
-  try {
-    const res = await fetch(`${base.replace(/\/$/, "")}/api/blogs`, { cache: "no-store" });
-    if (res.ok) {
-      const result = await res.json();
-      if (result.success && Array.isArray(result.data)) {
-        const fetched = result.data.find(
-          (b: any) =>
-            String(b._id) === slug ||
-            String(b.id) === slug ||
-            String(b._id) === decodedSlug ||
-            String(b.id) === decodedSlug ||
-            b.slug === slug ||
-            b.slug === decodedSlug ||
-            (b.title && b.title.trim().toLowerCase() === decodedSlug.trim().toLowerCase()) ||
-            (b.title && b.title.toLowerCase().replace(/\s+/g, "-") === slug) ||
-            (b.title && b.title.toLowerCase().replace(/\s+/g, "-") === decodedSlug)
-        );
-        if (fetched) {
-          const rawContent = fetched.content || fetched.excerpt || fetched.title;
-          return {
-            post: {
-              id: String(fetched._id || fetched.id),
-              slug: fetched.slug || (fetched.title || "").toLowerCase().replace(/\s+/g, "-"),
-              title: fetched.title,
-              category: fetched.category || "general",
-              excerpt: fetched.excerpt || "",
-              content: parseRichBlogText(rawContent, fetched.excerpt),
-              publishedAt: fetched.createdAt || fetched.date || new Date().toISOString(),
-              readingTime: 5,
-              author: {
-                id: "u-admin",
-                name: typeof fetched.author === "string" ? fetched.author : "Business Hub BD Team",
-                avatar: "/images/avatars/default.jpg",
-              },
-              commentsEnabled: true,
-            } as BlogPostDetail,
-            missing: false,
-          };
-        }
-      }
-    }
-  } catch (err) {
-    console.error("Failed to fetch blog article:", err);
   }
 
   return { post: null, missing: true };
@@ -172,12 +175,6 @@ export default async function BlogArticlePage({ params }: PageProps) {
             <BlogMeta author={post.author} date={post.publishedAt} readingTime={readingTime} />
           </header>
 
-          {post.coverImage && (
-            <div className="relative aspect-video overflow-hidden rounded-2xl border border-border bg-muted">
-              <Image src={post.coverImage} alt={post.title} fill priority sizes="(min-width: 768px) 768px, 100vw" className="object-cover" />
-            </div>
-          )}
-
           {/* Safe: sanitized on the server with strict paragraph & text formatting */}
           <div className="prose-blog text-ink leading-relaxed font-['Hind_Siliguri',sans-serif] space-y-4" dangerouslySetInnerHTML={{ __html: html }} />
 
@@ -186,7 +183,7 @@ export default async function BlogArticlePage({ params }: PageProps) {
             <ShareButtons title={post.title} />
           </div>
 
-          {post.commentsEnabled && <CommentSection postId={post.id} scope="blog" />}
+          {post.commentsEnabled && <CommentSection postId={post.slug || post.id} scope="blog" />}
         </div>
       </article>
 

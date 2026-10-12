@@ -15,6 +15,7 @@ import type {
   AppNotification,
 } from "@/types";
 import { DETAILED_BLOG_POSTS } from "@/lib/blog-data";
+import { generateSmartAdvisorSuggestions } from "@/lib/advisor-engine";
 
 export const MOCK_POSTS: Post[] = [
   {
@@ -1603,48 +1604,11 @@ export function getMockComments(postId: string): Comment[] {
   return [];
 }
 
-export function getMockAdvisorSuggestions(budget: number, category?: string): AdvisorResponse {
-  return {
-    suggestions: [
-      {
-        id: "adv-1",
-        name: "অনলাইন স্ন্যাকস ও ফ্রোজেন ফুড হোম ডেলিভারি",
-        category: category || "food-beverage",
-        costBreakdown: [
-          { item: "কাঁচামাল ও প্যাকেজিং", amount: Math.round(budget * 0.45) },
-          { item: "মার্কেটিং ও অনলাইন পেজ প্রমোট", amount: Math.round(budget * 0.25) },
-          { item: "ডেলিভারি সার্ভিস ও জরুরি ফান্ড", amount: Math.round(budget * 0.3) },
-        ],
-        totalCost: budget,
-        profitDaily: Math.round(budget * 0.04),
-        profitMonthly: Math.round(budget * 0.35),
-        riskPercent: 22,
-        reason: "আপনার নির্বাচিত এলাকায় স্বল্প বাজেটে ঘরে তৈরি ফ্রোজেন খাবারের অনলাইন চাহিদা দ্রুত বাড়ছে।",
-        tips: [
-          "ফেসবুক ও স্থানীয় হোয়াটসঅ্যাপ গ্রুপে প্রচারণা শুরু করুন।",
-          "প্রথম ১০০ জন কাস্টমারকে ফ্রি স্যাম্পল বা বিশেষ ছাড় দিন।",
-          "প্যাকেজিং পরিষ্কার ও আকর্ষণীয় রাখুন।",
-        ],
-      },
-      {
-        id: "adv-2",
-        name: "রেডিমেড পোশাকের ফেসবুক ভিত্তিক পপ-আপ শপ",
-        category: "clothing",
-        costBreakdown: [
-          { item: "পাইকারি বাজার থেকে টি-শার্ট ও ড্রেস সোর্সিং", amount: Math.round(budget * 0.6) },
-          { item: "প্যাকেজিং ও স্টিকার", amount: Math.round(budget * 0.15) },
-          { item: "ফেসবুক বুস্টিং ও ভিডিও রিভিউ", amount: Math.round(budget * 0.25) },
-        ],
-        totalCost: budget,
-        profitDaily: Math.round(budget * 0.05),
-        profitMonthly: Math.round(budget * 0.4),
-        riskPercent: 35,
-        reason: "উৎসব কেন্দ্রিক কাপড়ের চাহিদা বেশি থাকে এবং স্টক দ্রুত ক্লিয়ার হয়।",
-        tips: [
-          "ইসলামপুর বা নারায়ণগঞ্জের পাইকারি বাজার থেকে সরাসরি সংগ্রহ করুন।",
-          "সুন্দর ছবি ও রিলস তৈরি করে সোশ্যাল মিডিয়ায় পোস্ট করুন।",
-        ],
-      },
-    ],
-  };
+export function getMockAdvisorSuggestions(budget: number, category?: string, district?: string, division?: string): AdvisorResponse {
+  return generateSmartAdvisorSuggestions({
+    budget,
+    category,
+    district,
+    division,
+  });
 }

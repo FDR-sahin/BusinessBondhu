@@ -24,13 +24,24 @@ interface CommentItemProps {
 export function CommentItem({ comment, postId, scope = "posts", isReply = false }: CommentItemProps) {
   const mounted = useMounted();
   const requireAuth = useRequireAuth();
-  const userId = useAuthStore((s) => s.user?.id);
+  const user = useAuthStore((s) => s.user);
+  const userId = user?.id;
+  const userEmail = user?.email?.toLowerCase().trim();
+  const userName = user?.name?.trim();
   const [replying, setReplying] = useState(false);
   const [confirmOpen, setConfirmOpen] = useState(false);
   const like = useToggleCommentLike(postId, scope);
   const del = useDeleteComment(postId, scope);
 
-  const isOwn = mounted && !!userId && comment.author.id === userId;
+  const isOwn =
+    mounted &&
+    !!user &&
+    (
+      (Boolean(comment.author?.id) && (comment.author.id === userId || comment.author.id === "me")) ||
+      (Boolean((comment.author as any)?.email) && (comment.author as any).email.toLowerCase().trim() === userEmail) ||
+      (Boolean(userName) && comment.author?.name?.trim() === userName)
+    );
+  const canDelete = isOwn || (mounted && user?.role === "admin");
   const liked = mounted && !!comment.likedByMe;
 
   return (
@@ -73,7 +84,7 @@ export function CommentItem({ comment, postId, scope = "posts", isReply = false 
             </Button>
           )}
 
-          {isOwn && (
+          {canDelete && (
             <Button variant="ghost" size="sm" className="h-8 px-2 text-ink-secondary hover:text-danger" onClick={() => setConfirmOpen(true)}>
               <Trash2 aria-hidden /> মুছুন
             </Button>

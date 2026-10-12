@@ -5,6 +5,9 @@ import { PostDetailView } from "@/components/post/post-detail-view";
 import { MOCK_POSTS } from "@/lib/mock-data";
 import { getDistrictLabel } from "@/lib/bd-data";
 import { findUserPost } from "@/lib/user-posts-store";
+import { connectToDatabase } from "@/lib/db";
+import { BusinessIdeaModel } from "@/lib/models";
+import { getQueryForId } from "@/lib/api-handlers/posts";
 import type { PostDetail } from "@/types";
 
 interface PageProps {
@@ -14,71 +17,67 @@ interface PageProps {
 export const dynamic = "force-dynamic";
 
 /**
- * Server-side fetch (cached 60s). Direct zero-latency resolution from MOCK_POSTS
- * with fallback to external API for admin created posts.
+ * Server-side fetch (cached 60s). Direct query from MongoDB database
+ * with fallback to local MOCK_POSTS.
  */
 const getPost = cache(async (id: string): Promise<{ post: PostDetail | null; missing: boolean }> => {
   const decodedId = decodeURIComponent(id);
-  const base = process.env.NEXT_PUBLIC_API_URL || "https://uddok-admin.vercel.app";
 
-  // 1. Fetch from backend API first to get real-time likes, dislikes, and comments
+  // 1. Direct MongoDB Database query
   try {
-    const res = await fetch(`${base.replace(/\/$/, "")}/api/ideas`, { cache: "no-store" });
-    if (res.ok) {
-      const result = await res.json();
-      if (result.success && Array.isArray(result.data)) {
-        const item = result.data.find((i: any) => String(i._id) === decodedId || String(i.id) === decodedId);
-        if (item) {
-          const districtName = getDistrictLabel(item.district) || item.district || "ঢাকা";
-          const exactLoc =
-            item.exactLocation ||
-            (item.upazilaOrArea ? `${item.upazilaOrArea}, ${districtName}` : `${districtName}, Bangladesh`);
-          const wholesalePrice = Number(item.wholesalePrice || 0);
-          const wholesalePriceMax = item.wholesalePriceMax ? Number(item.wholesalePriceMax) : undefined;
-          const wholesalePriceText = item.wholesalePriceText || (wholesalePriceMax ? `${wholesalePrice}-${wholesalePriceMax}` : undefined);
-          const retailPrice = Number(item.retailPrice || item.retailSellPrice || 0);
-          const retailPriceMax = item.retailPriceMax ? Number(item.retailPriceMax) : undefined;
-          const retailPriceText = item.retailPriceText || (retailPriceMax ? `${retailPrice}-${retailPriceMax}` : undefined);
+    await connectToDatabase();
+    const query = getQueryForId(decodedId);
+    const item = await BusinessIdeaModel.findOne(query).lean();
+    if (item) {
+      const districtName = getDistrictLabel(item.district) || item.district || "ঢাকা";
+      const exactLoc =
+        item.exactLocation ||
+        (item.upazilaOrArea ? `${item.upazilaOrArea}, ${districtName}` : `${districtName}, Bangladesh`);
+      const wholesalePrice = Number(item.wholesalePrice || 0);
+      const wholesalePriceMax = item.wholesalePriceMax ? Number(item.wholesalePriceMax) : undefined;
+      const wholesalePriceText = item.wholesalePriceText || (wholesalePriceMax ? `${wholesalePrice}-${wholesalePriceMax}` : undefined);
+      const retailPrice = Number(item.retailPrice || item.retailSellPrice || 0);
+      const retailPriceMax = item.retailPriceMax ? Number(item.retailPriceMax) : undefined;
+      const retailPriceText = item.retailPriceText || (retailPriceMax ? `${retailPrice}-${retailPriceMax}` : undefined);
 
-          return {
-            post: {
-              id: String(item.id || item._id),
-              _id: String(item._id || item.id),
-              title: item.title,
-              category: item.category || "agriculture-livestock",
-              division: item.division || "Dhaka",
-              district: districtName,
-              area: item.upazilaOrArea || item.area || districtName,
-              exactLocation: exactLoc,
-              wholesalePrice,
-              wholesalePriceMax,
-              wholesalePriceText,
-              retailPrice,
-              retailPriceMax,
-              retailPriceText,
-              retailSellPrice: retailPrice,
-              profitPotential: item.profitPotential || (retailPrice - wholesalePrice > 100 ? "high" : "medium"),
-              description: item.description || "উৎপাদন ও সোর্সিং সংক্রান্ত বিস্তারিত তথ্য।",
-              image: item.image || "/images/ideas/default.jpg",
-              tags: item.tags || [`#${districtName}`, `#${item.category}`],
-              author: {
-                id: "u-admin",
-                name: typeof item.author === "string" ? item.author : item.author?.name || item.postedBy?.name || "উদ্যোক্তা অ্যাডমিন",
-                avatar: "/images/avatars/default.jpg",
-              },
-              likesCount: item.likesCount ?? item.likes ?? 0,
-              dislikesCount: item.dislikesCount ?? item.dislikes ?? 0,
-              viewsCount: item.viewsCount ?? 15,
-              commentsCount: item.comments?.length || 0,
-              createdAt: item.createdAt || new Date().toISOString(),
-            } as PostDetail,
-            missing: false,
-          };
-        }
-      }
+      return {
+        post: {
+          id: String(item._id || item.id || item.customId),
+          _id: String(item._id || item.id || item.customId),
+          customId: item.customId,
+          title: item.title,
+          category: item.category || "agriculture-livestock",
+          division: item.division || "Dhaka",
+          district: districtName,
+          area: item.upazilaOrArea || item.area || districtName,
+          exactLocation: exactLoc,
+          wholesalePrice,
+          wholesalePriceMax,
+          wholesalePriceText,
+          retailPrice,
+          retailPriceMax,
+          retailPriceText,
+          retailSellPrice: retailPrice,
+          profitPotential: item.profitPotential || (retailPrice - wholesalePrice > 100 ? "high" : "medium"),
+          description: item.description || "উৎপাদন ও সোর্সিং সংক্রান্ত বিস্তারিত তথ্য।",
+          image: item.image || "/images/ideas/default.jpg",
+          tags: item.tags || [`#${districtName}`, `#${item.category}`],
+          author: {
+            id: item.userId || "u-admin",
+            name: typeof item.author === "string" ? item.author : item.author?.name || item.postedBy?.name || "উদ্যোক্তা অ্যাডমিন",
+            avatar: item.author?.avatar || "/images/avatars/default.jpg",
+          },
+          likesCount: typeof item.likes === "number" ? item.likes : item.likesCount || 0,
+          dislikesCount: typeof item.dislikes === "number" ? item.dislikes : item.dislikesCount || 0,
+          viewsCount: item.viewsCount || 15,
+          commentsCount: Array.isArray(item.comments) ? item.comments.length : 0,
+          createdAt: item.createdAt || new Date().toISOString(),
+        } as PostDetail,
+        missing: false,
+      };
     }
   } catch (err) {
-    console.error("Failed to fetch post detail:", err);
+    console.error("Direct MongoDB query error in getPost:", err);
   }
 
   // 2. Check local user store

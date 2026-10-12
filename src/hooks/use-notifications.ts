@@ -64,3 +64,29 @@ export function useMarkAllRead() {
     onError: (e) => toast.error(getErrorMessage(e)),
   });
 }
+
+/** DELETE /me/notifications/:id */
+export function useDeleteNotification() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (id: string) => api.delete(`/me/notifications/${id}`),
+    onSuccess: () => {
+      toast.success("নোটিফিকেশনটি মুছে ফেলা হয়েছে");
+      void qc.invalidateQueries({ queryKey: ["notifications"] });
+    },
+    onError: (e) => toast.error(getErrorMessage(e)),
+  });
+}
+
+/** DELETE /me/notifications/clear-all */
+export function useClearAllNotifications() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: () => api.delete("/me/notifications/clear-all"),
+    onSuccess: () => {
+      toast.success("সব নোটিফিকেশন মুছে ফেলা হয়েছে");
+      void qc.invalidateQueries({ queryKey: ["notifications"] });
+    },
+    onError: (e) => toast.error(getErrorMessage(e)),
+  });
+}

@@ -1,29 +1,28 @@
 import { NextResponse } from "next/server";
+import { connectToDatabase } from "@/lib/db";
+import { BusinessIdeaModel } from "@/lib/models";
 import { MOCK_POSTS } from "@/lib/mock-data";
 import { getDistrictLabel } from "@/lib/bd-data";
 
 export async function handleIdeasGet() {
-  const backendUrl = process.env.NEXT_PUBLIC_API_URL || "https://uddok-admin.vercel.app";
-  let adminItems: any[] = [];
+  let dbItems: any[] = [];
 
   try {
-    const res = await fetch(`${backendUrl.replace(/\/$/, "")}/api/ideas`, {
-      cache: "no-store",
-      headers: { "Content-Type": "application/json" },
-    });
+    await connectToDatabase();
+    const ideas = await BusinessIdeaModel.find({
+      status: "approved",
+    }).sort({ _id: -1 }).lean();
 
-    if (res.ok) {
-      const result = await res.json();
-      if (result.success && Array.isArray(result.data)) {
-        adminItems = result.data
-          .filter(
-            (item: any) =>
-              !item.isBlog &&
-              !item.isUserAccount &&
-              item.status !== "user_account" &&
-              !(typeof item.title === "string" && item.title.startsWith("[ইউজার]"))
-          )
-          .map((item: any) => {
+    if (Array.isArray(ideas) && ideas.length > 0) {
+      dbItems = ideas
+        .filter(
+          (item: any) =>
+            !item.isBlog &&
+            !item.isUserAccount &&
+            item.status !== "user_account" &&
+            !(typeof item.title === "string" && item.title.startsWith("[ইউজার]"))
+        )
+        .map((item: any) => {
           const districtName = getDistrictLabel(item.district) || item.district || "ঢাকা";
           const exactLoc =
             item.exactLocation ||
@@ -34,9 +33,12 @@ export async function handleIdeasGet() {
           const retailPriceMax = item.retailPriceMax ? Number(item.retailPriceMax) : undefined;
           const profit = Math.max(0, retailPrice - wholesalePrice);
 
+          const ideaId = String(item._id || item.id || item.customId);
+
           return {
-            _id: String(item._id || item.id),
-            id: String(item.id || item._id),
+            _id: ideaId,
+            id: ideaId,
+            customId: item.customId || ideaId,
             title: item.title,
             category: item.category || "agriculture-livestock",
             division: item.division || "Dhaka",
@@ -58,18 +60,20 @@ export async function handleIdeasGet() {
             author: typeof item.author === "string" ? item.author : item.author?.name || item.postedBy?.name || "উদ্যোক্তা অ্যাডমিন",
             likesCount: item.likesCount ?? item.likes ?? 0,
             viewsCount: item.viewsCount ?? 15,
+            status: item.status || "approved",
             createdAt: item.createdAt || new Date().toISOString(),
           };
         });
-      }
     }
   } catch (err) {
-    console.error("Failed to fetch ideas from admin backend, using fallback:", err);
+    console.error("Failed to fetch ideas directly from MongoDB:", err);
   }
 
-  // Merge admin posts with all 57 MOCK_POSTS (preventing duplicate IDs)
-  const existingIds = new Set(adminItems.map((i) => String(i.id)));
-  const fallbackFormatted = MOCK_POSTS.filter((post) => !existingIds.has(String(post.id))).map((post) => {
+  // Merge dbItems with any non-overlapping MOCK_POSTS
+  const existingIds = new Set(dbItems.map((i) => String(i.id)));
+  const existingTitles = new Set(dbItems.map((i) => (i.title || "").trim().toLowerCase()));
+
+  const fallbackFormatted = MOCK_POSTS.filter((post) => !existingIds.has(String(post.id)) && !existingTitles.has((post.title || "").trim().toLowerCase())).map((post) => {
     const districtName = getDistrictLabel(post.district) || post.district;
     const exactLoc = post.exactLocation || (post.area ? `${post.area}, ${districtName}` : `${districtName}, Bangladesh`);
     const profit = Math.max(0, (post.retailSellPrice ?? post.retailPrice) - post.wholesalePrice);
@@ -77,6 +81,7 @@ export async function handleIdeasGet() {
     return {
       _id: post.id,
       id: post.id,
+      customId: post.id,
       title: post.title,
       category: post.category,
       division: post.division,
@@ -98,11 +103,12 @@ export async function handleIdeasGet() {
       author: typeof post.author === "string" ? post.author : post.author?.name || "সোর্সিং প্রতিনিধি",
       likesCount: post.likesCount,
       viewsCount: post.viewsCount,
+      status: "approved",
       createdAt: post.createdAt,
     };
   });
 
-  const combined = [...adminItems, ...fallbackFormatted];
+  const combined = dbItems.length > 0 ? dbItems : fallbackFormatted;
 
   return NextResponse.json({
     success: true,

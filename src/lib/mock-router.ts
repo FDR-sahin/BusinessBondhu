@@ -230,7 +230,7 @@ export function handleMockFallback(config?: AxiosRequestConfig): AxiosResponse |
   // POST /advisor/suggest
   if (path.includes("/advisor/suggest")) {
     const body = typeof config.data === "string" ? JSON.parse(config.data || "{}") : config.data || {};
-    return createAxiosResponse(getMockAdvisorSuggestions(body.budget || 20000, body.category), config);
+    return createAxiosResponse(getMockAdvisorSuggestions(body.budget || 20000, body.category, body.district, body.division), config);
   }
 
   // Auth /me & Profile & Settings mock endpoints
@@ -490,11 +490,63 @@ export function handleMockFallback(config?: AxiosRequestConfig): AxiosResponse |
       config,
     );
   }
+  if (path.includes("/me/saved")) {
+    let savedItems: any[] = [];
+    if (typeof window !== "undefined") {
+      try {
+        const savedIds = new Set<string>();
+        for (let i = 0; i < localStorage.length; i++) {
+          const key = localStorage.key(i);
+          if (key && key.startsWith("saved_") && localStorage.getItem(key) === "true") {
+            savedIds.add(key.replace("saved_", ""));
+          }
+        }
+        savedItems = MOCK_POSTS.filter((p) => savedIds.has(String(p.id)));
+      } catch (e) {
+        console.error(e);
+      }
+    }
+    return createAxiosResponse(
+      {
+        items: savedItems,
+        total: savedItems.length,
+        page: 1,
+        limit: 10,
+        totalPages: Math.ceil(savedItems.length / 10) || 1,
+      },
+      config,
+    );
+  }
+  if (path.includes("/me/likes")) {
+    let likedItems: any[] = [];
+    if (typeof window !== "undefined") {
+      try {
+        const likedIds = new Set<string>();
+        for (let i = 0; i < localStorage.length; i++) {
+          const key = localStorage.key(i);
+          if (key && key.startsWith("reaction_") && localStorage.getItem(key) === "like") {
+            likedIds.add(key.replace("reaction_", ""));
+          }
+        }
+        likedItems = MOCK_POSTS.filter((p) => likedIds.has(String(p.id)));
+      } catch (e) {
+        console.error(e);
+      }
+    }
+    return createAxiosResponse(
+      {
+        items: likedItems,
+        total: likedItems.length,
+        page: 1,
+        limit: 10,
+        totalPages: Math.ceil(likedItems.length / 10) || 1,
+      },
+      config,
+    );
+  }
   if (
     path.includes("/me/collections") ||
-    path.includes("/me/likes") ||
-    path.includes("/me/dislikes") ||
-    path.includes("/me/saved")
+    path.includes("/me/dislikes")
   ) {
     return createAxiosResponse(
       {

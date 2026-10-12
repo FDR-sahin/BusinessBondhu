@@ -9,6 +9,7 @@ import {
   persistUserToBackend,
 } from "@/lib/user-profile-store";
 import { generateOtp, verifyOtp, clearOtp } from "@/lib/otp-store";
+import { isUserBlocked } from "@/lib/user-block-check";
 
 export async function handleAuthSignup(request: Request) {
   try {
@@ -122,6 +123,13 @@ export async function handleAuthLogin(request: Request) {
       return NextResponse.json(
         { message: "ইমেইল বা পাসওয়ার্ড সঠিক নয়।" },
         { status: 401 }
+      );
+    }
+
+    if (existingUser?.isBlocked || (await isUserBlocked(email, existingUser?.id))) {
+      return NextResponse.json(
+        { message: "আপনার অ্যাকাউন্টটি অ্যাডমিন কর্তৃক সাময়িকভাবে ব্লক করা হয়েছে। সহযোগিতার জন্য কর্তৃপক্ষের সাথে যোগাযোগ করুন।" },
+        { status: 403 }
       );
     }
 
@@ -314,6 +322,8 @@ export async function handleAuthMePut(request: Request) {
       bio,
       avatar,
     });
+
+    await persistUserToBackend(saved);
 
     const res = NextResponse.json({ user: sanitizeUser(saved) });
     const maxAge = 60 * 60 * 24 * 30;

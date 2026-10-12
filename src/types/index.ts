@@ -48,6 +48,7 @@ export interface PostAuthor {
   id: string;
   name: string;
   avatar?: string;
+  email?: string;
 }
 
 /** Adjust to your API. Location is flat; `category` is a slug from CATEGORIES. */

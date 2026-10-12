@@ -18,9 +18,11 @@ import {
   handleBlogSlug,
   handleBlogDelete,
   handleBlogCommentsGet,
+  handleBlogCommentsPost,
   handleBlogCommentsOptions,
   handleBlogRelated,
 } from "./blog";
+import { handleCommentDelete, handleCommentLike } from "./comments";
 import {
   handlePostsGet,
   handlePostsPost,
@@ -29,6 +31,7 @@ import {
   handlePostDetailDelete,
   handlePostLike,
   handlePostDislike,
+  handlePostSave,
   handlePostCommentsGet,
   handlePostCommentsPost,
   handlePostMe,
@@ -53,8 +56,15 @@ import {
 } from "./me";
 import { handleAdvisorSuggest } from "./advisor";
 import { handleChat } from "./chat";
+import {
+  handleNotificationsUnreadCount,
+  handleNotificationsList,
+  handleNotificationMarkRead,
+  handleNotificationsMarkAllRead,
+  handleNotificationDelete,
+  handleNotificationsClearAll,
+} from "./notifications";
 import { handleStatsAnalysis, handleStatsTopDistricts } from "./stats";
-import { handleNotificationsUnreadCount } from "./notifications";
 
 export async function dispatchApiRequest(request: Request, pathSegments: string[]): Promise<Response> {
   const method = request.method.toUpperCase();
@@ -70,7 +80,23 @@ export async function dispatchApiRequest(request: Request, pathSegments: string[
     if (method === "POST") return handleBlogCreate(request);
   }
 
-  // 3. /api/v1/*
+  // 3. Root /api/comments
+  if (pathSegments.length >= 2 && pathSegments[0] === "comments") {
+    const commentId = pathSegments[1];
+    if (pathSegments.length === 2 && method === "DELETE") {
+      return handleCommentDelete(commentId, request);
+    }
+    if (pathSegments.length === 3 && pathSegments[2] === "like" && method === "POST") {
+      return handleCommentLike(commentId, request);
+    }
+  }
+
+  // Root /api/advisor/suggest
+  if (pathSegments.length === 2 && pathSegments[0] === "advisor" && pathSegments[1] === "suggest") {
+    if (method === "POST") return handleAdvisorSuggest(request);
+  }
+
+  // 4. /api/v1/*
   if (pathSegments.length >= 1 && pathSegments[0] === "v1") {
     const rest = pathSegments.slice(1);
 
@@ -107,7 +133,7 @@ export async function dispatchApiRequest(request: Request, pathSegments: string[
 
     // /api/v1/notifications/*
     if (rest[0] === "notifications") {
-      if (rest[1] === "unread-count" && method === "GET") return handleNotificationsUnreadCount();
+      if (rest[1] === "unread-count" && method === "GET") return handleNotificationsUnreadCount(request);
     }
 
     // /api/v1/me/*
@@ -128,16 +154,33 @@ export async function dispatchApiRequest(request: Request, pathSegments: string[
         if (meSub.length === 1 && method === "GET") return handleMePosts(request);
         if (meSub.length === 2 && method === "GET") return handleMePostDetail(meSub[1]);
       }
-      if (meSub[0] === "saved" && method === "GET") return handleMeSaved();
+      if (meSub[0] === "saved" && method === "GET") return handleMeSaved(request);
       if (meSub[0] === "settings" && method === "GET") return handleMeSettings();
-      if (meSub[0] === "comments" && method === "GET") return handleMeComments();
-      if (meSub[0] === "dislikes" && method === "GET") return handleMeDislikes();
-      if (meSub[0] === "likes" && method === "GET") return handleMeLikes();
-      if (meSub[0] === "notifications" && method === "GET") return handleMeNotifications();
+      if (meSub[0] === "comments" && method === "GET") return handleMeComments(request);
+      if (meSub[0] === "dislikes" && method === "GET") return handleMeDislikes(request);
+      if (meSub[0] === "likes" && method === "GET") return handleMeLikes(request);
+      if (meSub[0] === "notifications") {
+        if (meSub.length === 1 && method === "GET") return handleNotificationsList(request);
+        if (meSub.length === 2 && meSub[1] === "read-all" && method === "POST") return handleNotificationsMarkAllRead(request);
+        if (meSub.length === 2 && meSub[1] === "clear-all" && method === "DELETE") return handleNotificationsClearAll(request);
+        if (meSub.length === 3 && meSub[2] === "read" && method === "POST") return handleNotificationMarkRead(meSub[1], request);
+        if (meSub.length === 2 && method === "DELETE") return handleNotificationDelete(meSub[1], request);
+      }
       if (meSub[0] === "blogs") {
         if (meSub.length === 1 && method === "GET") return handleMeBlogs(request);
         if (meSub.length === 2 && method === "GET") return handleMeBlogDetail(meSub[1]);
         if (meSub.length === 2 && method === "DELETE") return handleMeBlogDelete(meSub[1], request);
+      }
+    }
+
+    // /api/v1/comments/*
+    if (rest[0] === "comments") {
+      const commentId = rest[1];
+      if (rest.length === 2 && method === "DELETE") {
+        return handleCommentDelete(commentId, request);
+      }
+      if (rest.length === 3 && rest[2] === "like" && method === "POST") {
+        return handleCommentLike(commentId, request);
       }
     }
 
@@ -157,10 +200,14 @@ export async function dispatchApiRequest(request: Request, pathSegments: string[
         const slug = blogSub[0];
         const subAction = blogSub[1];
         if (subAction === "comments") {
-          if (method === "GET") return handleBlogCommentsGet(request);
+          if (method === "GET") return handleBlogCommentsGet(slug, request);
+          if (method === "POST") return handleBlogCommentsPost(slug, request);
           if (method === "OPTIONS") return handleBlogCommentsOptions(request);
         }
         if (subAction === "related" && method === "GET") return handleBlogRelated(slug);
+      }
+      if (blogSub.length === 3 && blogSub[1] === "comments" && method === "DELETE") {
+        return handleCommentDelete(blogSub[2], request);
       }
     }
 
@@ -182,12 +229,16 @@ export async function dispatchApiRequest(request: Request, pathSegments: string[
         const action = postSub[1];
         if (action === "like" && method === "POST") return handlePostLike(id, request);
         if (action === "dislike" && method === "POST") return handlePostDislike(id, request);
+        if (action === "save" && method === "POST") return handlePostSave(id, request);
         if (action === "comments") {
           if (method === "GET") return handlePostCommentsGet(id);
           if (method === "POST") return handlePostCommentsPost(id, request);
         }
         if (action === "me" && method === "GET") return handlePostMe(id, request);
         if (action === "related" && method === "GET") return handlePostRelated(id);
+      }
+      if (postSub.length === 3 && postSub[1] === "comments" && method === "DELETE") {
+        return handleCommentDelete(postSub[2], request);
       }
     }
   }
